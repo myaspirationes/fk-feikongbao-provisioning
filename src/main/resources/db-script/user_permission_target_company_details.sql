@@ -1,6 +1,6 @@
 
 
-CREATE TABLE `user_permission_target_group_details` (
+CREATE TABLE `user_permission_target_company_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_permission_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户权限组id',
   `company_id` int(11) NOT NULL DEFAULT 0 COMMENT '集团id',
