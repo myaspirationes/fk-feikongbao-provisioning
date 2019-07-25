@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="feikongbao-provisioning" packages="">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSSZ} ${env:hostName} %p %m%n</Property>
+        <Property name="LOG_ROOT_DIR">/fkb-logs</Property>
+    </Properties>
+
+    <!--define the location where the log messages should go to -->
+    <Appenders>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <RollingFile name="file"
+                     fileName="${LOG_ROOT_DIR}/paas-mgmt.log"
+                     filePattern="${LOG_ROOT_DIR}/feikongbao-provisioning-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <!--define the logger which combines the log level and appender,
+            as well as which package the logger should apply to-->
+    <Loggers>
+
+        <!--
+        <Root level="error">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="fout"/>
+        </Root>
+        -->
+
+        <AsyncRoot level="DEBUG">
+                
+            <AppenderRef ref="console"/>
+                
+            <AppenderRef ref="file"/>
+        </AsyncRoot>
+
+    </Loggers>
+
+</Configuration>
