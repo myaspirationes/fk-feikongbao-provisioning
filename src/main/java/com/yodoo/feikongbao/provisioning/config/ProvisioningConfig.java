@@ -38,7 +38,7 @@ import java.net.URISyntaxException;
 @Configuration
 @Import({SwiftStorageClientConfig.class})
 @ComponentScan(basePackages = {"com.yodoo.feikongbao.provisioning"})
-@MapperScan(basePackages = "com.yodoo.feikongbao.provisioning.*.*.dao", sqlSessionFactoryRef = ProvisioningConfig.SQL_SESSION_FACTORY_BEAN_NAME)
+@MapperScan(basePackages = "com.yodoo.feikongbao.provisioning.mapper.*.*", sqlSessionFactoryRef = ProvisioningConfig.SQL_SESSION_FACTORY_BEAN_NAME)
 @EnableTransactionManagement
 @EnableRabbitMqConfig
 @EnableProvisioningDataSource
@@ -87,7 +87,7 @@ public class ProvisioningConfig {
         sqlSessionFactoryBean.setDataSource(provisioningDataSource);
         // 下边仅仅用于*.xml文件，如果整个持久层操作不需要使用到xml文件的话（只用注解就可以搞定），则不加
         sqlSessionFactoryBean.setMapperLocations(
-                new PathMatchingResourcePatternResolver().getResources("classpath*:com/yodoo/feikongbao/provisioning/mapper/**/*.xml"));
+                new PathMatchingResourcePatternResolver().getResources("classpath*:com/yodoo/feikongbao/provisioning/**/*.xml"));
         return sqlSessionFactoryBean.getObject();
     }
 

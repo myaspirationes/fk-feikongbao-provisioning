@@ -17,10 +17,14 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String createUser;
+
     /**
      * 创建日期
      **/
     private Date createTime;
+
+    private String updateUser;
 
     /**
      * 更新日期
@@ -35,12 +39,28 @@ public class BaseEntity {
         this.id = id;
     }
 
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser == null ? null : createUser.trim();
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser == null ? null : updateUser.trim();
     }
 
     public Date getUpdateTime() {
@@ -50,4 +70,5 @@ public class BaseEntity {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
 }
