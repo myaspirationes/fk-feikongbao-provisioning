@@ -17,6 +17,9 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /**
+     * 创建人
+     **/
     private String createUser;
 
     /**
@@ -24,6 +27,9 @@ public class BaseEntity {
      **/
     private Date createTime;
 
+    /**
+     * 更新人
+     **/
     private String updateUser;
 
     /**

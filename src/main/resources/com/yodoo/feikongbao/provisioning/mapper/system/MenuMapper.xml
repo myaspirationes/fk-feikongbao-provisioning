@@ -13,10 +13,23 @@
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
   <sql id="Base_Column_List">
     id, parent_id, menu_code, menu_name, menu_target, order_no, create_user, create_time, 
     update_user, update_time
   </sql>
+
+  <select id="getMenuByPermission" resultMap="BaseResultMap">
+      SELECT
+        <include refid="Base_Column_List"/>
+      FROM menu
+      where id in (select menu_id from menu_permission_details where permission_id in
+        <foreach item="item" collection="permissionIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      )
+    ORDER BY order_no ASC
+  </select>
 
 
 </mapper>
