@@ -168,7 +168,7 @@ public class MenuTreeService {
     }
 
     private void addParentMenu(List<Menu> targetMenuList, Set<Integer> targetMenuIdSet, Menu menu, Map<Integer, Menu> allMenuMap) {
-        if (menu.getParentId() != null && 0 != menu.getId() && !targetMenuIdSet.contains(menu.getParentId())) {
+        if (menu.getParentId() != null && 0 != menu.getParentId().intValue() && !targetMenuIdSet.contains(menu.getParentId())) {
             Menu parentMenu = allMenuMap.get(menu.getParentId());
             targetMenuList.add(parentMenu);
             targetMenuIdSet.add(parentMenu.getId());

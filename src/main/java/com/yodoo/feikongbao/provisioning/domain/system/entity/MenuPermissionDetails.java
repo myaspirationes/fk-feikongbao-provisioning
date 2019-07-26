@@ -2,12 +2,15 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 菜单权限关系
+ */
 public class MenuPermissionDetails extends BaseEntity {
 
+    /** 菜单id **/
     private Integer menuId;
 
+    /** 权限id **/
     private Integer permissionId;
 
     public Integer getMenuId() {

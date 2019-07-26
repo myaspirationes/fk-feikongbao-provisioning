@@ -2,16 +2,21 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * DB 实例表
+ */
 public class DbInstance extends BaseEntity {
 
+    /** IP **/
     private String ip;
 
+    /** 端口 **/
     private Integer port;
 
+    /** 用户名 **/
     private String username;
 
+    /** 密码 **/
     private String password;
 
     public String getIp() {

@@ -4,28 +4,42 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 import java.util.Date;
 
+/**
+ * 公司表
+ */
 public class Company extends BaseEntity {
 
+    /** 集团id **/
     private Integer groupId;
 
+    /** 公司名称 **/
     private String companyName;
 
+    /** 公司Code **/
     private String companyCode;
 
+    /** 更新周期 **/
     private String updateCycle;
 
+    /** 下次更新日期 **/
     private Date nextUpdateDate;
 
+    /** 到期日 **/
     private Date expireDate;
 
+    /** DB数据库组id **/
     private Integer dbGroupId;
 
+    /** redis组id **/
     private Integer redisGroupId;
 
+    /** swift租户id **/
     private Integer swiftProjectId;
 
+    /** 消息队列vhost **/
     private Integer mqVhostId;
 
+    /** neo4j实例id **/
     private Integer neo4jInstanceId;
 
     public Integer getGroupId() {

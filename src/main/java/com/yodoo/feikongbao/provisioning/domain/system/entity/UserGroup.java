@@ -2,12 +2,15 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 用户组表
+ */
 public class UserGroup extends BaseEntity {
 
+    /** 用户组code **/
     private String groupCode;
 
+    /** 用户组名称 **/
     private String groupName;
 
     public String getGroupCode() {

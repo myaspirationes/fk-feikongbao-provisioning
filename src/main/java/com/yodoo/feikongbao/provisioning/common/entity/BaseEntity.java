@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class BaseEntity {
     /**
-     * id
+     * id 主键
      **/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class BaseEntity {
     private String updateUser;
 
     /**
-     * 更新日期
+     * 最后一次修改时间
      **/
     private Date updateTime;
 

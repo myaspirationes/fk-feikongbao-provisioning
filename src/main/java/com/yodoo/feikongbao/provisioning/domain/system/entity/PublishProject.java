@@ -2,24 +2,33 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 公司部署项目表
+ */
 public class PublishProject extends BaseEntity {
 
+    /** 公司id **/
     private Integer companyId;
 
+    /** ecs实例id **/
     private Integer vmInstanceId;
 
+    /** 项目名称 **/
     private String projectName;
 
+    /** 项目类型 **/
     private String projectType;
 
+    /** IP **/
     private String ip;
 
+    /** 端口 **/
     private Integer port;
 
+    /** 版本 **/
     private String version;
 
+    /** 状态，0 运行中：Running，1 已停止：Stopped **/
     private Integer status;
 
     public Integer getCompanyId() {

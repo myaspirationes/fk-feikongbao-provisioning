@@ -2,16 +2,21 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * ECS 模板明细表
+ */
 public class EcsTemplateDetail extends BaseEntity {
 
+    /** 模板id **/
     private Integer templateId;
 
+    /** 请求参数code **/
     private String requestCode;
 
+    /** 请求参数名称 **/
     private String requestName;
 
+    /** 请求参数value **/
     private String requestValue;
 
     public Integer getTemplateId() {

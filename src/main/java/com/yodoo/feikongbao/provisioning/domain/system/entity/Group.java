@@ -4,16 +4,24 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 import java.util.Date;
 
+/**
+ * 集团表
+ */
 public class Group extends BaseEntity {
 
+    /** 集团名称 **/
     private String groupName;
 
+    /** 集团Code **/
     private String groupCode;
 
+    /** 到期日 **/
     private Date expireDate;
 
+    /** 更新周期 **/
     private String updateCycle;
 
+    /** 下次更新日期 **/
     private Date nextUpdateDate;
 
     public String getGroupName() {

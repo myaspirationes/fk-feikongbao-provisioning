@@ -2,12 +2,15 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 用户权限表
+ */
 public class UserPermissionDetails extends BaseEntity {
 
+    /** 用户id **/
     private Integer userId;
 
+    /** 权限id **/
     private Integer permissionId;
 
     public Integer getUserId() {

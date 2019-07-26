@@ -2,16 +2,21 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 功能模块表
+ */
 public class FunctionModule extends BaseEntity {
 
+    /** 父类id **/
     private Integer parentId;
 
+    /** 功能模块名称 **/
     private String name;
 
+    /** 描述 **/
     private String description;
 
+    /** 序号 **/
     private String orderNo;
 
     public Integer getParentId() {
