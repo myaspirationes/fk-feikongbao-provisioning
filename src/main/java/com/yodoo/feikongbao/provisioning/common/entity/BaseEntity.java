@@ -19,7 +19,7 @@ public class BaseEntity {
 
     /**
      * 创建人
-     */
+     **/
     private String createUser;
 
     /**
@@ -29,7 +29,7 @@ public class BaseEntity {
 
     /**
      * 更新人
-     */
+     **/
     private String updateUser;
 
     /**

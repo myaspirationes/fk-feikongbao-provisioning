@@ -1,6 +1,6 @@
 package com.yodoo.feikongbao.provisioning.aspect;
 
-import com.yodoo.feikongbao.provisioning.common.dto.response.ProvisioningResponse;
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
@@ -24,25 +24,25 @@ public class ProvisioningExceptionAspect {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Around("execution(* com.yodoo.feikongbao.provisioning..web..*.*(..))")
-    public ProvisioningResponse handleException(ProceedingJoinPoint joinPoint) {
-        ProvisioningResponse response = new ProvisioningResponse();
+    public ProvisioningDto handleException(ProceedingJoinPoint joinPoint) {
+        ProvisioningDto response = new ProvisioningDto();
         // 方法名称
         Signature signature = joinPoint.getSignature();
         String methodName = signature.getDeclaringTypeName() + "." + signature.getName();
         try {
             Object proceedObj = joinPoint.proceed(joinPoint.getArgs());
 
-            if (proceedObj instanceof ProvisioningResponse) {
-                response = (ProvisioningResponse) proceedObj;
+            if (proceedObj instanceof ProvisioningDto) {
+                response = (ProvisioningDto) proceedObj;
             }
         } catch (ProvisioningException e) {
             e.printStackTrace();
             logger.error("service aop,exit PaasExceptionAspect#handleException,method:{},ProvisioningException:{}", methodName, e);
-            response = new ProvisioningResponse(SystemStatus.FAIL.getStatus(), e.getMessageBundleKey(), e.getMessage());
+            response = new ProvisioningDto(SystemStatus.FAIL.getStatus(), e.getMessageBundleKey(), e.getMessage());
         } catch (Throwable e) {
             e.printStackTrace();
             logger.error("service aop,exit PaasExceptionAspect#handleException,method:{},exception:{}", methodName, e);
-            response = new ProvisioningResponse(SystemStatus.FAIL.getStatus(), BundleKey.UNDEFINED, BundleKey.UNDEFINED_MSG);
+            response = new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.UNDEFINED, BundleKey.UNDEFINED_MSG);
         } finally {
 
         }

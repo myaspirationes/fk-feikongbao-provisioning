@@ -1,10 +1,10 @@
-package com.yodoo.feikongbao.provisioning.common.dto.response;
+package com.yodoo.feikongbao.provisioning.common.dto;
 
 /**
  * @Author houzhen
  * @Date 2019/5/14 16:40
  **/
-public class ProvisioningResponse<T> {
+public class ProvisioningDto<T> {
 
     /**
      * 请求状态 -1：未登录 0：成功 1：失败 2：无权限
@@ -25,17 +25,17 @@ public class ProvisioningResponse<T> {
     private T data;
 
 
-    public ProvisioningResponse() {
+    public ProvisioningDto() {
 
     }
 
-    public ProvisioningResponse(String status, String messageBundleKey, String message) {
+    public ProvisioningDto(String status, String messageBundleKey, String message) {
         this.status = status;
         this.messageBundleKey = messageBundleKey;
         this.message = message;
     }
 
-    public ProvisioningResponse(String status, String messageBundleKey, String message, T data) {
+    public ProvisioningDto(String status, String messageBundleKey, String message, T data) {
         this.status = status;
         this.messageBundleKey = messageBundleKey;
         this.message = message;
