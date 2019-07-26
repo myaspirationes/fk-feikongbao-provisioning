@@ -1,15 +1,13 @@
-package com.yodoo.feikongbao.provisioning.common.dto.response;
+package com.yodoo.feikongbao.provisioning.common.dto;
 
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * @Date 2019/6/11 9:22
+ * @Date 2019/7/26 13:17
  * @Created by houzhen
  */
-public class BaseResponse extends ResourceSupport {
-    /**
-     * 主键id
-     **/
+public class BaseDto extends ResourceSupport {
+
     private Integer tid;
 
     public Integer getTid() {

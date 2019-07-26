@@ -1,4 +1,4 @@
-package com.yodoo.feikongbao.provisioning.common.dto.response;
+package com.yodoo.feikongbao.provisioning.common.dto;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * @Date 2019/7/11 10:56
  * @Created by houzhen
  */
-public class PageResponse<T> extends BaseResponse {
+public class PageInfoDto<T> extends BaseDto {
     /**
      * 当前页
      */
@@ -32,18 +32,18 @@ public class PageResponse<T> extends BaseResponse {
      */
     private List<T> list;
 
-    public PageResponse() {
+    public PageInfoDto() {
 
     }
 
-    public PageResponse(int pageNum, int pageSize, long total, int pages) {
+    public PageInfoDto(int pageNum, int pageSize, long total, int pages) {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
         this.total = total;
         this.pages = pages;
     }
 
-    public PageResponse(int pageNum, int pageSize, long total, int pages, List<T> t) {
+    public PageInfoDto(int pageNum, int pageSize, long total, int pages, List<T> t) {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
         this.total = total;

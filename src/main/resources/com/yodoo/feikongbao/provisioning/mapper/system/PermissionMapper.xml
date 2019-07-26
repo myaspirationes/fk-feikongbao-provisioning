@@ -10,9 +10,19 @@
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
   <sql id="Base_Column_List">
     id, permission_code, permission_name, create_user, create_time, update_user, update_time
   </sql>
+
+  <select id="getPermissionByUserId" resultMap="BaseResultMap">
+      SELECT
+        <include refid="Base_Column_List"/>
+      FROM permission
+      where id in (
+        select permission_id from user_permission_details where user_id = #{userId,jdbcType=INTEGER}
+      )
+  </select>
 
 
 </mapper>
