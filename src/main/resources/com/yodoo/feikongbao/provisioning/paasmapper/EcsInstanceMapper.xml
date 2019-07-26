@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yodoo.feikongbao.provisioning.mapper.paasmapper.EcsInstanceMapper">
+  <resultMap id="BaseResultMap" type="com.yodoo.feikongbao.provisioning.entity.paasmapper.EcsInstance">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="ecs_type" jdbcType="VARCHAR" property="ecsType" />
+    <result column="instance_id" jdbcType="VARCHAR" property="instanceId" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+    <result column="image_id" jdbcType="VARCHAR" property="imageId" />
+    <result column="security_group_ids" jdbcType="VARCHAR" property="securityGroupIds" />
+    <result column="expire_date" jdbcType="DATE" property="expireDate" />
+    <result column="v_switch_id" jdbcType="VARCHAR" property="vSwitchId" />
+    <result column="instance_type" jdbcType="VARCHAR" property="instanceType" />
+    <result column="internet_max_bandwidth_in" jdbcType="INTEGER" property="internetMaxBandwidthIn" />
+    <result column="internet_max_bandwidth_out" jdbcType="INTEGER" property="internetMaxBandwidthOut" />
+    <result column="instance_name" jdbcType="VARCHAR" property="instanceName" />
+    <result column="host_name" jdbcType="VARCHAR" property="hostName" />
+    <result column="inner_ip" jdbcType="VARCHAR" property="innerIp" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="system_disk_size" jdbcType="VARCHAR" property="systemDiskSize" />
+    <result column="system_disk_category" jdbcType="VARCHAR" property="systemDiskCategory" />
+    <result column="auto_release_time" jdbcType="VARCHAR" property="autoReleaseTime" />
+    <result column="internet_charge_type" jdbcType="VARCHAR" property="internetChargeType" />
+    <result column="period" jdbcType="INTEGER" property="period" />
+    <result column="auto_renew" jdbcType="TINYINT" property="autoRenew" />
+    <result column="instance_charge_type" jdbcType="VARCHAR" property="instanceChargeType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="period_unit" jdbcType="VARCHAR" property="periodUnit" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, ecs_type, instance_id, region_id, image_id, security_group_ids, expire_date, 
+    v_switch_id, instance_type, internet_max_bandwidth_in, internet_max_bandwidth_out, 
+    instance_name, host_name, inner_ip, username, password, port, description, system_disk_size, 
+    system_disk_category, auto_release_time, internet_charge_type, period, auto_renew, 
+    instance_charge_type, status, period_unit, create_user, create_time, update_user, 
+    update_time
+  </sql>
+
+</mapper>

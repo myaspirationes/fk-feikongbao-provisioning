@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yodoo.feikongbao.provisioning.mapper.paasmapper.SwiftProjectMapper">
+  <resultMap id="BaseResultMap" type="com.yodoo.feikongbao.provisioning.entity.paasmapper.SwiftProject">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="max_size" jdbcType="DECIMAL" property="maxSize" />
+    <result column="user_size" jdbcType="DECIMAL" property="userSize" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, project_name, max_size, user_size, ip, port, create_user, create_time, update_user, 
+    update_time
+  </sql>
+
+</mapper>
