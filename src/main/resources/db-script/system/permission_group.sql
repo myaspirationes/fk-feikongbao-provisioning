@@ -9,3 +9,6 @@ CREATE TABLE `permission_group` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限组表';
+
+insert into `permission_group`(`id`,`group_code`,`group_name`,`create_user`,`update_user`) value (1,'customer','客户管理','admin','admin');
+insert into `permission_group`(`id`,`group_code`,`group_name`,`create_user`,`update_user`) value (2,'system','系统管理','admin','admin');

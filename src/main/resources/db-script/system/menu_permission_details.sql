@@ -9,3 +9,11 @@ CREATE TABLE `menu_permission_details` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单权限关系';
+
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (1,3,1,'admin','admin');
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (2,4,2,'admin','admin');
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (3,5,3,'admin','admin');
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (4,6,4,'admin','admin');
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (5,7,5,'admin','admin');
+insert into `menu_permission_details`(`id`,`menu_id`,`permission_id`,`create_user`,`update_user`) value (6,8,6,'admin','admin');
+

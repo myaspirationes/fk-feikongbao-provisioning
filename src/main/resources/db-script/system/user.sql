@@ -19,3 +19,6 @@ CREATE TABLE `user` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+insert into `user`(`id`,`parent_id`,`account`,`name`,`password`,`email`,`region`,`post`,`sex`,`birthday`,`phone`,`status`,`create_user`,`update_user`) value (1,1,'admin','管理员','21232F297A57A5A743894A0E4A801FC3','test@126.com','Shanghai','运维工程师',1,'2000-01-01','13803838438',0,'admin','admin');
+insert into `user`(`id`,`parent_id`,`account`,`name`,`password`,`email`,`region`,`post`,`sex`,`birthday`,`phone`,`status`,`create_user`,`update_user`) value (2,1,'test','测试用户','098F6BCD4621D373CADE4E832627B4F6','test@126.com','Shanghai','运维工程师',1,'2000-01-01','13803838438',0,'admin','admin');

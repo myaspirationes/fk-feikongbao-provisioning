@@ -9,3 +9,10 @@ CREATE TABLE `permission` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
+
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (1,'group','集团管理','admin','admin');
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (2,'company','公司集团','admin','admin');
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (3,'user','用户管理','admin','admin');
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (4,'permission','权限管理','admin','admin');
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (5,'menu','菜单管理','admin','admin');
+insert into `permission`(`id`,`permission_code`,`permission_name`,`create_user`,`update_user`) value (6,'dictionary','字典管理','admin','admin');
