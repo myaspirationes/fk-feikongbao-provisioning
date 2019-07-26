@@ -2,14 +2,18 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 消息队列 vhost 表
+ */
 public class MqVhost extends BaseEntity {
 
+    /** vhost 名称 **/
     private String vhostName;
 
+    /** IP **/
     private String ip;
 
+    /** 端口 **/
     private Integer port;
 
     public String getVhostName() {

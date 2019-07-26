@@ -2,18 +2,24 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 字典表
+ */
 public class Dictionary extends BaseEntity {
 
+    /** 类型 **/
     private String type;
 
+    /** 编码 **/
     private String code;
 
+    /** 名称 **/
     private String name;
 
+    /** 值 **/
     private String value;
 
+    /** 备注 **/
     private String remark;
 
     public String getType() {

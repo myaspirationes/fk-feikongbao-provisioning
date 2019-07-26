@@ -2,18 +2,24 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 菜单表
+ */
 public class Menu extends BaseEntity {
 
+    /** 父类id **/
     private Integer parentId;
 
+    /** 单code **/
     private String menuCode;
 
+    /** 菜单名称 **/
     private String menuName;
 
+    /** 菜单目标 **/
     private String menuTarget;
 
+    /** 序号 **/
     private String orderNo;
 
     public Integer getParentId() {

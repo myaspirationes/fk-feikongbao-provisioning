@@ -2,14 +2,18 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 公司功能模块关系表
+ */
 public class CompanyFunctionModule extends BaseEntity {
 
+    /** 功能模块id **/
     private Integer functionModuleId;
 
+    /** 公司id **/
     private Integer companyId;
 
+    /** 状态，0：启用，1：停用 **/
     private Integer status;
 
     public Integer getFunctionModuleId() {

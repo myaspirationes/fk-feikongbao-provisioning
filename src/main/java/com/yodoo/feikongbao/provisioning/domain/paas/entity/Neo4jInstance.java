@@ -2,14 +2,18 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * neo4j 实例表
+ */
 public class Neo4jInstance extends BaseEntity {
 
+    /** neo4j名称 **/
     private String neo4jName;
 
+    /** IP **/
     private String ip;
 
+    /** 端口 **/
     private Integer port;
 
     public String getNeo4jName() {

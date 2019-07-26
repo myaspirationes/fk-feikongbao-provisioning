@@ -2,12 +2,15 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * redis 实例组表
+ */
 public class RedisGroup extends BaseEntity {
 
+    /** 组code **/
     private String groupCode;
 
+    /** 组名称 **/
     private String groupName;
 
     public String getGroupCode() {

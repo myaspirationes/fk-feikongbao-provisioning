@@ -2,22 +2,30 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * DB 数据库表
+ */
 public class DbSchema extends BaseEntity {
 
+    /** DB实例id **/
     private Integer dbInstanceId;
 
+    /** DB数据库组id **/
     private Integer dbGroupId;
 
+    /** 数据库名 **/
     private String schemaName;
 
+    /** 用户名 **/
     private String username;
 
+    /** 密码 **/
     private String password;
 
+    /** 状态 **/
     private Integer status;
 
+    /** 类型，0：主，1：从 **/
     private Integer type;
 
     public Integer getDbInstanceId() {
