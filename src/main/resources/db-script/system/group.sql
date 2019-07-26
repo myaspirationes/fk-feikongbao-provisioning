@@ -12,3 +12,5 @@ CREATE TABLE `group` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='集团表';
+
+insert into `group`(`id`,`group_name`,`group_code`,`expire_date`,`update_cycle`,`next_update_date`,`create_user`,`update_user`) value (1,'Alibaba','Alibaba','2099-07-26','每个月更新一次','2019-08-26','admin','admin');

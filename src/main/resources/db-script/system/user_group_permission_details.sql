@@ -11,3 +11,8 @@ CREATE TABLE `user_group_permission_details` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组权限表';
 
+insert into `user_group_permission_details`(`id`,`user_group_id`,`permission_group_id`,`create_user`,`update_user`) value (1,1,1,'admin','admin');
+insert into `user_group_permission_details`(`id`,`user_group_id`,`permission_group_id`,`create_user`,`update_user`) value (2,2,2,'admin','admin');
+insert into `user_group_permission_details`(`id`,`user_group_id`,`permission_group_id`,`create_user`,`update_user`) value (3,3,1,'admin','admin');
+
+

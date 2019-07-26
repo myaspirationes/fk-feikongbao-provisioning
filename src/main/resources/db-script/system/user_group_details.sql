@@ -10,3 +10,7 @@ CREATE TABLE `user_group_details` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组关系明细表';
+
+insert into `user_group_details`(`id`,`user_group_id`,`user_id`,`create_user`,`update_user`) value (1,1,1,'admin','admin');
+insert into `user_group_details`(`id`,`user_group_id`,`user_id`,`create_user`,`update_user`) value (2,2,2,'admin','admin');
+insert into `user_group_details`(`id`,`user_group_id`,`user_id`,`create_user`,`update_user`) value (3,3,1,'admin','admin');
