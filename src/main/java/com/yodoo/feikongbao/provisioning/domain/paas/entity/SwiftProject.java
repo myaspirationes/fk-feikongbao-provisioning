@@ -3,18 +3,25 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
+/**
+ * swift 租户表
+ */
 public class SwiftProject extends BaseEntity {
 
+    /** 租户名称 **/
     private String projectName;
 
+    /** 最大使用范围（单位M，1M=1024B） **/
     private BigDecimal maxSize;
 
+    /** 所属用户使用范围 **/
     private BigDecimal userSize;
 
+    /** IP **/
     private String ip;
 
+    /** 端口 **/
     private Integer port;
 
     public String getProjectName() {

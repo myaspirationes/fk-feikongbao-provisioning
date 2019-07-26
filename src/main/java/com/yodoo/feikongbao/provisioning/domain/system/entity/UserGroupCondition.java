@@ -2,16 +2,21 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
-import java.util.Date;
-
+/**
+ * 用户组条件表
+ */
 public class UserGroupCondition extends BaseEntity {
 
+    /** 用户组条件id **/
     private Integer searchConditionId;
 
+    /** 用户组id **/
     private Integer userGroupId;
 
+    /** 运算符号 **/
     private String operator;
 
+    /** 匹配值 **/
     private String matchValue;
 
     public Integer getSearchConditionId() {
