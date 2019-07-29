@@ -39,7 +39,7 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public PageInfoDto<DictionaryDto> queryDictionaryList(DictionaryDto dictionaryDto) {
         Dictionary dictionary = new Dictionary();
         BeanUtils.copyProperties(dictionaryDto, dictionary);
@@ -66,7 +66,7 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public Integer addDictionary(DictionaryDto dictionaryDto) {
         addDictionaryParameterCheck(dictionaryDto);
 
@@ -80,7 +80,7 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public Integer editDictionary(DictionaryDto dictionaryDto) {
         editDictionaryParameterCheck(dictionaryDto);
         return dictionaryMapper.updateByPrimaryKeySelective(updateParameter(dictionaryDto));
@@ -91,7 +91,7 @@ public class DictionaryService {
      * @param id
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public Integer deleteDictionary(Integer id) {
         deleteDictionaryParameterCheck(id);
         return dictionaryMapper.deleteByPrimaryKey(id);
@@ -102,7 +102,7 @@ public class DictionaryService {
      * @param id
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public DictionaryDto getDictionaryDetails(Integer id) {
         Dictionary dictionary = selectByPrimaryKey(id);
         DictionaryDto dictionaryDto = new DictionaryDto();;

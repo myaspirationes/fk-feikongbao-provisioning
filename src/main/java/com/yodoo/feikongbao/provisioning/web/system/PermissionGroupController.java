@@ -32,7 +32,7 @@ public class PermissionGroupController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> queryPermissionGroupList(PermissionGroupDto permissionGroupDto){
         PageInfoDto<PermissionGroupDto> pageInfoDto = permissionGroupService.queryPermissionGroupList(permissionGroupDto);
         // 列表item导向
@@ -49,7 +49,7 @@ public class PermissionGroupController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
         permissionGroupService.addPermissionGroup(permissionGroupDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -61,7 +61,7 @@ public class PermissionGroupController {
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT)
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> editPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
         permissionGroupService.editPermissionGroup(permissionGroupDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -73,7 +73,7 @@ public class PermissionGroupController {
      * @return
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> deletePermissionGroup(@PathVariable Integer id){
         permissionGroupService.deletePermissionGroup(id);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -85,7 +85,7 @@ public class PermissionGroupController {
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id){
         PermissionGroupDto permissionGroupDetails = permissionGroupService.getPermissionGroupDetails(id);
         return new ProvisioningDto<PermissionGroupDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, permissionGroupDetails);

@@ -51,7 +51,7 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public PageInfoDto<PermissionGroupDto> queryPermissionGroupList(PermissionGroupDto permissionGroupDto) {
         PermissionGroup permissionGroup = new PermissionGroup();
         BeanUtils.copyProperties(permissionGroupDto, permissionGroup);
@@ -78,7 +78,7 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public Integer addPermissionGroup(PermissionGroupDto permissionGroupDto) {
         addPermissionGroupParameterCheck(permissionGroupDto);
         return permissionGroupMapper.insertSelective(new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName()));
@@ -89,7 +89,7 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public Integer editPermissionGroup(PermissionGroupDto permissionGroupDto) {
         editPermissionGroupParameterCheck(permissionGroupDto);
         PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
@@ -104,7 +104,7 @@ public class PermissionGroupService {
      * @param id
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public Integer deletePermissionGroup(Integer id) {
         deletePermissionGroupParameterCheck(id);
         return permissionGroupMapper.deleteByPrimaryKey(id);
@@ -115,7 +115,7 @@ public class PermissionGroupService {
      * @param id
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission')")
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public PermissionGroupDto getPermissionGroupDetails(Integer id) {
         PermissionGroup permissionGroup = selectByPrimaryKey(id);
         PermissionGroupDto permissionGroupDto = new PermissionGroupDto();;
