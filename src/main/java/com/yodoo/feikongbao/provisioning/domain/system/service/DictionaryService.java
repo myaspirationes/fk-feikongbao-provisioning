@@ -3,13 +3,12 @@ package com.yodoo.feikongbao.provisioning.domain.system.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
-import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.DictionaryDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Dictionary;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.DictionaryMapper;
-import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
+import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,16 +61,18 @@ public class DictionaryService {
         return new PageInfoDto<DictionaryDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
+    /**
+     * 添加
+     * @param dictionaryDto
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('dictionary')")
-    public ProvisioningDto<?> addDictionary(DictionaryDto dictionaryDto) {
-        ProvisioningDto provisioningDto = addDictionaryParameterCheck(dictionaryDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
+    public Integer addDictionary(DictionaryDto dictionaryDto) {
+        addDictionaryParameterCheck(dictionaryDto);
+
         Dictionary dictionary = new Dictionary();
         BeanUtils.copyProperties(dictionaryDto,dictionary);
-        dictionaryMapper.insertSelective(dictionary);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+        return dictionaryMapper.insertSelective(dictionary);
     }
 
     /**
@@ -80,13 +81,9 @@ public class DictionaryService {
      * @return
      */
     @PreAuthorize("hasAnyAuthority('dictionary')")
-    public ProvisioningDto<?> editDictionary(DictionaryDto dictionaryDto) {
-        ProvisioningDto provisioningDto = editDictionaryParameterCheck(dictionaryDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
-        dictionaryMapper.updateByPrimaryKey(updateParameter(dictionaryDto));
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    public Integer editDictionary(DictionaryDto dictionaryDto) {
+        editDictionaryParameterCheck(dictionaryDto);
+        return dictionaryMapper.updateByPrimaryKeySelective(updateParameter(dictionaryDto));
     }
 
     /**
@@ -95,13 +92,9 @@ public class DictionaryService {
      * @return
      */
     @PreAuthorize("hasAnyAuthority('dictionary')")
-    public ProvisioningDto<?> deleteDictionary(Integer id) {
-        ProvisioningDto provisioningDto = deleteDictionaryParameterCheck(id);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
-        dictionaryMapper.deleteByPrimaryKey(id);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    public Integer deleteDictionary(Integer id) {
+        deleteDictionaryParameterCheck(id);
+        return dictionaryMapper.deleteByPrimaryKey(id);
     }
 
     /**
@@ -110,14 +103,14 @@ public class DictionaryService {
      * @return
      */
     @PreAuthorize("hasAnyAuthority('dictionary')")
-    public ProvisioningDto<?> getDictionaryDetails(Integer id) {
+    public DictionaryDto getDictionaryDetails(Integer id) {
         Dictionary dictionary = selectByPrimaryKey(id);
         DictionaryDto dictionaryDto = new DictionaryDto();;
         if (dictionary != null){
             BeanUtils.copyProperties(dictionary, dictionaryDto);
             dictionaryDto.setTid(dictionary.getId());
         }
-        return new ProvisioningDto<DictionaryDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dictionaryDto);
+        return dictionaryDto;
     }
 
     /**
@@ -150,15 +143,14 @@ public class DictionaryService {
      * @param id
      * @return
      */
-    private ProvisioningDto deleteDictionaryParameterCheck(Integer id) {
+    private void deleteDictionaryParameterCheck(Integer id) {
         if (id == null || id < 0){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Dictionary dictionary = selectByPrimaryKey(id);
         if (dictionary == null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
-        return null;
     }
 
     /**
@@ -175,22 +167,21 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    private ProvisioningDto editDictionaryParameterCheck(DictionaryDto dictionaryDto) {
+    private void editDictionaryParameterCheck(DictionaryDto dictionaryDto) {
         if (dictionaryDto == null || dictionaryDto.getTid() == null || dictionaryDto.getTid() < 0
                 || StringUtils.isBlank(dictionaryDto.getType()) || StringUtils.isBlank(dictionaryDto.getCode())
                 || StringUtils.isBlank(dictionaryDto.getName()) || StringUtils.isBlank(dictionaryDto.getValue())
                 || StringUtils.isBlank(dictionaryDto.getRemark())){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Dictionary dictionary = selectByPrimaryKey(dictionaryDto.getTid());
         if (dictionary == null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
         Dictionary dictionarySelf = dictionaryMapper.selectDictionaryInAdditionToItself(dictionaryDto.getTid(),dictionaryDto.getType(), dictionaryDto.getCode(), dictionaryDto.getName(),dictionaryDto.getValue());
         if (dictionarySelf != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.EXIST, BundleKey.EXIST_MEG);
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
-        return null;
     }
 
     /**
@@ -198,11 +189,11 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    private ProvisioningDto addDictionaryParameterCheck(DictionaryDto dictionaryDto) {
+    private void addDictionaryParameterCheck(DictionaryDto dictionaryDto) {
         if (dictionaryDto == null || StringUtils.isBlank(dictionaryDto.getType()) || StringUtils.isBlank(dictionaryDto.getCode())
                 || StringUtils.isBlank(dictionaryDto.getName()) || StringUtils.isBlank(dictionaryDto.getValue())
                 || StringUtils.isBlank(dictionaryDto.getRemark())){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
         Dictionary dictionary = new Dictionary();
@@ -212,8 +203,7 @@ public class DictionaryService {
         dictionary.setValue(dictionaryDto.getValue());
         Dictionary dictionary1 = dictionaryMapper.selectOne(dictionary);
         if (dictionary1 != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.DICTIONARY_EXIST, BundleKey.DICTIONARY_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.DICTIONARY_EXIST, BundleKey.DICTIONARY_EXIST_MSG);
         }
-        return null;
     }
 }

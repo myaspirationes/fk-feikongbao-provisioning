@@ -39,7 +39,7 @@ public class DictionaryController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), DictionaryController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, DictionaryController.class, Arrays.asList("dictionary"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode());
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(),OperateCode.ITEM.getCode());
         return new ProvisioningDto<PageInfoDto<DictionaryDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
 
@@ -51,7 +51,8 @@ public class DictionaryController {
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('dictionary')")
     public ProvisioningDto<?> addDictionary(@RequestBody DictionaryDto dictionaryDto){
-        return dictionaryService.addDictionary(dictionaryDto);
+        dictionaryService.addDictionary(dictionaryDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -62,7 +63,8 @@ public class DictionaryController {
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('dictionary')")
     public ProvisioningDto<?> editDictionary(@RequestBody DictionaryDto dictionaryDto){
-        return dictionaryService.editDictionary(dictionaryDto);
+        dictionaryService.editDictionary(dictionaryDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -73,7 +75,8 @@ public class DictionaryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('dictionary')")
     public ProvisioningDto<?> deleteDictionary(@PathVariable Integer id){
-        return dictionaryService.deleteDictionary(id);
+        dictionaryService.deleteDictionary(id);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -84,6 +87,7 @@ public class DictionaryController {
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('dictionary')")
     public ProvisioningDto<?> getDictionaryDetails(@PathVariable Integer id){
-        return dictionaryService.getDictionaryDetails(id);
+        DictionaryDto dictionaryDetails = dictionaryService.getDictionaryDetails(id);
+        return new ProvisioningDto<DictionaryDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dictionaryDetails);
     }
 }

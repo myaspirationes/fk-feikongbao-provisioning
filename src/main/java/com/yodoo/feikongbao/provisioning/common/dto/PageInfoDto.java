@@ -7,15 +7,6 @@ import java.util.List;
  * @Created by houzhen
  */
 public class PageInfoDto<T> extends BaseDto {
-    /**
-     * 当前页
-     */
-    private int pageNum;
-
-    /**
-     * 页面大小
-     */
-    private int pageSize;
 
     /**
      * 总条数
@@ -37,34 +28,16 @@ public class PageInfoDto<T> extends BaseDto {
     }
 
     public PageInfoDto(int pageNum, int pageSize, long total, int pages) {
-        this.pageNum = pageNum;
-        this.pageSize = pageSize;
+        super(pageNum, pageSize);
         this.total = total;
         this.pages = pages;
     }
 
     public PageInfoDto(int pageNum, int pageSize, long total, int pages, List<T> t) {
-        this.pageNum = pageNum;
-        this.pageSize = pageSize;
+        super(pageNum, pageSize);
         this.total = total;
         this.pages = pages;
         this.list = t;
-    }
-
-    public int getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
     }
 
     public long getTotal() {
