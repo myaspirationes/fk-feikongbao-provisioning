@@ -39,7 +39,7 @@ public class PermissionGroupController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), PermissionGroupController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, PermissionGroupController.class, Arrays.asList("permission"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode());
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode());
         return new ProvisioningDto<PageInfoDto<PermissionGroupDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
 
@@ -50,8 +50,9 @@ public class PermissionGroupController {
      */
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('permission')")
-    private ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
-        return permissionGroupService.addPermissionGroup(permissionGroupDto);
+    public ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
+        permissionGroupService.addPermissionGroup(permissionGroupDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -62,7 +63,8 @@ public class PermissionGroupController {
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('permission')")
     public ProvisioningDto<?> editPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
-        return permissionGroupService.editPermissionGroup(permissionGroupDto);
+        permissionGroupService.editPermissionGroup(permissionGroupDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -73,7 +75,8 @@ public class PermissionGroupController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('permission')")
     public ProvisioningDto<?> deletePermissionGroup(@PathVariable Integer id){
-        return permissionGroupService.deletePermissionGroup(id);
+        permissionGroupService.deletePermissionGroup(id);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
@@ -84,6 +87,7 @@ public class PermissionGroupController {
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('permission')")
     public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id){
-        return permissionGroupService.getPermissionGroupDetails(id);
+        PermissionGroupDto permissionGroupDetails = permissionGroupService.getPermissionGroupDetails(id);
+        return new ProvisioningDto<PermissionGroupDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, permissionGroupDetails);
     }
 }

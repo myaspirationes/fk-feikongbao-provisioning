@@ -2,7 +2,6 @@ package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
-import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 
 /**
  * @Description ：TODO
@@ -10,7 +9,7 @@ import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
  * @Date ： 2019/7/26 0026
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DictionaryDto extends PageInfoDto {
+public class DictionaryDto extends BaseDto {
 
     /** 类型 **/
     private String type;

@@ -3,16 +3,14 @@ package com.yodoo.feikongbao.provisioning.domain.system.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
-import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.PermissionGroupDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.PermissionGroup;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.PermissionGroupDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserGroupPermissionDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.PermissionGroupMapper;
-import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
-import com.yodoo.feikongbao.provisioning.web.system.UserGroupPermissionDetailsService;
+import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,14 +79,9 @@ public class PermissionGroupService {
      * @return
      */
     @PreAuthorize("hasAnyAuthority('permission')")
-    public ProvisioningDto<?> addPermissionGroup(PermissionGroupDto permissionGroupDto) {
-        ProvisioningDto provisioningDto = addPermissionGroupParameterCheck(permissionGroupDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
-        PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
-        permissionGroupMapper.insertSelective(permissionGroup);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    public Integer addPermissionGroup(PermissionGroupDto permissionGroupDto) {
+        addPermissionGroupParameterCheck(permissionGroupDto);
+        return permissionGroupMapper.insertSelective(new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName()));
     }
 
     /**
@@ -96,14 +89,11 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    public ProvisioningDto<?> editPermissionGroup(PermissionGroupDto permissionGroupDto) {
-        ProvisioningDto provisioningDto = editPermissionGroupParameterCheck(permissionGroupDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public Integer editPermissionGroup(PermissionGroupDto permissionGroupDto) {
+        editPermissionGroupParameterCheck(permissionGroupDto);
         PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
-        permissionGroupMapper.insertSelective(permissionGroup);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+        return permissionGroupMapper.updateByPrimaryKeySelective(permissionGroup);
     }
 
     /**
@@ -114,13 +104,10 @@ public class PermissionGroupService {
      * @param id
      * @return
      */
-    public ProvisioningDto<?> deletePermissionGroup(Integer id) {
-        ProvisioningDto provisioningDto = deletePermissionGroupParameterCheck(id);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
-        permissionGroupMapper.deleteByPrimaryKey(id);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public Integer deletePermissionGroup(Integer id) {
+        deletePermissionGroupParameterCheck(id);
+        return permissionGroupMapper.deleteByPrimaryKey(id);
     }
 
     /**
@@ -128,14 +115,15 @@ public class PermissionGroupService {
      * @param id
      * @return
      */
-    public ProvisioningDto<?> getPermissionGroupDetails(Integer id) {
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public PermissionGroupDto getPermissionGroupDetails(Integer id) {
         PermissionGroup permissionGroup = selectByPrimaryKey(id);
         PermissionGroupDto permissionGroupDto = new PermissionGroupDto();;
         if (permissionGroup != null){
             BeanUtils.copyProperties(permissionGroup, permissionGroupDto);
             permissionGroupDto.setTid(permissionGroup.getId());
         }
-        return new ProvisioningDto<PermissionGroupDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, permissionGroupDto);
+        return permissionGroupDto;
     }
 
     /**
@@ -143,21 +131,20 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    private ProvisioningDto editPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
+    private void editPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
         if (permissionGroupDto == null || permissionGroupDto.getTid() == null || permissionGroupDto.getTid() < 0
                 || StringUtils.isBlank(permissionGroupDto.getGroupCode()) || StringUtils.isBlank(permissionGroupDto.getGroupName())){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 不存在不能修改
         PermissionGroup permissionGroup = selectByPrimaryKey(permissionGroupDto.getTid());
         if (permissionGroup == null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
         PermissionGroup permissionGroupSelf = permissionGroupMapper.selectPermissionGroupInAdditionToItself(permissionGroupDto.getTid(),permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
         if (permissionGroupSelf != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.EXIST, BundleKey.EXIST_MEG);
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
-        return null;
     }
 
     /**
@@ -174,16 +161,15 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    private ProvisioningDto addPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
+    private void addPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
         if (permissionGroupDto == null || StringUtils.isBlank(permissionGroupDto.getGroupCode()) || StringUtils.isBlank(permissionGroupDto.getGroupName())){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
         PermissionGroup permissionGroup = permissionGroupMapper.selectOne(new PermissionGroup(permissionGroupDto.getGroupCode(),permissionGroupDto.getGroupName()));
         if (permissionGroup != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.DICTIONARY_EXIST, BundleKey.DICTIONARY_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.DICTIONARY_EXIST, BundleKey.DICTIONARY_EXIST_MSG);
         }
-        return null;
     }
 
     /**
@@ -194,24 +180,23 @@ public class PermissionGroupService {
      * @param id
      * @return
      */
-    private ProvisioningDto deletePermissionGroupParameterCheck(Integer id) {
+    private void deletePermissionGroupParameterCheck(Integer id) {
         if (id == null || id < 0){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         PermissionGroup permissionGroup = selectByPrimaryKey(id);
         if (permissionGroup == null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
         // 查询权限组明细，如果存在使用，不能删除
         PermissionGroupDetails permissionGroupDetails = permissionGroupDetailsService.selectPermissionGroupDetailsByPermissionGroupId(id);
         if (permissionGroupDetails != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.EXIST, BundleKey.EXIST_MEG);
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
         // 查询用户组权限组关系表，如果存在使用不能删除
         UserGroupPermissionDetails userGroupPermissionDetails = userGroupPermissionDetailsService.selectUserGroupPermissionDetailsByPermissionGroupId(id);
         if (userGroupPermissionDetails != null){
-            return new ProvisioningDto<String>(SystemStatus.FAIL.getStatus(), BundleKey.EXIST, BundleKey.EXIST_MEG);
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST);
         }
-        return null;
     }
 }

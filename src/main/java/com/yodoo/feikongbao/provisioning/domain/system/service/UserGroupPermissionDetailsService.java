@@ -1,4 +1,4 @@
-package com.yodoo.feikongbao.provisioning.web.system;
+package com.yodoo.feikongbao.provisioning.domain.system.service;
 
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserGroupPermissionDetails;
