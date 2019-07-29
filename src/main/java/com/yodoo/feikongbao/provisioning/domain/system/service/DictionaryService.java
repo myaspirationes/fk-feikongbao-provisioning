@@ -82,8 +82,8 @@ public class DictionaryService {
      */
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public Integer editDictionary(DictionaryDto dictionaryDto) {
-        editDictionaryParameterCheck(dictionaryDto);
-        return dictionaryMapper.updateByPrimaryKeySelective(updateParameter(dictionaryDto));
+        Dictionary dictionary = editDictionaryParameterCheck(dictionaryDto);
+        return dictionaryMapper.updateByPrimaryKeySelective(dictionary);
     }
 
     /**
@@ -111,31 +111,6 @@ public class DictionaryService {
             dictionaryDto.setTid(dictionary.getId());
         }
         return dictionaryDto;
-    }
-
-    /**
-     * 更新
-     * @param dictionaryDto
-     * @return
-     */
-    private Dictionary updateParameter(DictionaryDto dictionaryDto) {
-        Dictionary dictionary = selectByPrimaryKey(dictionaryDto.getTid());
-        if (StringUtils.isNoneBlank(dictionaryDto.getType())){
-            dictionary.setType(dictionaryDto.getType());
-        }
-        if (StringUtils.isNoneBlank(dictionaryDto.getCode())){
-            dictionary.setCode(dictionaryDto.getCode());
-        }
-        if (StringUtils.isNoneBlank(dictionaryDto.getName())){
-            dictionary.setName(dictionaryDto.getName());
-        }
-        if (StringUtils.isNoneBlank(dictionaryDto.getValue())){
-            dictionary.setValue(dictionaryDto.getValue());
-        }
-        if (StringUtils.isNoneBlank(dictionaryDto.getRemark())){
-            dictionary.setRemark(dictionaryDto.getRemark());
-        }
-        return dictionary;
     }
 
     /**
@@ -167,7 +142,7 @@ public class DictionaryService {
      * @param dictionaryDto
      * @return
      */
-    private void editDictionaryParameterCheck(DictionaryDto dictionaryDto) {
+    private Dictionary editDictionaryParameterCheck(DictionaryDto dictionaryDto) {
         if (dictionaryDto == null || dictionaryDto.getTid() == null || dictionaryDto.getTid() < 0
                 || StringUtils.isBlank(dictionaryDto.getType()) || StringUtils.isBlank(dictionaryDto.getCode())
                 || StringUtils.isBlank(dictionaryDto.getName()) || StringUtils.isBlank(dictionaryDto.getValue())
@@ -182,6 +157,22 @@ public class DictionaryService {
         if (dictionarySelf != null){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
+        if (StringUtils.isNoneBlank(dictionaryDto.getType())){
+            dictionary.setType(dictionaryDto.getType());
+        }
+        if (StringUtils.isNoneBlank(dictionaryDto.getCode())){
+            dictionary.setCode(dictionaryDto.getCode());
+        }
+        if (StringUtils.isNoneBlank(dictionaryDto.getName())){
+            dictionary.setName(dictionaryDto.getName());
+        }
+        if (StringUtils.isNoneBlank(dictionaryDto.getValue())){
+            dictionary.setValue(dictionaryDto.getValue());
+        }
+        if (StringUtils.isNoneBlank(dictionaryDto.getRemark())){
+            dictionary.setRemark(dictionaryDto.getRemark());
+        }
+        return dictionary;
     }
 
     /**

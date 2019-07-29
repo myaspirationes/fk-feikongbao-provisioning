@@ -38,7 +38,7 @@ public class DictionaryController {
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), DictionaryController.class);
         // 操作资源导向
-        LinkUtils.setResourceLink(pageInfoDto, DictionaryController.class, Arrays.asList("dictionary"),
+        LinkUtils.setResourceLink(pageInfoDto, DictionaryController.class, Arrays.asList("dictionary_manage"),
                 OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(),OperateCode.ITEM.getCode());
         return new ProvisioningDto<PageInfoDto<DictionaryDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }

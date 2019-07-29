@@ -1,5 +1,5 @@
 
-CREATE TABLE `group` (
+CREATE TABLE `groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_name` varchar(150) NOT NULL DEFAULT '' COMMENT '集团名称',
   `group_code` varchar(50) NOT NULL DEFAULT '' COMMENT '集团Code',
@@ -13,4 +13,4 @@ CREATE TABLE `group` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='集团表';
 
-insert into `group`(`id`,`group_name`,`group_code`,`expire_date`,`update_cycle`,`next_update_date`,`create_user`,`update_user`) value (1,'Alibaba','Alibaba','2099-07-26','每个月更新一次','2019-08-26','admin','admin');
+insert into `groups`(`id`,`group_name`,`group_code`,`expire_date`,`update_cycle`,`next_update_date`,`create_user`,`update_user`) value (1,'Alibaba','Alibaba','2099-07-26','每个月更新一次','2019-08-26','admin','admin');

@@ -1,13 +1,15 @@
-package com.yodoo.feikongbao.provisioning.domain.system.entity;
+package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
-import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
+import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
 
 import java.util.Date;
 
 /**
- * 集团表
+ * @Description ：集团
+ * @Author ：jinjun_luo
+ * @Date ： 2019/7/29 0029
  */
-public class Group extends BaseEntity {
+public class GroupsDto extends BaseDto {
 
     /** 集团名称 **/
     private String groupName;
@@ -28,40 +30,44 @@ public class Group extends BaseEntity {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName == null ? null : groupName.trim();
+    public GroupsDto setGroupName(String groupName) {
+        this.groupName = groupName;
+        return this;
     }
 
     public String getGroupCode() {
         return groupCode;
     }
 
-    public void setGroupCode(String groupCode) {
-        this.groupCode = groupCode == null ? null : groupCode.trim();
+    public GroupsDto setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+        return this;
     }
 
     public Date getExpireDate() {
         return expireDate;
     }
 
-    public void setExpireDate(Date expireDate) {
+    public GroupsDto setExpireDate(Date expireDate) {
         this.expireDate = expireDate;
+        return this;
     }
 
     public String getUpdateCycle() {
         return updateCycle;
     }
 
-    public void setUpdateCycle(String updateCycle) {
-        this.updateCycle = updateCycle == null ? null : updateCycle.trim();
+    public GroupsDto setUpdateCycle(String updateCycle) {
+        this.updateCycle = updateCycle;
+        return this;
     }
 
     public Date getNextUpdateDate() {
         return nextUpdateDate;
     }
 
-    public void setNextUpdateDate(Date nextUpdateDate) {
+    public GroupsDto setNextUpdateDate(Date nextUpdateDate) {
         this.nextUpdateDate = nextUpdateDate;
+        return this;
     }
-
 }
