@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.aspect;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
+import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -49,7 +50,12 @@ public class MapperAspect {
                 if (args[0] instanceof List) {
                     List<BaseEntity> recordList = (List<BaseEntity>) args[0];
                     for (BaseEntity entity : recordList) {
-                        entity.setCreateUser();
+                        if (StringUtils.isEmpty(entity.getCreateUser())) {
+                            entity.setCreateUser();
+                        }
+                        if (StringUtils.isEmpty(entity.getUpdateUser())) {
+                            entity.setUpdateUser();
+                        }
                     }
                 }
             }
@@ -57,8 +63,12 @@ public class MapperAspect {
             else if (INSERT_SET.contains(methodName)) {
                 if (args[0] instanceof BaseEntity) {
                     BaseEntity entity = (BaseEntity) args[0];
-                    entity.setCreateUser();
-                    entity.setUpdateUser();
+                    if (StringUtils.isEmpty(entity.getCreateUser())) {
+                        entity.setCreateUser();
+                    }
+                    if (StringUtils.isEmpty(entity.getUpdateUser())) {
+                        entity.setUpdateUser();
+                    }
                 }
 
             }
@@ -66,7 +76,9 @@ public class MapperAspect {
             else if (UPDATE_SET.contains(methodName)) {
                 if (args[0] instanceof BaseEntity) {
                     BaseEntity entity = (BaseEntity) args[0];
-                    entity.setUpdateUser();
+                    if (StringUtils.isEmpty(entity.getUpdateUser())) {
+                        entity.setUpdateUser();
+                    }
                 }
             }
         }

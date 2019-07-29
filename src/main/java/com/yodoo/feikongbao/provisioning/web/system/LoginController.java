@@ -32,8 +32,8 @@ public class LoginController {
      * @Date 9:37 2019/7/4
      **/
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ProvisioningDto<LoginDto> index() {
-        LoginDto loginDto = loginService.index();
+    public ProvisioningDto<LoginDto> login() {
+        LoginDto loginDto = loginService.login();
         return new ProvisioningDto<LoginDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, loginDto);
     }
 

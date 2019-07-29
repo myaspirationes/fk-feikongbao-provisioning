@@ -1,10 +1,12 @@
 package com.yodoo.feikongbao.provisioning.domain.system.security;
 
+import com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,9 +15,13 @@ import java.util.Set;
  */
 public class ProvisioningUserDetails implements UserDetails, Serializable {
 
+    private Integer id;
     private String username;
     private String password;
+    private String name;
+
     private Set<? extends GrantedAuthority> authorities;
+    private List<MenuDto> menuTree;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -62,5 +68,29 @@ public class ProvisioningUserDetails implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<MenuDto> getMenuTree() {
+        return menuTree;
+    }
+
+    public void setMenuTree(List<MenuDto> menuTree) {
+        this.menuTree = menuTree;
     }
 }

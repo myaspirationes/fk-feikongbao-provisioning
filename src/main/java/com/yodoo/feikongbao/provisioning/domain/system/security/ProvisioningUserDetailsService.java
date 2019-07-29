@@ -7,7 +7,6 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ProvisioningUserDetailsService implements UserDetailsService {
     private PermissionMapper permissionMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public ProvisioningUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 根据用户名查询用户信息
         User user = userService.getUserByAccount(username);
         if (user == null) {
@@ -39,8 +38,10 @@ public class ProvisioningUserDetailsService implements UserDetailsService {
         }
         // 返回用户信息
         ProvisioningUserDetails userInfo = new ProvisioningUserDetails();
+        userInfo.setId(user.getId());
         userInfo.setUsername(username);
         userInfo.setPassword(user.getPassword());
+        userInfo.setName(user.getName());
 
         // 查询用户权限
         Set<GrantedAuthority> authoritiesSet = new HashSet<>();
