@@ -1,0 +1,89 @@
+package com.yodoo.feikongbao.provisioning.web.system;
+
+import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
+import com.yodoo.feikongbao.provisioning.domain.system.dto.PermissionGroupDto;
+import com.yodoo.feikongbao.provisioning.domain.system.service.PermissionGroupService;
+import com.yodoo.feikongbao.provisioning.enums.OperateCode;
+import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
+import com.yodoo.feikongbao.provisioning.exception.BundleKey;
+import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+
+/**
+ * @Description ：权限组
+ * @Author ：jinjun_luo
+ * @Date ： 2019/7/29 0029
+ */
+@RestController
+@RequestMapping(value = "/permission/group")
+public class PermissionGroupController {
+
+    @Autowired
+    private PermissionGroupService permissionGroupService;
+
+    /**
+     * 条件分页查询
+     * @param permissionGroupDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public ProvisioningDto<?> queryPermissionGroupList(PermissionGroupDto permissionGroupDto){
+        PageInfoDto<PermissionGroupDto> pageInfoDto = permissionGroupService.queryPermissionGroupList(permissionGroupDto);
+        // 列表item导向
+        LinkUtils.setItemListLink(pageInfoDto.getList(), PermissionGroupController.class);
+        // 操作资源导向
+        LinkUtils.setResourceLink(pageInfoDto, PermissionGroupController.class, Arrays.asList("permission"),
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode());
+        return new ProvisioningDto<PageInfoDto<PermissionGroupDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
+    }
+
+    /**
+     * 添加
+     * @param permissionGroupDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('permission')")
+    private ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
+        return permissionGroupService.addPermissionGroup(permissionGroupDto);
+    }
+
+    /**
+     * 更新
+     * @param permissionGroupDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public ProvisioningDto<?> editPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
+        return permissionGroupService.editPermissionGroup(permissionGroupDto);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public ProvisioningDto<?> deletePermissionGroup(@PathVariable Integer id){
+        return permissionGroupService.deletePermissionGroup(id);
+    }
+
+    /**
+     * 查询详情
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('permission')")
+    public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id){
+        return permissionGroupService.getPermissionGroupDetails(id);
+    }
+}

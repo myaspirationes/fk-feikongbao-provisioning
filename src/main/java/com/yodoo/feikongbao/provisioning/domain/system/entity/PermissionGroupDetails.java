@@ -13,6 +13,14 @@ public class PermissionGroupDetails extends BaseEntity {
     /** 权限id **/
     private Integer permissionId;
 
+    public PermissionGroupDetails() {
+    }
+
+    public PermissionGroupDetails(Integer permissionGroupId, Integer permissionId) {
+        this.permissionGroupId = permissionGroupId;
+        this.permissionId = permissionId;
+    }
+
     public Integer getPermissionGroupId() {
         return permissionGroupId;
     }

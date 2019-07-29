@@ -13,6 +13,14 @@ public class UserGroupPermissionDetails extends BaseEntity {
     /** 权限组id **/
     private Integer permissionGroupId;
 
+    public UserGroupPermissionDetails() {
+    }
+
+    public UserGroupPermissionDetails(Integer userGroupId, Integer permissionGroupId) {
+        this.userGroupId = userGroupId;
+        this.permissionGroupId = permissionGroupId;
+    }
+
     public Integer getUserGroupId() {
         return userGroupId;
     }
