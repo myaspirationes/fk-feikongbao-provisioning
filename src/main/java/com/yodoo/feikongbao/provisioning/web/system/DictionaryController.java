@@ -32,7 +32,7 @@ public class DictionaryController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public ProvisioningDto<?> queryDictionaryList(DictionaryDto dictionaryDto){
         PageInfoDto<DictionaryDto> pageInfoDto = dictionaryService.queryDictionaryList(dictionaryDto);
         // 列表item导向
@@ -49,7 +49,7 @@ public class DictionaryController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public ProvisioningDto<?> addDictionary(@RequestBody DictionaryDto dictionaryDto){
         dictionaryService.addDictionary(dictionaryDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -61,7 +61,7 @@ public class DictionaryController {
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT)
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public ProvisioningDto<?> editDictionary(@RequestBody DictionaryDto dictionaryDto){
         dictionaryService.editDictionary(dictionaryDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -73,7 +73,7 @@ public class DictionaryController {
      * @return
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public ProvisioningDto<?> deleteDictionary(@PathVariable Integer id){
         dictionaryService.deleteDictionary(id);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
@@ -85,7 +85,7 @@ public class DictionaryController {
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('dictionary')")
+    @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public ProvisioningDto<?> getDictionaryDetails(@PathVariable Integer id){
         DictionaryDto dictionaryDetails = dictionaryService.getDictionaryDetails(id);
         return new ProvisioningDto<DictionaryDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dictionaryDetails);
