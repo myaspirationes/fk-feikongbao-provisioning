@@ -87,8 +87,6 @@ public class PermissionGroupService {
             return provisioningDto;
         }
         PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
-        permissionGroup.setCreateUser();
-        permissionGroup.setUpdateUser();
         permissionGroupMapper.insertSelective(permissionGroup);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
@@ -104,8 +102,6 @@ public class PermissionGroupService {
             return provisioningDto;
         }
         PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
-        permissionGroup.setCreateUser();
-        permissionGroup.setUpdateUser();
         permissionGroupMapper.insertSelective(permissionGroup);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }

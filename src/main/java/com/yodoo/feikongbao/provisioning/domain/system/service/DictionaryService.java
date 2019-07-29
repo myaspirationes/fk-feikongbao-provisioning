@@ -70,8 +70,6 @@ public class DictionaryService {
         }
         Dictionary dictionary = new Dictionary();
         BeanUtils.copyProperties(dictionaryDto,dictionary);
-        dictionary.setCreateUser();
-        dictionary.setUpdateUser();
         dictionaryMapper.insertSelective(dictionary);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
@@ -144,7 +142,6 @@ public class DictionaryService {
         if (StringUtils.isNoneBlank(dictionaryDto.getRemark())){
             dictionary.setRemark(dictionaryDto.getRemark());
         }
-        dictionary.setUpdateUser();
         return dictionary;
     }
 
