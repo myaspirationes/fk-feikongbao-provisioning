@@ -1,5 +1,8 @@
 package com.yodoo.feikongbao.provisioning.common.entity;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -75,6 +78,20 @@ public class BaseEntity {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public void setCreateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            this.createUser = (String) authentication.getPrincipal();
+        }
+    }
+
+    public void setUpdateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            this.updateUser = (String) authentication.getPrincipal();
+        }
     }
 
 }
