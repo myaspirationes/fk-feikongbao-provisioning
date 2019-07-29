@@ -14,5 +14,11 @@
     id, group_code, group_name, create_user, create_time, update_user, update_time
   </sql>
 
+  <select id="selectPermissionGroupInAdditionToItself" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from permission_group
+    where id != #{id,jdbcType=INTEGER} and group_code = #{groupCode,jdbcType=VARCHAR} and group_name = #{groupName,jdbcType=VARCHAR}
+  </select>
 
 </mapper>

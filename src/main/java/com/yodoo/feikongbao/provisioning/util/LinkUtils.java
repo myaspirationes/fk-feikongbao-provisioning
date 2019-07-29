@@ -51,9 +51,9 @@ public class LinkUtils {
      * @Author houzhen
      * @Date 10:41 2019/7/11
      **/
-    public <T extends ResourceSupport> void setResourceLink(T t, Class clazz, List permissionList, String... resources) {
+    public static <T extends ResourceSupport> void setResourceLink(T t, Class clazz, List permissionList, String... resources) {
         List<Link> links = new ArrayList<>();
-        String baseUrl = this.getRequestMappingValue(clazz);
+        String baseUrl = getRequestMappingValue(clazz);
         // self link
         links.add(new Link(baseUrl).withType(RequestMethod.GET.name()).withTitle(OperateCode.READ.getName()));
         // other permission link

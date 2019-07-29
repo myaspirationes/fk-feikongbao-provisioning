@@ -3,17 +3,14 @@ package com.yodoo.feikongbao.provisioning.web.system;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.DictionaryDto;
-import com.yodoo.feikongbao.provisioning.domain.system.security.ProvisioningAuthenticationProvider;
 import com.yodoo.feikongbao.provisioning.domain.system.service.DictionaryService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
+import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -29,9 +26,6 @@ public class DictionaryController {
     @Autowired
     private DictionaryService dictionaryService;
 
-    @Autowired
-    private ProvisioningAuthenticationProvider provider;
-
     /**
      * 条件分页查询
      * @param dictionaryDto
@@ -42,9 +36,9 @@ public class DictionaryController {
     public ProvisioningDto<?> queryDictionaryList(DictionaryDto dictionaryDto){
         PageInfoDto<DictionaryDto> pageInfoDto = dictionaryService.queryDictionaryList(dictionaryDto);
         // 列表item导向
-        provider.setItemListLink(pageInfoDto.getList(), DictionaryController.class);
+        LinkUtils.setItemListLink(pageInfoDto.getList(), DictionaryController.class);
         // 操作资源导向
-        provider.setResourceLink(pageInfoDto, DictionaryController.class, Arrays.asList("dictionary"),
+        LinkUtils.setResourceLink(pageInfoDto, DictionaryController.class, Arrays.asList("dictionary"),
                 OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode());
         return new ProvisioningDto<PageInfoDto<DictionaryDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
@@ -54,10 +48,42 @@ public class DictionaryController {
      * @param dictionaryDto
      * @return
      */
-    @RequestMapping(value="/add", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('dictionary')")
     public ProvisioningDto<?> addDictionary(@RequestBody DictionaryDto dictionaryDto){
         return dictionaryService.addDictionary(dictionaryDto);
     }
 
+    /**
+     * 更新
+     * @param dictionaryDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    @PreAuthorize("hasAnyAuthority('dictionary')")
+    public ProvisioningDto<?> editDictionary(@RequestBody DictionaryDto dictionaryDto){
+        return dictionaryService.editDictionary(dictionaryDto);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('dictionary')")
+    public ProvisioningDto<?> deleteDictionary(@PathVariable Integer id){
+        return dictionaryService.deleteDictionary(id);
+    }
+
+    /**
+     * 查询详情
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('dictionary')")
+    public ProvisioningDto<?> getDictionaryDetails(@PathVariable Integer id){
+        return dictionaryService.getDictionaryDetails(id);
+    }
 }

@@ -17,4 +17,11 @@
     id, type, code, name, value, remark, create_user, create_time, update_user, update_time
   </sql>
 
+  <select id="selectDictionaryInAdditionToItself" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dictionary
+    where id != #{id,jdbcType=INTEGER} and type = #{type,jdbcType=VARCHAR} and code = #{code,jdbcType=VARCHAR} and name = #{name,jdbcType=VARCHAR} and value = #{value,jdbcType=VARCHAR}
+  </select>
+
 </mapper>

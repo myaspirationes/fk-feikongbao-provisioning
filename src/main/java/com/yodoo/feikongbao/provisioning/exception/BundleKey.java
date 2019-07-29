@@ -253,4 +253,16 @@ public interface BundleKey {
     String BUILD_JENKINS_ERROR = PAAS_PREFIX + "BUILD.JENKINS.ERROR";
     String BUILD_JENKINS_ERROR_MEG = "build jenkins 异常";
 
+    /**
+     * 数据不存在
+     */
+    String ON_EXIST = "ON.EXIST";
+    String ON_EXIST_MEG = "数据不存在";
+
+    /**
+     * 数数据已存在
+     */
+    String EXIST = "EXIST";
+    String EXIST_MEG = "数据已存在";
+
 }
