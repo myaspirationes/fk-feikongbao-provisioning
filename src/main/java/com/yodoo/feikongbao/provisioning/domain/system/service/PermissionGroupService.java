@@ -91,8 +91,7 @@ public class PermissionGroupService {
      */
     @PreAuthorize("hasAnyAuthority('permission_manage')")
     public Integer editPermissionGroup(PermissionGroupDto permissionGroupDto) {
-        editPermissionGroupParameterCheck(permissionGroupDto);
-        PermissionGroup permissionGroup = new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName());
+        PermissionGroup permissionGroup = editPermissionGroupParameterCheck(permissionGroupDto);
         return permissionGroupMapper.updateByPrimaryKeySelective(permissionGroup);
     }
 
@@ -131,7 +130,7 @@ public class PermissionGroupService {
      * @param permissionGroupDto
      * @return
      */
-    private void editPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
+    private PermissionGroup editPermissionGroupParameterCheck(PermissionGroupDto permissionGroupDto) {
         if (permissionGroupDto == null || permissionGroupDto.getTid() == null || permissionGroupDto.getTid() < 0
                 || StringUtils.isBlank(permissionGroupDto.getGroupCode()) || StringUtils.isBlank(permissionGroupDto.getGroupName())){
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
@@ -145,6 +144,9 @@ public class PermissionGroupService {
         if (permissionGroupSelf != null){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
+        permissionGroup.setGroupCode(permissionGroupDto.getGroupCode());
+        permissionGroup.setGroupName(permissionGroupDto.getGroupName());
+        return permissionGroup;
     }
 
     /**
@@ -189,13 +191,13 @@ public class PermissionGroupService {
             throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
         // 查询权限组明细，如果存在使用，不能删除
-        PermissionGroupDetails permissionGroupDetails = permissionGroupDetailsService.selectPermissionGroupDetailsByPermissionGroupId(id);
-        if (permissionGroupDetails != null){
+        Integer permissionGroupDetailsCount = permissionGroupDetailsService.selectPermissionGroupDetailsCountByPermissionGroupId(id);
+        if (permissionGroupDetailsCount != null && permissionGroupDetailsCount > 0){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
         // 查询用户组权限组关系表，如果存在使用不能删除
-        UserGroupPermissionDetails userGroupPermissionDetails = userGroupPermissionDetailsService.selectUserGroupPermissionDetailsByPermissionGroupId(id);
-        if (userGroupPermissionDetails != null){
+        Integer userGroupPermissionDetailsCount = userGroupPermissionDetailsService.selectUserGroupPermissionDetailsCountByPermissionGroupId(id);
+        if (userGroupPermissionDetailsCount != null && userGroupPermissionDetailsCount > 0){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST);
         }
     }

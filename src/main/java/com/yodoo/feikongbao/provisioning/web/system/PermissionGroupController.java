@@ -38,7 +38,7 @@ public class PermissionGroupController {
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), PermissionGroupController.class);
         // 操作资源导向
-        LinkUtils.setResourceLink(pageInfoDto, PermissionGroupController.class, Arrays.asList("permission"),
+        LinkUtils.setResourceLink(pageInfoDto, PermissionGroupController.class, Arrays.asList("permission_manage"),
                 OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode());
         return new ProvisioningDto<PageInfoDto<PermissionGroupDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }

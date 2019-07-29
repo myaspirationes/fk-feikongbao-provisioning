@@ -46,6 +46,9 @@ public class CompanyDto extends BaseDto {
     /** neo4j实例id **/
     private Integer neo4jInstanceId;
 
+    /** 状态，0：创建中，1：创建完成,启用中， 2：停用 **/
+    private Integer status;
+
     public Integer getGroupId() {
         return groupId;
     }
@@ -132,5 +135,14 @@ public class CompanyDto extends BaseDto {
 
     public void setNeo4jInstanceId(Integer neo4jInstanceId) {
         this.neo4jInstanceId = neo4jInstanceId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public CompanyDto setStatus(Integer status) {
+        this.status = status;
+        return this;
     }
 }

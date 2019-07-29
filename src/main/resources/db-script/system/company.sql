@@ -12,6 +12,7 @@ CREATE TABLE `company` (
   `swift_project_id` int(11) NOT NULL DEFAULT 0 COMMENT 'swift租户id',
   `mq_vhost_id` int(11) NOT NULL DEFAULT 0 COMMENT '消息队列vhost',
   `neo4j_instance_id` int(11) NOT NULL DEFAULT 0 COMMENT 'neo4j实例id',
+  `status` int(1) NOT NULL DEFAULT 0 COMMENT '状态，0：创建中，1：创建完成,启用中， 2：停用',
   `create_user` varchar(150) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(150) NOT NULL DEFAULT '' COMMENT '更新人',

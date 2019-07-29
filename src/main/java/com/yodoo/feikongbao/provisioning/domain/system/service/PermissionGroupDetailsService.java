@@ -24,7 +24,7 @@ public class PermissionGroupDetailsService {
      * @param permissionGroupId
      * @return
      */
-    public PermissionGroupDetails selectPermissionGroupDetailsByPermissionGroupId(Integer permissionGroupId) {
-        return permissionGroupDetailsMapper.selectOne(new PermissionGroupDetails(permissionGroupId, null));
+    public Integer selectPermissionGroupDetailsCountByPermissionGroupId(Integer permissionGroupId) {
+        return permissionGroupDetailsMapper.selectCount(new PermissionGroupDetails(permissionGroupId, null));
     }
 }
