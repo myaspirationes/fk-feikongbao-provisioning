@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description ：集团
@@ -89,5 +90,17 @@ public class GroupsController {
     public ProvisioningDto<?> getGroupDetails(@PathVariable Integer id){
         GroupsDto groupDto = groupService.getGroupDetails(id);
         return new ProvisioningDto<GroupsDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, groupDto);
+    }
+
+    /**
+     * 获取当前用户能管理集团列表
+     * 1、编辑公司实例页面，集团下拉列表
+     * @return
+     */
+    @RequestMapping(value = "groupListByUserId", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('group_manage')")
+    public ProvisioningDto<?> getGroupListByUserId(){
+        List<GroupsDto> groupDtoList = groupService.getGroupListByUserId();
+        return new ProvisioningDto<List<GroupsDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, groupDtoList);
     }
 }

@@ -6,6 +6,8 @@ import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.GroupsDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionDetails;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.GroupsMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
@@ -39,6 +41,9 @@ public class GroupsService {
 
     @Autowired
     private UserPermissionTargetGroupDetailsService userPermissionTargetGroupDetailsService;
+
+    @Autowired
+    private UserPermissionDetailsService userPermissionDetailsService;
 
     /**
      * 条件分页查询
@@ -122,6 +127,50 @@ public class GroupsService {
             groupsDto.setTid(group.getId());
         }
         return groupsDto;
+    }
+
+    /**
+     * 获取当前用户下管理的集团列表
+     * @return
+     */
+    public List<GroupsDto> getGroupListByUserId() {
+        // TODO 用户id 从  session中获取
+        Integer userId = 1;
+        // 通过用户id 查询用户权限表
+        List<UserPermissionDetails> userPermissionDetails = userPermissionDetailsService.selectUserPermissionDetailsByUserId(userId);
+        List<GroupsDto> groupsDtoList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userPermissionDetails)){
+            userPermissionDetails.stream()
+                    .filter(Objects::nonNull)
+                    .map(userPermissionDetails1 -> {
+                        // 通过用户权限id 查询目标集团表
+                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetails = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails1.getId());
+                        if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetails)) {
+                            List<GroupsDto> collect1 = userPermissionTargetGroupDetails.stream()
+                                    .filter(Objects::nonNull)
+                                    .map(userPermissionTargetGroupDetails1 -> {
+                                        // 通过集团id查询集团表
+                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails1.getGroupId());
+                                        GroupsDto groupsDto = null;
+                                        if (groups != null){
+                                            groupsDto = new GroupsDto();
+                                            BeanUtils.copyProperties(groups, groupsDto);
+                                            groupsDto.setTid(groups.getId());
+                                        }
+                                        return groupsDto;
+                                    })
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(collect1)){
+                                groupsDtoList.addAll(collect1);
+                            }
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return groupsDtoList;
     }
 
     /**

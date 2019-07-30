@@ -51,8 +51,8 @@ public class CompanyController {
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> addCompany(@RequestBody CompanyDto companyDto){
-        companyService.addCompany(companyDto);
-        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+        CompanyDto companyDto1 = companyService.addCompany(companyDto);
+        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto1);
     }
 
     /**
