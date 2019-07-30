@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @Description ：目标集团
  * @Author ：jinjun_luo
@@ -28,5 +30,16 @@ public class UserPermissionTargetGroupDetailsService {
         UserPermissionTargetGroupDetails userPermissionTargetGroupDetails = new UserPermissionTargetGroupDetails();
         userPermissionTargetGroupDetails.setGroupId(groupId);
         return userPermissionTargetGroupDetailsMapper.selectCount(userPermissionTargetGroupDetails);
+    }
+
+    /**
+     * 通过用户权限 id 查询
+     * @param userPermissionId
+     * @return
+     */
+    public List<UserPermissionTargetGroupDetails> selectUserPermissionTargetGroupDetailsByUserPermissionId(Integer userPermissionId){
+        UserPermissionTargetGroupDetails userPermissionTargetGroupDetails = new UserPermissionTargetGroupDetails();
+        userPermissionTargetGroupDetails.setUserPermissionId(userPermissionId);
+        return userPermissionTargetGroupDetailsMapper.select(userPermissionTargetGroupDetails);
     }
 }

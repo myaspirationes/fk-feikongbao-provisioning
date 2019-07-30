@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,14 +71,18 @@ public class CompanyService {
      * @param companyDto
      */
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public Integer addCompany(CompanyDto companyDto) {
+    public CompanyDto addCompany(CompanyDto companyDto) {
         // 校验
         addCompanyParameterCheck(companyDto);
 
         Company company = new Company();
         BeanUtils.copyProperties(companyDto,company);
         company.setStatus(CompanyStatusEnum.CREATING.getCode());
-        return companyMapper.insertSelective(company);
+        companyMapper.insertSelective(company);
+
+        // 添加完成，把数据返回，用于下步操作
+        companyDto.setTid(company.getId());
+        return companyDto;
     }
 
     /**
@@ -170,8 +175,65 @@ public class CompanyService {
         if (companySelf != null){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
-        BeanUtils.copyProperties(companyDto,company);
+        // 封装修改的参数
+        buildUpdateParameter(company, companyDto);
         return company;
+    }
+
+    /**
+     * 封装修改参数，目的是做每步都要修改数据库，方便
+     * @param company
+     * @param companyDto
+     */
+    private void buildUpdateParameter(Company company, CompanyDto companyDto) {
+        /** 集团id **/
+        if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0){
+            company.setGroupId(companyDto.getGroupId());
+        }
+        /** 公司名称 **/
+        if (StringUtils.isNoneBlank(companyDto.getCompanyName())){
+            company.setCompanyName(companyDto.getCompanyName());
+        }
+        /** 公司Code **/
+        if (StringUtils.isNoneBlank(companyDto.getCompanyCode())){
+            company.setCompanyCode(companyDto.getCompanyCode());
+        }
+        /** 更新周期 **/
+        if (StringUtils.isNoneBlank(companyDto.getUpdateCycle())){
+            company.setUpdateCycle(companyDto.getUpdateCycle());
+        }
+        /** 下次更新日期 **/
+        if (companyDto.getNextUpdateDate() != null){
+            company.setNextUpdateDate(companyDto.getNextUpdateDate());
+        }
+        /** 到期日 **/
+        if (companyDto.getExpireDate() != null){
+            company.setExpireDate(companyDto.getExpireDate());
+        }
+        /** DB数据库组id **/
+        if (companyDto.getDbGroupId() != null && companyDto.getDbGroupId() > 0){
+            company.setDbGroupId(companyDto.getDbGroupId());
+        }
+        /** redis组id **/
+        if (companyDto.getRedisGroupId() != null && companyDto.getRedisGroupId() > 0){
+            company.setRedisGroupId(companyDto.getRedisGroupId());
+        }
+        /** swift租户id **/
+        if (companyDto.getSwiftProjectId() != null && companyDto.getSwiftProjectId() > 0){
+            company.setSwiftProjectId(companyDto.getSwiftProjectId());
+        }
+        /** 消息队列vhost **/
+        if (companyDto.getMqVhostId() != null && companyDto.getMqVhostId() > 0){
+            company.setMqVhostId(companyDto.getMqVhostId());
+        }
+        /** neo4j实例id **/
+        if (companyDto.getNeo4jInstanceId() != null && companyDto.getNeo4jInstanceId() > 0){
+            company.setNeo4jInstanceId(companyDto.getNeo4jInstanceId());
+        }
+        /** 状态，0：创建中，1：创建完成,启用中， 2：停用 **/
+        if (companyDto.getStatus() != null && companyDto.getStatus() > 0){
+            company.setStatus(companyDto.getStatus());
+        }
     }
 
 
