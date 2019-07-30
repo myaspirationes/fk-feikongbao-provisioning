@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * @Date 2019/7/26 11:49
@@ -30,9 +31,11 @@ public class UserService {
         logger.info("UserService.getUserByAccount account:{}", account);
         // 验证参数
         RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(account));
-        User findUser = new User();
-        findUser.setAccount(account);
-        return userMapper.selectOne(findUser);
+        Example example = new Example(User.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("account", account);
+        example.and(criteria);
+        return userMapper.selectOneByExample(example);
     }
 
 
