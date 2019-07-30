@@ -81,4 +81,22 @@ public class RedisInstanceService {
     public RedisInstance selectByPrimaryKey(Integer id){
         return redisInstanceMapper.selectByPrimaryKey(id);
     }
+
+    /**
+     * 使用缓存 TODO
+     * @param redisInstanceDto
+     * @return
+     */
+    public RedisInstanceDto useRedisInstance(RedisInstanceDto redisInstanceDto) {
+        useRedisInstanceParameterCheck(redisInstanceDto);
+        return null;
+    }
+
+    /**
+     * 使用缓存校验 TODO
+     * @param redisInstanceDto
+     */
+    private void useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
+
+    }
 }

@@ -10,10 +10,7 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -55,6 +52,18 @@ public class RedisInstanceController {
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getRedisInstanceDetails(@PathVariable Integer id){
         RedisInstanceDto redisInstanceDto = redisInstanceService.getRedisInstanceDetails(id);
+        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
+    }
+
+    /**
+     * 使用缓存
+     * @param redisInstanceDto
+     * @return
+     */
+    @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
+        RedisInstanceDto redisInstanceDto1 = redisInstanceService.useRedisInstance(redisInstanceDto);
         return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
     }
 

@@ -40,8 +40,19 @@ public class GroupsController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), GroupsController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, GroupsController.class, Arrays.asList("group_manage"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(),OperateCode.ITEM.getCode());
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(),OperateCode.ITEM.getCode(), "groupCode");
         return new ProvisioningDto<PageInfoDto<GroupsDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
+    }
+
+    /**
+     * 校验公司 code 是否存在
+     * @return
+     */
+    @RequestMapping(value = "groupCode/{groupCode}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('group_manage')")
+    public ProvisioningDto<?> getGroupsByGroupCode(@PathVariable String groupCode){
+        GroupsDto groupDto = groupService.getGroupsByGroupCode(groupCode);
+        return new ProvisioningDto<GroupsDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, groupDto);
     }
 
     /**
@@ -97,7 +108,7 @@ public class GroupsController {
      * 1、编辑公司实例页面，集团下拉列表
      * @return
      */
-    @RequestMapping(value = "groupListByUserId", method = RequestMethod.POST)
+    @RequestMapping(value = "/groupListByUserId", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('group_manage')")
     public ProvisioningDto<?> getGroupListByUserId(){
         List<GroupsDto> groupDtoList = groupService.getGroupListByUserId();

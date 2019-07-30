@@ -68,4 +68,10 @@ public interface BundleKey {
     String COMPANY_NOT_EXIST = PAAS_PREFIX + "COMPANY.NOT.EXIST";
     String COMPANY_NOT_EXIST_MSG = "公司不存在";
 
+    /**
+     * 初始化数据库异常"
+     **/
+    String BUILD_SCRIPT_MIGRATION_DATA = PAAS_PREFIX + "BUILD.SCRIPT.MIGRATION.DATA";
+    String BUILD_SCRIPT_MIGRATION_DATA_MSG = "初始化数据库异常";
+
 }

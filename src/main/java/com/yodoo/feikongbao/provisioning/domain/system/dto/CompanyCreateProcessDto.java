@@ -12,11 +12,11 @@ public class CompanyCreateProcessDto  extends BaseDto {
     /** 公司id **/
     private Integer companyId;
 
-    /** 过程code **/
-    private String processCode;
-
     /** 过程序号 **/
     private Integer processOrder;
+
+    /** 过程code **/
+    private String processCode;
 
     public Integer getCompanyId() {
         return companyId;
@@ -27,21 +27,21 @@ public class CompanyCreateProcessDto  extends BaseDto {
         return this;
     }
 
-    public String getProcessCode() {
-        return processCode;
-    }
-
-    public CompanyCreateProcessDto setProcessCode(String processCode) {
-        this.processCode = processCode;
-        return this;
-    }
-
     public Integer getProcessOrder() {
         return processOrder;
     }
 
     public CompanyCreateProcessDto setProcessOrder(Integer processOrder) {
         this.processOrder = processOrder;
+        return this;
+    }
+
+    public String getProcessCode() {
+        return processCode;
+    }
+
+    public CompanyCreateProcessDto setProcessCode(String processCode) {
+        this.processCode = processCode;
         return this;
     }
 }

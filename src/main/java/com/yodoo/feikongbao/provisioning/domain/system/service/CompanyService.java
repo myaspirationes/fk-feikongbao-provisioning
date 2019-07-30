@@ -6,8 +6,10 @@ import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
+import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
@@ -20,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +40,9 @@ public class CompanyService {
 
     @Autowired
     private CompanyCreateProcessService companyCreateProcessService;
+
+    @Autowired
+    private ApolloService apolloService;
 
     /**
      * 分页查询
@@ -74,24 +78,54 @@ public class CompanyService {
     public CompanyDto addCompany(CompanyDto companyDto) {
         // 校验
         addCompanyParameterCheck(companyDto);
-
+        // 公司基础数据先落库
         Company company = new Company();
         BeanUtils.copyProperties(companyDto,company);
         company.setStatus(CompanyStatusEnum.CREATING.getCode());
         companyMapper.insertSelective(company);
 
-        // 添加完成，把数据返回，用于下步操作
+        // 调用 apollo 创建环境
+        apolloService.createCluster(company.getCompanyCode());
+
+        // 添加公司创建过程 记录表
+        companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(company.getId(),
+                CompanyCreationStepsEnum.FIRST_STEP.getCode(), CompanyCreationStepsEnum.FIRST_STEP.getName()));
+
+        // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
         return companyDto;
     }
 
     /**
-     * 更新
+     * 更新公司基础信息
      * @param companyDto
      */
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public Integer editCompany(CompanyDto companyDto) {
         Company company = editCompanyParameterCheck(companyDto);
+        return companyMapper.updateByPrimaryKeySelective(company);
+    }
+
+    /**
+     * 更新公司基础信息
+     * dbGroupId ：DB数据库组id
+     * redisGroupId ：redis组id
+     * swiftProjectId ：swift租户id
+     * mqVhostId ：消息队列vhost
+     * neo4jInstanceId ：neo4j实例id
+     * status ：状态，0：创建中，1：创建完成,启用中， 2：停用
+     * @param companyDto
+     * @return
+     */
+    public Integer updateCompany(CompanyDto companyDto){
+        if (companyDto.getTid() == null || companyDto.getTid() < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Company company = selectByPrimaryKey(companyDto.getTid());
+        if (company == null){
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        }
+        buildUpdateParameter(company, companyDto);
         return companyMapper.updateByPrimaryKeySelective(company);
     }
 
@@ -131,6 +165,36 @@ public class CompanyService {
         Company company = new Company();
         company.setGroupId(groupsId);
         return companyMapper.selectCount(company);
+    }
+
+    /**
+     * 通过公司 code 查询
+     * @param companyCode
+     * @return
+     */
+    public CompanyDto getCompanyByCompanyCode(String companyCode) {
+        if (StringUtils.isBlank(companyCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Company company = new Company();
+        company.setCompanyCode(companyCode);
+        Company company1 = companyMapper.selectOne(company);
+        CompanyDto companyDto = null;
+        if (company1 != null){
+            companyDto = new CompanyDto();
+            BeanUtils.copyProperties(company1, companyCode);
+            companyDto.setTid(company1.getId());
+        }
+        return companyDto;
+    }
+
+    /**
+     * 通过主键查询
+     * @param id
+     * @return
+     */
+    public Company selectByPrimaryKey(Integer id) {
+        return companyMapper.selectByPrimaryKey(id);
     }
 
     /**
@@ -234,16 +298,6 @@ public class CompanyService {
         if (companyDto.getStatus() != null && companyDto.getStatus() > 0){
             company.setStatus(companyDto.getStatus());
         }
-    }
-
-
-    /**
-     * 通过主键查询
-     * @param id
-     * @return
-     */
-    private Company selectByPrimaryKey(Integer id) {
-        return companyMapper.selectByPrimaryKey(id);
     }
 
     /**

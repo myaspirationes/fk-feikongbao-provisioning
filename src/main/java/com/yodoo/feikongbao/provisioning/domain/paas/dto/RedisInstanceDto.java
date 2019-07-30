@@ -34,6 +34,12 @@ public class RedisInstanceDto extends BaseDto {
      * */
     private Integer status;
 
+    /** 公司id **/
+    private Integer companyId;
+
+    /** 公司Code **/
+    private String companyCode;
+
     public Integer getRedisGroupId() {
         return redisGroupId;
     }
@@ -94,6 +100,24 @@ public class RedisInstanceDto extends BaseDto {
 
     public RedisInstanceDto setStatus(Integer status) {
         this.status = status;
+        return this;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public RedisInstanceDto setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+        return this;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public RedisInstanceDto setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
         return this;
     }
 }

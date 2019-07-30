@@ -39,12 +39,23 @@ public class CompanyController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), CompanyController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, CompanyController.class, Arrays.asList("company_manage"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode());
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode(),"companyCode");
         return new ProvisioningDto<PageInfoDto<CompanyDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
 
     /**
-     * 添加:
+     * 校验公司code是否存在
+     * @return
+     */
+    @RequestMapping(value = "companyCode/{companyCode}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> getCompanyByCompanyCode(@PathVariable String companyCode){
+        CompanyDto companyDto = companyService.getCompanyByCompanyCode(companyCode);
+        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto);
+    }
+
+    /**
+     * 添加: TODO
      * @param companyDto
      * @return
      */

@@ -4,7 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.GroupsDto;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionTargetGroupDetails;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -130,6 +133,27 @@ public class GroupsService {
     }
 
     /**
+     * 通过 groupCode 查询
+     * @param groupCode
+     * @return
+     */
+    public GroupsDto getGroupsByGroupCode(String groupCode) {
+        if (StringUtils.isBlank(groupCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Groups groups = new Groups();
+        groups.setGroupCode(groupCode);
+        Groups groups1 = groupsMapper.selectOne(groups);
+        GroupsDto groupsDto = null;
+        if (groups1 != null){
+            groupsDto = new GroupsDto();
+            BeanUtils.copyProperties(groups1, groupsDto);
+            groupsDto.setTid(groups1.getId());
+        }
+        return groupsDto;
+    }
+
+    /**
      * 获取当前用户下管理的集团列表
      * @return
      */
@@ -204,7 +228,7 @@ public class GroupsService {
      */
     private Groups editGroupParameterCheck(GroupsDto groupsDto) {
         if (groupsDto == null || groupsDto.getTid() == null || groupsDto.getTid() < 0 || StringUtils.isBlank(groupsDto.getGroupName())
-                || StringUtils.isBlank(groupsDto.getGroupCode()) || groupsDto.getExpireDate() == null){
+                || groupsDto.getExpireDate() == null){
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Groups groups = selectByPrimaryKey(groupsDto.getTid());
@@ -215,8 +239,32 @@ public class GroupsService {
         if (groupsItself != null){
             throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
-        BeanUtils.copyProperties(groupsDto,groups);
+        buildUpdateParameter(groups,groupsDto);
         return groups;
+    }
+
+    /**
+     * 更新参数封装
+     * @param groups
+     * @param groupsDto
+     */
+    private void buildUpdateParameter(Groups groups, GroupsDto groupsDto) {
+        /** 集团名称 **/
+        if (StringUtils.isNoneBlank(groupsDto.getGroupName())){
+            groups.setGroupName(groupsDto.getGroupName());
+        }
+        /** 到期日 **/
+        if (groupsDto.getExpireDate() != null){
+            groups.setExpireDate(groupsDto.getExpireDate());
+        }
+        /** 更新周期 **/
+        if (StringUtils.isNoneBlank(groupsDto.getUpdateCycle())){
+            groups.setUpdateCycle(groupsDto.getUpdateCycle());
+        }
+        /** 下次更新日期 **/
+        if (groupsDto.getNextUpdateDate() != null){
+            groups.setNextUpdateDate(groupsDto.getNextUpdateDate());
+        }
     }
 
     /**
