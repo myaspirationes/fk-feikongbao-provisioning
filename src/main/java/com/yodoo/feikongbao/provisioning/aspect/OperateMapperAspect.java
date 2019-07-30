@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -21,7 +22,8 @@ import java.util.Set;
  **/
 @Aspect
 @Component
-public class MapperAspect {
+@Order(1)
+public class OperateMapperAspect {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -33,6 +35,7 @@ public class MapperAspect {
     // 更新
     private final Set<String> UPDATE_SET = new HashSet<>(Arrays.asList("updateByPrimaryKey",
             "updateByExampleSelective", "updateByExample", "updateByPrimaryKeySelective"));
+
 
 
     @Pointcut("execution(* com.yodoo.feikongbao.provisioning.domain.*.mapper.*.*(..))")
