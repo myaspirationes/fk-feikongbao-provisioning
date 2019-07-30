@@ -4,15 +4,15 @@
   <resultMap id="BaseResultMap" type="com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="process_code" jdbcType="VARCHAR" property="processCode" />
     <result column="process_order" jdbcType="INTEGER" property="processOrder" />
+    <result column="process_code" jdbcType="VARCHAR" property="processCode" />
     <result column="create_user" jdbcType="VARCHAR" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, company_id, process_code, process_order, create_user, create_time, update_user, 
+    id, company_id, process_order, process_code, create_user, create_time, update_user,
     update_time
   </sql>
 

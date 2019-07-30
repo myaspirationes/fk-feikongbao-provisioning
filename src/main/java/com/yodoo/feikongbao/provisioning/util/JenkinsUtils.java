@@ -293,6 +293,19 @@ public class JenkinsUtils {
         return false;
     }
 
+    /**
+     * 休眠
+     * @Author houzhen
+     * @Date 15:32 2019/6/4
+     **/
+    public void sleepSomeTime(int sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
 //        Job job = JenkinsUtils.getJob("fat-md-swift-storage-client");
 //        System.out.println(JsonUtils.obj2json(job));

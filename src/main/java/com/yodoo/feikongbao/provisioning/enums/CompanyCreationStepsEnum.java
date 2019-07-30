@@ -13,7 +13,7 @@ public enum CompanyCreationStepsEnum {
     FIVE_STEP(5, "第五步：消息队列"),
     SIX_STEP(6, "第六步：流程定义"),
     SEVEN_STEP(7, "第七步：应用实例"),
-    EIGHT_STEP(8, "第七步：超级用户");
+    EIGHT_STEP(8, "第八步：超级用户");
 
     private Integer code;
 

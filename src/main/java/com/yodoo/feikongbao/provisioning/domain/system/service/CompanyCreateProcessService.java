@@ -56,4 +56,12 @@ public class CompanyCreateProcessService {
         }
         return new PageInfoDto<CompanyCreateProcessDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
+
+    /**
+     * 添加公司创建步骤记录表
+     * @param companyCreateProcess
+     */
+    public void insertCompanyCreateProcess(CompanyCreateProcess companyCreateProcess) {
+        companyCreateProcessMapper.insertSelective(companyCreateProcess);
+    }
 }
