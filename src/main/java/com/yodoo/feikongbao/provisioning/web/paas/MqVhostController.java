@@ -3,7 +3,6 @@ package com.yodoo.feikongbao.provisioning.web.paas;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.MqVhostDto;
-import com.yodoo.feikongbao.provisioning.domain.paas.dto.SwiftProjectDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.MqVhostService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;

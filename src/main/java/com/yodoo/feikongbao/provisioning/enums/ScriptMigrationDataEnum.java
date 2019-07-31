@@ -10,11 +10,7 @@ public enum JenkinsEnum {
     /** 执行 */
     ROLL_FORWARD("roll-forward"),
     /** 回滚 */
-    ROLL_BACK("rollback"),
-    /** 成功 */
-    SUCCESS("SUCCESS"),
-    /** 失败 **/
-    FAILURE("FAILURE");
+    ROLL_BACK("rollback");
 
     private String action;
 

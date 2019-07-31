@@ -2,6 +2,9 @@ package com.yodoo.feikongbao.provisioning.util;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.*;
+import com.yodoo.megalodon.datasource.config.JenkinsConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +18,13 @@ import java.util.Map;
 @Component
 public class JenkinsUtils {
 
+    private static Logger logger = LoggerFactory.getLogger(JenkinsUtils.class);
+
     @Autowired
     private JenkinsServer jenkins;
+
+    @Autowired
+    private JenkinsConfig jenkinsConfig;
 
     /**
      * 获取所有任务
@@ -306,8 +314,32 @@ public class JenkinsUtils {
         }
     }
 
-    public static void main(String[] args) {
-//        Job job = JenkinsUtils.getJob("fat-md-swift-storage-client");
-//        System.out.println(JsonUtils.obj2json(job));
+    /****
+     * 查询 build 项目是否成功
+     * @param jobName ： job 名称
+     * @return boolean
+     */
+    public Boolean checkRunningStatusToJenkins(String jobName){
+        // 校验参数
+        RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(jobName));
+        // 开始时间
+        Long startTime = System.currentTimeMillis();
+        for(;;) {
+            // 要睡时间长点，要不然获取到的是上一次 build 的数据
+            sleepSomeTime(jenkinsConfig.jenkinsCheckRunWaitTime);
+            String jobRunResult = getJobRunResult(jobName);
+            if (org.apache.commons.lang3.StringUtils.isNoneBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())){
+                return true;
+            }else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
+                    || BuildResult.ABORTED.name().equalsIgnoreCase(jobRunResult)
+                    || BuildResult.CANCELLED.name().equalsIgnoreCase(jobRunResult)){
+                return false;
+            }
+            // 超过一点时间，认为 build 失败
+            if(System.currentTimeMillis() - startTime > jenkinsConfig.jenkinsCheckRunWaitTimeTotal) {
+                logger.error(String.format("build jenkins failed within %s jobName: %s", jenkinsConfig.jenkinsCheckRunWaitTimeTotal /60000, jobName));
+                return false;
+            }
+        }
     }
 }

@@ -2,8 +2,13 @@ package com.yodoo.feikongbao.provisioning.web.system;
 
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
+import com.yodoo.feikongbao.provisioning.domain.paas.service.*;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
+import com.yodoo.feikongbao.provisioning.domain.system.dto.PublishProjectDto;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
+import com.yodoo.feikongbao.provisioning.domain.system.service.CompanySuperUserService;
+import com.yodoo.feikongbao.provisioning.domain.system.service.PublishProjectService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
@@ -13,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description ：公司管理
@@ -25,6 +31,28 @@ public class CompanyController {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private DbSchemaService dbSchemaService;
+
+    @Autowired
+    private RedisInstanceService redisInstanceService;
+
+    @Autowired
+    private SwiftProjectService swiftProjectService;
+
+    @Autowired
+    private MqVhostService mqVhostService;
+
+    @Autowired
+    private Neo4jInstanceService neo4jInstanceService;
+
+    @Autowired
+    private PublishProjectService publishProjectService;
+
+    @Autowired
+    private CompanySuperUserService companySuperUserService;
+
 
     /**
      * 条件分页查询
@@ -52,18 +80,6 @@ public class CompanyController {
     public ProvisioningDto<?> getCompanyByCompanyCode(@PathVariable String companyCode){
         CompanyDto companyDto = companyService.getCompanyByCompanyCode(companyCode);
         return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto);
-    }
-
-    /**
-     * 添加: TODO
-     * @param companyDto
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> addCompany(@RequestBody CompanyDto companyDto){
-        CompanyDto companyDto1 = companyService.addCompany(companyDto);
-        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto1);
     }
 
     /**
@@ -101,4 +117,114 @@ public class CompanyController {
         CompanyDto  companyDto = companyService.getCompanyDetails(id);
         return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto);
     }
+
+    /**
+     * 第一步：创建公司 TODO
+     * @param companyDto
+     * @return
+     */
+    @RequestMapping(value = "/addCompany", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> addCompany(@RequestBody CompanyDto companyDto){
+        CompanyDto companyDto1 = companyService.addCompany(companyDto);
+        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto1);
+    }
+
+    /**
+     * 第二步：数据库
+     * @param dbSchemaDto
+     * @return
+     */
+    @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto){
+        DbSchemaDto dbSchemaDto1 = dbSchemaService.useDbSchema(dbSchemaDto);
+        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDto1);
+    }
+
+    /**
+     * 第三步：缓存
+     * @param redisInstanceDto
+     * @return
+     */
+    @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
+        RedisInstanceDto redisInstanceDto1 = redisInstanceService.useRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
+    }
+
+    /**
+     * 第四步：创建存储对象
+     * @param swiftProjectDto
+     * @return
+     */
+    @RequestMapping(value = "/useSwiftProject", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto){
+        SwiftProjectDto swiftProjectDto1 = swiftProjectService.useSwiftProject(swiftProjectDto);
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto1);
+    }
+
+    /**
+     * 第五步：消息队列
+     * @param mqVhostDto
+     * @return
+     */
+    @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto){
+        MqVhostDto mqVhostDto1 = mqVhostService.useMqVhost(mqVhostDto);
+        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto1);
+    }
+
+    /**
+     * 第六步：创建 eno4j
+     * @param neo4jInstanceDto
+     * @return
+     */
+    @RequestMapping(value = "/useNeo4jInstance", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto){
+        Neo4jInstanceDto neo4jInstanceDto1 = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDto1);
+    }
+
+    /**
+     * 第七步：发布项目
+     * @param companyId
+     * @return
+     */
+    @RequestMapping(value = "/publishProjects/{companyId}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> publishProjectsForCompanyCreateFinish(@PathVariable Integer companyId){
+        publishProjectService.publishProjectsForCompanyCreateFinish(companyId);
+        return new ProvisioningDto<>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 第八步：创建超级用户
+     * @param companyId
+     * @return
+     */
+    @RequestMapping(value = "/createSuperUser/{companyId}", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> createSuperUser(@PathVariable Integer companyId){
+        companySuperUserService.createSuperUser(companyId);
+        return new ProvisioningDto<>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+
+    /**
+     * 第九步：部署的项目
+     * @param projectList
+     * @return
+     */
+    @RequestMapping(value = "/createPublishProjects", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> createPublishProjects(List<PublishProjectDto> projectList){
+        publishProjectService.createPublishProjects(projectList);
+        return new ProvisioningDto<>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
 }

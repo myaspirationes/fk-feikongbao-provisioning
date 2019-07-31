@@ -16,13 +16,16 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.JenkinsEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
+import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * @Description ：数据库信息
@@ -52,10 +55,10 @@ public class DbSchemaService {
     private CompanyCreateProcessService companyCreateProcessService;
 
     @Autowired
-    private JenkinsManagerService jenkinsManagerService;
+    private JenkinsConfig jenkinsConfig;
 
     @Autowired
-    private JenkinsConfig jenkinsConfig;
+    private JenkinsUtils jenkinsUtils;
 
     /**
      * 创建数据库
@@ -67,10 +70,10 @@ public class DbSchemaService {
         DbSchema dbSchema = useDbSchemaParameterCheck(dbSchemaDto);
 
         // 初始化数据库表
-        jenkinsManagerService.buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+        buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
         // 查询 build 状态成功做下步动作
-        if (!jenkinsManagerService.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)){
-            jenkinsManagerService.buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_BACK.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+        if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)){
+            buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_BACK.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
             throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
         }
 
@@ -88,6 +91,52 @@ public class DbSchemaService {
                 CompanyCreationStepsEnum.DATABASE_STEP.getOrder(),CompanyCreationStepsEnum.DATABASE_STEP.getCode()));
 
         return dbSchemaDto;
+    }
+
+    /**
+     * 数据脚本迁移，json 串不能用双引或单引号，可以用其它符号，目前用#号
+     * json : {"instanceId":"dev_mysql","schemas":[{"schema":"migrate_database"}]}
+     * @param instanceId : 实例名
+     * @param action ：执行的动作 JenkinsEnum
+     * @param version ： 版本
+     * @param schemaList ：schemas 可以传多个
+     * @return
+     */
+    private String buildScriptMigrationData(String instanceId, String action, String version, List<String> schemaList){
+        // 校验参数
+        RequestPrecondition.checkArguments(!com.yodoo.feikongbao.provisioning.util.StringUtils.isContainEmpty(instanceId, action, version));
+        if (CollectionUtils.isEmpty(schemaList)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        // 封装参数
+        Map<String, String> parameters = encapsulatingRequestParameters(instanceId, action, version, schemaList);
+        return jenkinsUtils.buildJobWithParameters(jenkinsConfig.jenkinsScriptMigrationDataJobName, parameters);
+    }
+
+    /**
+     * 封装参数
+     * @param instanceId : 实例名
+     * @param action ：执行的动作 JenkinsEnum
+     * @param version ： 版本
+     * @param schemaList ：schemas 可以传多个
+     * @return
+     */
+    private Map<String, String> encapsulatingRequestParameters(String instanceId, String action, String version, List<String> schemaList) {
+        // 把 schema拼接成json串
+        StringBuilder schemaStringBuilder = new StringBuilder();
+        schemaList.stream()
+                .filter(Objects::nonNull)
+                .forEach(schemaName -> {
+                    schemaStringBuilder.append(",{#schema#:#"+ schemaName +"#}");
+                });
+        // 去掉第一个豆号
+        String schemas = schemaStringBuilder.toString().substring(1, schemaStringBuilder.toString().length());
+        // 封装 map 参数
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("instanceId","{#instanceId#:#"+ instanceId +"#,#schemas#:["+ schemas +"]}");
+        parameters.put("action", action);
+        parameters.put("version",version);
+        return parameters;
     }
 
     /**
