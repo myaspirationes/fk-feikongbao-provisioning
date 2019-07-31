@@ -89,7 +89,7 @@ public class CompanyService {
 
         // 添加公司创建过程 记录表
         companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(company.getId(),
-                CompanyCreationStepsEnum.FIRST_STEP.getCode(), CompanyCreationStepsEnum.FIRST_STEP.getName()));
+                CompanyCreationStepsEnum.COMPANY_STEP.getOrder(), CompanyCreationStepsEnum.COMPANY_STEP.getCode()));
 
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
