@@ -14,6 +14,12 @@ public interface BundleKey {
     String SUCCESS_MSG = "请求成功";
 
     /**
+     * 失败
+     **/
+    String FAIL = PAAS_PREFIX + "FAIL";
+    String FAIL_MSG = "请求失败";
+
+    /**
      * 未定义、未捕获、未处理的异常
      **/
     String UNDEFINED = PAAS_PREFIX + "UNDEFINED";
@@ -73,5 +79,11 @@ public interface BundleKey {
      **/
     String BUILD_SCRIPT_MIGRATION_DATA = PAAS_PREFIX + "BUILD.SCRIPT.MIGRATION.DATA";
     String BUILD_SCRIPT_MIGRATION_DATA_MSG = "初始化数据库异常";
+
+    /**
+     * 创建对象存储异常"
+     **/
+    String SWIFT_PROJECT_ERROR = PAAS_PREFIX + "SWIFT.PROJECT.ERROR";
+    String SWIFT_PROJECT_ERROR_MSG = "创建对象存储异常";
 
 }

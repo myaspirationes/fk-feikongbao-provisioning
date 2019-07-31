@@ -26,6 +26,11 @@ public class SwiftProjectDto extends BaseDto {
     /** 端口 **/
     private Integer port;
 
+    /** 公司id **/
+    private Integer companyId;
+
+    private String companyCode;
+
     public String getProjectName() {
         return projectName;
     }
@@ -68,6 +73,24 @@ public class SwiftProjectDto extends BaseDto {
 
     public SwiftProjectDto setPort(Integer port) {
         this.port = port;
+        return this;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public SwiftProjectDto setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+        return this;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public SwiftProjectDto setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
         return this;
     }
 }

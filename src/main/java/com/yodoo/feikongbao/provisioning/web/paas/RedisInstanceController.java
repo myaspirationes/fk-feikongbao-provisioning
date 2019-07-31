@@ -60,7 +60,7 @@ public class RedisInstanceController {
      * @param redisInstanceDto
      * @return
      */
-    @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
+    @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
         RedisInstanceDto redisInstanceDto1 = redisInstanceService.useRedisInstance(redisInstanceDto);
