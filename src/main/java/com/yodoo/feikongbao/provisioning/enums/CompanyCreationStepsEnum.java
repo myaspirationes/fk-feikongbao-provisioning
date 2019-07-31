@@ -6,29 +6,29 @@ package com.yodoo.feikongbao.provisioning.enums;
  * @Date ： 2019/7/29 0029
  */
 public enum CompanyCreationStepsEnum {
-    FIRST_STEP(1, "第一步：公司基本信息"),
-    SECOND_STEP(2, "第二步：数据库"),
-    THREE_STEP(3, "第三步：缓存"),
-    FOUR_STEP(4, "第四步：对象存储"),
-    FIVE_STEP(5, "第五步：消息队列"),
-    SIX_STEP(6, "第六步：流程定义"),
-    SEVEN_STEP(7, "第七步：应用实例"),
-    EIGHT_STEP(8, "第八步：超级用户");
+    COMPANY_STEP(1, "company"),
+    DATABASE_STEP(2, "database"),
+    REDIS_STEP(3, "redis"),
+    SWIFT_STEP(4, "swift"),
+    RABBITMQ_STEP(5, "rabbitmq"),
+    NEO4J_STEP(6, "neo4j"),
+    PUBLISH_STEP(7, "publish"),
+    SUPERUSER_STEP(8, "superuser");
 
-    private Integer code;
+    private Integer order;
 
-    private String name;
+    private String code;
 
-    public Integer getCode() {
+    public Integer getOrder() {
+        return order;
+    }
+
+    public String getCode() {
         return code;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    private CompanyCreationStepsEnum(Integer code, String name) {
+    private CompanyCreationStepsEnum(Integer order, String code) {
+        this.order = order;
         this.code = code;
-        this.name = name;
     }
 }

@@ -85,7 +85,7 @@ public class DbSchemaService {
 
         // 添加公司创建过程记录表信息
         companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(dbSchemaDto.getCompanyId(),
-                CompanyCreationStepsEnum.SECOND_STEP.getCode(),CompanyCreationStepsEnum.SECOND_STEP.getName()));
+                CompanyCreationStepsEnum.DATABASE_STEP.getOrder(),CompanyCreationStepsEnum.DATABASE_STEP.getCode()));
 
         return dbSchemaDto;
     }
