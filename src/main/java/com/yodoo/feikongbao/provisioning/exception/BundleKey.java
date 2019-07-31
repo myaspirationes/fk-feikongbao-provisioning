@@ -98,4 +98,10 @@ public interface BundleKey {
     String RABBITMQ_VHOST_NAME_FAIL_ERROR = PAAS_PREFIX + "RABBITMQ.VHOST.NAME.FAIL";
     String RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG = "RabbitMQ 虚拟机操作错误";
 
+    /**
+     * ECS不存在
+     **/
+    String ECS_NOT_EXIST = PAAS_PREFIX + "ECS.NOT.EXIST";
+    String ECS_NOT_EXIST_MSG = "ecs实例不存在";
+
 }
