@@ -1,11 +1,11 @@
-package com.yodoo.feikongbao.provisioning.domain.system.entity;
+package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
-import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
+import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
 
 /**
  * 公司部署项目表
  */
-public class PublishProject extends BaseEntity {
+public class PublishProjectDto extends BaseDto {
 
     /** 公司id **/
     private Integer companyId;
@@ -19,17 +19,8 @@ public class PublishProject extends BaseEntity {
     /** 项目类型 **/
     private String projectType;
 
-    /** IP **/
-    private String ip;
-
-    /** 端口 **/
-    private Integer port;
-
     /** 版本 **/
     private String version;
-
-    /** 状态，0 待发布，1 运行中，2：已停止 **/
-    private Integer status;
 
     public Integer getCompanyId() {
         return companyId;
@@ -52,7 +43,7 @@ public class PublishProject extends BaseEntity {
     }
 
     public void setProjectName(String projectName) {
-        this.projectName = projectName == null ? null : projectName.trim();
+        this.projectName = projectName;
     }
 
     public String getProjectType() {
@@ -60,23 +51,7 @@ public class PublishProject extends BaseEntity {
     }
 
     public void setProjectType(String projectType) {
-        this.projectType = projectType == null ? null : projectType.trim();
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip == null ? null : ip.trim();
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
+        this.projectType = projectType;
     }
 
     public String getVersion() {
@@ -84,15 +59,6 @@ public class PublishProject extends BaseEntity {
     }
 
     public void setVersion(String version) {
-        this.version = version == null ? null : version.trim();
+        this.version = version;
     }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
 }

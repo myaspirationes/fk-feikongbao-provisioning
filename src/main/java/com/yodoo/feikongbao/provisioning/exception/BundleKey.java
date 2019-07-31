@@ -74,4 +74,10 @@ public interface BundleKey {
     String BUILD_SCRIPT_MIGRATION_DATA = PAAS_PREFIX + "BUILD.SCRIPT.MIGRATION.DATA";
     String BUILD_SCRIPT_MIGRATION_DATA_MSG = "初始化数据库异常";
 
+    /**
+     * ECS不存在
+     **/
+    String ECS_NOT_EXIST = PAAS_PREFIX + "ECS.NOT.EXIST";
+    String ECS_NOT_EXIST_MSG = "ecs实例不存在";
+
 }
