@@ -5,16 +5,12 @@ package com.yodoo.feikongbao.provisioning.enums;
  * @Author ：jinjun_luo
  * @Date ： 2019/7/17 0017
  */
-public enum JenkinsEnum {
+public enum ScriptMigrationDataEnum {
 
     /** 执行 */
     ROLL_FORWARD("roll-forward"),
     /** 回滚 */
-    ROLL_BACK("rollback"),
-    /** 成功 */
-    SUCCESS("SUCCESS"),
-    /** 失败 **/
-    FAILURE("FAILURE");
+    ROLL_BACK("rollback");
 
     private String action;
 
@@ -22,7 +18,7 @@ public enum JenkinsEnum {
         return action;
     }
 
-    private JenkinsEnum(String action){
+    private ScriptMigrationDataEnum(String action){
         this.action = action;
     }
 }

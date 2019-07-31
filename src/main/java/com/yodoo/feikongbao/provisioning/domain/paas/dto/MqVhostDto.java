@@ -18,6 +18,9 @@ public class MqVhostDto extends BaseDto {
     /** 端口 **/
     private Integer port;
 
+    /** 公司id **/
+    private Integer companyId;
+
     public String getVhostName() {
         return vhostName;
     }
@@ -42,6 +45,15 @@ public class MqVhostDto extends BaseDto {
 
     public MqVhostDto setPort(Integer port) {
         this.port = port;
+        return this;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public MqVhostDto setCompanyId(Integer companyId) {
+        this.companyId = companyId;
         return this;
     }
 }

@@ -2,6 +2,7 @@ package com.yodoo.feikongbao.provisioning.web.paas;
 
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.SwiftProjectDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.SwiftProjectService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
@@ -10,10 +11,7 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -57,5 +55,18 @@ public class SwiftProjectController {
         SwiftProjectDto swiftProjectDto = swiftProjectService.getSwiftProjectDetails(id);
         return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto);
     }
+
+    /**
+     * 创建存储对象
+     * @param swiftProjectDto
+     * @return
+     */
+    @RequestMapping(value = "/useSwiftProject", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto){
+        SwiftProjectDto swiftProjectDto1 = swiftProjectService.useSwiftProject(swiftProjectDto);
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto1);
+    }
+
 
 }

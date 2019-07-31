@@ -118,7 +118,7 @@ public class CompanyService {
      * @return
      */
     public Integer updateCompany(CompanyDto companyDto){
-        if (companyDto.getTid() == null || companyDto.getTid() < 0){
+        if (companyDto == null || companyDto.getTid() == null || companyDto.getTid() < 0){
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Company company = selectByPrimaryKey(companyDto.getTid());

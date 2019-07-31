@@ -10,10 +10,7 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -56,5 +53,17 @@ public class MqVhostController {
     public ProvisioningDto<?> getMqVhostDetails(@PathVariable Integer id){
         MqVhostDto mqVhostDto = mqVhostService.getMqVhostDetails(id);
         return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto);
+    }
+
+    /**
+     * 创建公司后 创建 消息队列
+     * @param mqVhostDto
+     * @return
+     */
+    @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto){
+        MqVhostDto mqVhostDto1 = mqVhostService.useMqVhost(mqVhostDto);
+        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto1);
     }
 }

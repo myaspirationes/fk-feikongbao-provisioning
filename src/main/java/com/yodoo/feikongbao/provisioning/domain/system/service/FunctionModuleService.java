@@ -1,0 +1,114 @@
+package com.yodoo.feikongbao.provisioning.domain.system.service;
+
+import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.system.dto.FunctionModuleDto;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyFunctionModule;
+import com.yodoo.feikongbao.provisioning.domain.system.entity.FunctionModule;
+import com.yodoo.feikongbao.provisioning.domain.system.mapper.FunctionModuleMapper;
+import com.yodoo.feikongbao.provisioning.exception.BundleKey;
+import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+
+/**
+ * @Description ：功能模块
+ * @Author ：jinjun_luo
+ * @Date ： 2019/7/31 0031
+ */
+@Service
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+public class FunctionModuleService {
+
+    @Autowired
+    private FunctionModuleMapper functionModuleMapper;
+
+    @Autowired
+    private CompanyFunctionModuleService companyFunctionModuleService;
+
+    /**
+     * 通过主键查询
+     * @param id
+     * @return
+     */
+    public FunctionModule selectByPrimaryKey(Integer id) {
+        return functionModuleMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 添加
+     * @param functionModuleDto
+     * @return
+     */
+    public Integer addFunctionModule(FunctionModuleDto functionModuleDto) {
+        addFunctionModuleParameterCheck(functionModuleDto);
+        FunctionModule functionModule = new FunctionModule();
+        BeanUtils.copyProperties(functionModuleDto, functionModule);
+        return functionModuleMapper.insertSelective(functionModule);
+    }
+
+    /**
+     * 修改
+     * @param functionModuleDto
+     * @return
+     */
+    public Integer editFunctionModule(FunctionModuleDto functionModuleDto) {
+        FunctionModule functionModule = editFunctionModuleParameterCheck(functionModuleDto);
+        BeanUtils.copyProperties(functionModuleDto,functionModule);
+        return functionModuleMapper.updateByPrimaryKeySelective(functionModule);
+    }
+
+    /**
+     * 修改参数校验
+     * @param functionModuleDto
+     * @return
+     */
+    private FunctionModule editFunctionModuleParameterCheck(FunctionModuleDto functionModuleDto) {
+        if (functionModuleDto == null || functionModuleDto.getTid() == null || functionModuleDto.getTid() < 0
+                || StringUtils.isBlank(functionModuleDto.getName()) || StringUtils.isBlank(functionModuleDto.getDescription())
+                || StringUtils.isBlank(functionModuleDto.getOrderNo())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        FunctionModule functionModule = selectByPrimaryKey(functionModuleDto.getTid());
+        if (functionModule == null){
+            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        }
+        // 查询除了自己以外是否有相同的数据
+        Example example = new Example(FunctionModule.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andNotEqualTo("id", functionModuleDto.getTid());
+        if (functionModuleDto.getParentId() != null && functionModuleDto.getParentId() > 0){
+            criteria.andEqualTo("parentId", functionModuleDto.getParentId());
+        }
+        criteria.andEqualTo("name", functionModuleDto.getName());
+        FunctionModule functionModule1 = functionModuleMapper.selectOneByExample(example);
+        if (functionModule1 != null){
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        }
+        return functionModule;
+    }
+
+    /**
+     * 添加参数校验
+     * @param functionModuleDto
+     */
+    private void addFunctionModuleParameterCheck(FunctionModuleDto functionModuleDto) {
+        if (functionModuleDto == null || StringUtils.isBlank(functionModuleDto.getName()) || StringUtils.isBlank(functionModuleDto.getDescription())
+                || StringUtils.isBlank(functionModuleDto.getOrderNo())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        // 查询是否存在
+        FunctionModule functionModule = new FunctionModule();
+        if (functionModuleDto.getParentId() != null && functionModuleDto.getParentId() > 0){
+            functionModule.setParentId(functionModuleDto.getParentId());
+        }
+        functionModule.setName(functionModuleDto.getName());
+        FunctionModule functionModule1 = functionModuleMapper.selectOne(functionModule);
+        if (functionModule1 != null){
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        }
+    }
+}
