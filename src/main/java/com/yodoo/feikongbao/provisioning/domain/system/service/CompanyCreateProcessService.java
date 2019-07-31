@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -63,5 +64,16 @@ public class CompanyCreateProcessService {
      */
     public void insertCompanyCreateProcess(CompanyCreateProcess companyCreateProcess) {
         companyCreateProcessMapper.insertSelective(companyCreateProcess);
+    }
+
+    /**
+     * 添加公司创建步骤记录表
+     */
+    public void insertCompanyCreateProcess(Integer companyId, Integer processOrder, String processCode) {
+        CompanyCreateProcess companyCreateProcess = new CompanyCreateProcess();
+        companyCreateProcess.setCompanyId(companyId);
+        companyCreateProcess.setProcessOrder(processOrder);
+        companyCreateProcess.setProcessCode(processCode);
+        this.insertCompanyCreateProcess(companyCreateProcess);
     }
 }
