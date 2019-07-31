@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +71,15 @@ public class CompanyCreateProcessService {
      * 添加公司创建步骤记录表
      */
     public void insertCompanyCreateProcess(Integer companyId, Integer processOrder, String processCode) {
-        CompanyCreateProcess companyCreateProcess = new CompanyCreateProcess();
-        companyCreateProcess.setCompanyId(companyId);
-        companyCreateProcess.setProcessOrder(processOrder);
-        companyCreateProcess.setProcessCode(processCode);
-        this.insertCompanyCreateProcess(companyCreateProcess);
+        // 查询该步骤是否存在
+        Example example = new Example(CompanyCreateProcess.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("companyId", companyId);
+        criteria.andEqualTo("processOrder", processOrder);
+        criteria.andEqualTo("processCode", processCode);
+        List<CompanyCreateProcess> list = companyCreateProcessMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(list)) {
+            this.insertCompanyCreateProcess(new CompanyCreateProcess(companyId, processOrder, processCode));
+        }
     }
 }
