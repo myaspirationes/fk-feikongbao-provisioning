@@ -86,4 +86,16 @@ public interface BundleKey {
     String SWIFT_PROJECT_ERROR = PAAS_PREFIX + "SWIFT.PROJECT.ERROR";
     String SWIFT_PROJECT_ERROR_MSG = "创建对象存储异常";
 
+    /**  创建 RabbitMQ 的 虚拟机名已存在 **/
+    String RABBITMQ_VHOST_NAME_EXIST_ERROR = PAAS_PREFIX + "RABBITMQ.VHOST.NAME.EXIST";
+    String RABBITMQ_VHOST_NAME_EXIST_ERROR_MSG = "创建 RabbitMQ 的 虚拟机名已存在";
+
+    /**  创建 RabbitMQ 的 虚拟机名不存在 **/
+    String RABBITMQ_VHOST_NAME_NOT_EXIST_ERROR = PAAS_PREFIX + "RABBITMQ.VHOST.NAME.NOT.EXIST";
+    String RABBITMQ_VHOST_NAME_NOT_EXIST_ERROR_MSG = "创建 RabbitMQ 的 虚拟机名不存在";
+
+    /**   RabbitMQ 虚拟机操作错误 **/
+    String RABBITMQ_VHOST_NAME_FAIL_ERROR = PAAS_PREFIX + "RABBITMQ.VHOST.NAME.FAIL";
+    String RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG = "RabbitMQ 虚拟机操作错误";
+
 }

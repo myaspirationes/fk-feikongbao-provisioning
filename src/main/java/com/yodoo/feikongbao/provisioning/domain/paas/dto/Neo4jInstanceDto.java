@@ -18,6 +18,8 @@ public class Neo4jInstanceDto extends BaseDto {
     /** 端口 **/
     private Integer port;
 
+    private Integer companyId;
+
     public String getNeo4jName() {
         return neo4jName;
     }
@@ -42,6 +44,15 @@ public class Neo4jInstanceDto extends BaseDto {
 
     public Neo4jInstanceDto setPort(Integer port) {
         this.port = port;
+        return this;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public Neo4jInstanceDto setCompanyId(Integer companyId) {
+        this.companyId = companyId;
         return this;
     }
 }

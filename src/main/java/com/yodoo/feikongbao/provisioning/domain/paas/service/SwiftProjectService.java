@@ -17,6 +17,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,41 +103,58 @@ public class SwiftProjectService {
     }
 
     /**
-     * 使用存储对象
+     * 使用存储对象 TODO swift 的 ip 和 端口 数据来源还没定
      * @param swiftProjectDto
      * @return
      */
     public SwiftProjectDto useSwiftProject(SwiftProjectDto swiftProjectDto) {
+        // 参数校验
         useSwiftProjectParameterCheck(swiftProjectDto);
+
         // 创建租户
-        ProjectEntity project = storageManagerApi.createProject(new ProjectEntity(swiftProjectDto.getCompanyCode()));
+        ProjectEntity project = storageManagerApi.createProject(new ProjectEntity(swiftProjectDto.getProjectName()));
+        if (project == null|| StringUtils.isBlank(project.getId())){
+            throw new ProvisioningException(BundleKey.SWIFT_PROJECT_ERROR, BundleKey.SWIFT_PROJECT_ERROR_MSG);
+        }
+
+        // 添加租户名
+        SwiftProject swiftProject = new SwiftProject();
+        BeanUtils.copyProperties(swiftProjectDto,swiftProject);
+        swiftProjectMapper.insertSelective(swiftProject);
+
         // 更新公司表
         CompanyDto companyDto = new CompanyDto();
         companyDto.setTid(swiftProjectDto.getTid());
-        //companyDto.setSwiftProjectId(swiftProject.getId());
+        companyDto.setSwiftProjectId(swiftProject.getId());
         companyService.updateCompany(companyDto);
 
         // 添加创建公司流程记录表
         companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(swiftProjectDto.getCompanyId(),
-                CompanyCreationStepsEnum.FOUR_STEP.getCode(), CompanyCreationStepsEnum.FOUR_STEP.getName()));
-
+                CompanyCreationStepsEnum.SWIFT_STEP.getOrder(), CompanyCreationStepsEnum.SWIFT_STEP.getCode()));
 
         return swiftProjectDto;
     }
 
     /**
-     * 使用存储对象参数校验
+     * 使用存储对象参数校验 TODO 参数校验
      * @param swiftProjectDto
      */
     private void useSwiftProjectParameterCheck(SwiftProjectDto swiftProjectDto) {
-        if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0){
+        if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0
+                || StringUtils.isBlank(swiftProjectDto.getProjectName())){
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        // 查询公司名是否存在，存在不操作
+        SwiftProject swiftProject = new SwiftProject();
+        swiftProject.setProjectName(swiftProjectDto.getProjectName());
+        SwiftProject swiftProject1 = swiftProjectMapper.selectOne(swiftProject);
+        if (swiftProject1 != null){
+            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
         }
         // 查询公司数据是否存在
         Company company = companyService.selectByPrimaryKey(swiftProjectDto.getCompanyId());
         if (company == null){
             throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
         }
-        swiftProjectDto.setCompanyCode(company.getCompanyCode());
     }
 }

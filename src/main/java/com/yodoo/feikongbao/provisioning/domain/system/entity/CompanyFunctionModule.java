@@ -16,6 +16,20 @@ public class CompanyFunctionModule extends BaseEntity {
     /** 状态，0：启用，1：停用 **/
     private Integer status;
 
+    public CompanyFunctionModule() {
+    }
+
+    public CompanyFunctionModule(Integer functionModuleId, Integer companyId, Integer status) {
+        this.functionModuleId = functionModuleId;
+        this.companyId = companyId;
+        this.status = status;
+    }
+
+    public CompanyFunctionModule(Integer functionModuleId, Integer companyId) {
+        this.functionModuleId = functionModuleId;
+        this.companyId = companyId;
+    }
+
     public Integer getFunctionModuleId() {
         return functionModuleId;
     }

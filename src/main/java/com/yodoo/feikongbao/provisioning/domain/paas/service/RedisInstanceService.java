@@ -122,7 +122,7 @@ public class RedisInstanceService {
 
         // 添加创建公司流程记录表
         companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(redisInstanceDto.getCompanyId(),
-                CompanyCreationStepsEnum.THREE_STEP.getCode(), CompanyCreationStepsEnum.THREE_STEP.getName()));
+                CompanyCreationStepsEnum.REDIS_STEP.getOrder(), CompanyCreationStepsEnum.REDIS_STEP.getCode()));
         return redisInstanceDto;
     }
 

@@ -2,6 +2,7 @@ package com.yodoo.feikongbao.provisioning.web.paas;
 
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.MqVhostDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.Neo4jInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.Neo4jInstanceService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
@@ -10,10 +11,7 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -56,5 +54,17 @@ public class Neo4jInstanceController {
     public ProvisioningDto<?> getNeo4jInstanceDetails(@PathVariable Integer id){
         Neo4jInstanceDto neo4jInstanceDto = neo4jInstanceService.getNeo4jInstanceDetails(id);
         return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDto);
+    }
+
+    /**
+     * 创建公司后 创建 eno4j
+     * @param neo4jInstanceDto
+     * @return
+     */
+    @RequestMapping(value = "/useNeo4jInstance", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto){
+        Neo4jInstanceDto neo4jInstanceDto1 = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDto1);
     }
 }

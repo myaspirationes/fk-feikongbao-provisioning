@@ -29,8 +29,6 @@ public class SwiftProjectDto extends BaseDto {
     /** 公司id **/
     private Integer companyId;
 
-    private String companyCode;
-
     public String getProjectName() {
         return projectName;
     }
@@ -85,12 +83,4 @@ public class SwiftProjectDto extends BaseDto {
         return this;
     }
 
-    public String getCompanyCode() {
-        return companyCode;
-    }
-
-    public SwiftProjectDto setCompanyCode(String companyCode) {
-        this.companyCode = companyCode;
-        return this;
-    }
 }
