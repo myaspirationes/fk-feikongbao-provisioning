@@ -13,7 +13,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
-import com.yodoo.feikongbao.provisioning.enums.JenkinsEnum;
+import com.yodoo.feikongbao.provisioning.enums.ScriptMigrationDataEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
@@ -70,10 +70,10 @@ public class DbSchemaService {
         DbSchema dbSchema = useDbSchemaParameterCheck(dbSchemaDto);
 
         // 初始化数据库表
-        buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+        buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
         // 查询 build 状态成功做下步动作
         if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)){
-            buildScriptMigrationData(dbSchemaDto.getCompanyCode(), JenkinsEnum.ROLL_BACK.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+            buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_BACK.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
             throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
         }
 
@@ -97,7 +97,7 @@ public class DbSchemaService {
      * 数据脚本迁移，json 串不能用双引或单引号，可以用其它符号，目前用#号
      * json : {"instanceId":"dev_mysql","schemas":[{"schema":"migrate_database"}]}
      * @param instanceId : 实例名
-     * @param action ：执行的动作 JenkinsEnum
+     * @param action ：执行的动作 ScriptMigrationDataEnum
      * @param version ： 版本
      * @param schemaList ：schemas 可以传多个
      * @return
@@ -116,7 +116,7 @@ public class DbSchemaService {
     /**
      * 封装参数
      * @param instanceId : 实例名
-     * @param action ：执行的动作 JenkinsEnum
+     * @param action ：执行的动作 ScriptMigrationDataEnum
      * @param version ： 版本
      * @param schemaList ：schemas 可以传多个
      * @return
