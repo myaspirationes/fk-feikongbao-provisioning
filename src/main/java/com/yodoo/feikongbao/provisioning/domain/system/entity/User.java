@@ -9,37 +9,59 @@ import java.util.Date;
  */
 public class User extends BaseEntity {
 
-    /** 父id **/
+    /**
+     * 父id
+     **/
     private Integer parentId;
 
-    /** 账号 **/
+    /**
+     * 账号
+     **/
     private String account;
 
-    /** 用户名称 **/
+    /**
+     * 用户名称
+     **/
     private String name;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
-    /** 邮箱 **/
+    /**
+     * 邮箱
+     **/
     private String email;
 
-    /** 区域 **/
+    /**
+     * 区域
+     **/
     private String region;
 
-    /** 岗位 **/
+    /**
+     * 岗位
+     **/
     private String post;
 
-    /** 性别：0 没指定性别，1 男， 2 女 **/
+    /**
+     * 性别：0 没指定性别，1 男， 2 女
+     **/
     private Integer sex;
 
-    /** 出生日期 **/
+    /**
+     * 出生日期
+     **/
     private Date birthday;
 
-    /** 电话 **/
+    /**
+     * 电话
+     **/
     private String phone;
 
-    /** 状态，0：启用 1：停用 **/
+    /**
+     * 状态，0：启用 1：停用
+     **/
     private Integer status;
 
     public Integer getParentId() {

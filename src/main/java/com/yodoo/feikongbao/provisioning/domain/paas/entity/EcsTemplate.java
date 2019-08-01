@@ -7,13 +7,19 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class EcsTemplate extends BaseEntity {
 
-    /** ECS 类型 **/
+    /**
+     * ECS 类型
+     **/
     private String ecsType;
 
-    /** 模板名称 **/
+    /**
+     * 模板名称
+     **/
     private String name;
 
-    /** 备注 **/
+    /**
+     * 备注
+     **/
     private String remark;
 
     public String getEcsType() {

@@ -60,9 +60,10 @@ public class ApolloService {
 
     /**
      * 创建apollo集群
+     *
      * @Author houzhen
      * @Date 16:14 2019/7/29
-    **/
+     **/
     public OpenClusterDTO createCluster(String companyCode) {
         logger.info("ApolloService.createCluster companyCode:{}", companyCode);
         RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode));
@@ -81,10 +82,11 @@ public class ApolloService {
 
     /**
      * apollo数据库信息
+     *
      * @Author houzhen
      * @Date 9:38 2019/7/30
-    **/
-    public void createDBItems(String companyCode) {
+     **/
+    public void createdbItems(String companyCode) {
         // 检查公司是否存在
         Company company = this.checkCompany(companyCode);
         // 查询数据库信息
@@ -100,62 +102,66 @@ public class ApolloService {
         }
         // 查询数据库实例
         List<Integer> dbInstanceIdList = dbSchemaList.stream().map(DbSchema::getDbInstanceId).collect(Collectors.toList());
-        Example dBInstanceExample = new Example(DbInstance.class);
-        Example.Criteria criteria = dBInstanceExample.createCriteria();
+        Example example = new Example(DbInstance.class);
+        Example.Criteria criteria = example.createCriteria();
         criteria.andIn("id", dbInstanceIdList);
-        List<DbInstance> dbInstanceList = dbInstanceMapper.selectByExample(dBInstanceExample);
+        List<DbInstance> dbInstanceList = dbInstanceMapper.selectByExample(example);
         // 组建itemDTOList
-        List<OpenItemDTO> itemDTOList = new ArrayList<>();
-        String schemaName = ""; // 数据库名字
-        String dbUser = ""; // 用户名
-        String dbPassword = ""; // 密码
+        List<OpenItemDTO> openItemDtos = new ArrayList<>();
+        // 数据库名字
+        String schemaName = "";
+        // 用户名
+        String dbUser = "";
+        // 密码
+        String dbPassword = "";
         // 数据库连接地址
-        Integer masterDBInstanceId = 0;
+        Integer masterDbInstanceId = 0;
         for (DbSchema schema : dbSchemaList) {
             if (schema.getType() == 0) {
-                masterDBInstanceId = schema.getDbInstanceId();
+                masterDbInstanceId = schema.getDbInstanceId();
                 dbUser = schema.getUsername();
                 dbPassword = schema.getPassword();
                 schemaName = schema.getSchemaName();
                 break;
             }
         }
-        StringBuffer sbDBUrl = new StringBuffer();
+        StringBuffer sbDbUrl = new StringBuffer();
         for (DbInstance dbInstance : dbInstanceList) {
-            if (dbInstance.getId() == masterDBInstanceId) {
+            if (dbInstance.getId().equals(masterDbInstanceId)) {
                 Integer offset = 0;
-                if (sbDBUrl.length() > 0) {
-                    sbDBUrl.insert(offset, ",");
+                if (sbDbUrl.length() > 0) {
+                    sbDbUrl.insert(offset, ",");
                     offset++;
                 }
-                sbDBUrl.insert(offset, "jdbc.url=jdbc:mysql:replication://" + dbInstance.getIp() + ":" + dbInstance.getPort());
-            }else {
-                if (sbDBUrl.length() > 0) {
-                    sbDBUrl.append(",");
+                sbDbUrl.insert(offset, "jdbc.url=jdbc:mysql:replication://" + dbInstance.getIp() + ":" + dbInstance.getPort());
+            } else {
+                if (sbDbUrl.length() > 0) {
+                    sbDbUrl.append(",");
                 }
-                sbDBUrl.append(dbInstance.getIp() + ":" + dbInstance.getPort());
+                sbDbUrl.append(dbInstance.getIp() + ":" + dbInstance.getPort());
             }
         }
-        sbDBUrl.append("/" + schemaName + "?characterEncoding=utf8&autoReconnect=true&roundRobinLoadBalance=true");
+        sbDbUrl.append("/" + schemaName + "?characterEncoding=utf8&autoReconnect=true&roundRobinLoadBalance=true");
         // 	数据库连接地址
-        itemDTOList.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_URL, sbDBUrl.toString()));
+        openItemDtos.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_URL, sbDbUrl.toString()));
         // 用户名
-        itemDTOList.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_USER, dbUser));
+        openItemDtos.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_USER, dbUser));
         // 密码
-        itemDTOList.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_PASSWORD, dbPassword));
+        openItemDtos.add(this.buildItem(ApolloConstants.COMPANY_DB_CONNECTION_PASSWORD, dbPassword));
         // 最大连接数
-        itemDTOList.add(this.buildItem(ApolloConstants.COMPANY_DB_POOL_SIZE_MAX, ApolloConstants.COMPANY_DB_POOL_SIZE_MAX_VALUE));
+        openItemDtos.add(this.buildItem(ApolloConstants.COMPANY_DB_POOL_SIZE_MAX, ApolloConstants.COMPANY_DB_POOL_SIZE_MAX_VALUE));
         // 最小连接数
-        itemDTOList.add(this.buildItem(ApolloConstants.COMPANY_DB_POOL_SIZE_MIN, ApolloConstants.COMPANY_DB_POOL_SIZE_MIN_VALUE));
+        openItemDtos.add(this.buildItem(ApolloConstants.COMPANY_DB_POOL_SIZE_MIN, ApolloConstants.COMPANY_DB_POOL_SIZE_MIN_VALUE));
 
-        this.createItems(companyCode, ApolloConstants.DB_CONNECTION_NAMESPACE, itemDTOList);
+        this.createItems(companyCode, ApolloConstants.DB_CONNECTION_NAMESPACE, openItemDtos);
     }
 
     /**
      * 创建redis
+     *
      * @Author houzhen
      * @Date 11:23 2019/7/30
-    **/
+     **/
     public void createRedisItems(String companyCode) {
         // 检查公司是否存在
         Company company = this.checkCompany(companyCode);
@@ -171,10 +177,13 @@ public class ApolloService {
             throw new ProvisioningException(BundleKey.REDIS_NOT_EXIST, BundleKey.REDIS_NOT_EXIST_MSG);
         }
         // 组建itemDTOList
-        List<OpenItemDTO> itemDTOList = new ArrayList<>();
-        String hostname = ""; // 地址
-        String port = ""; // 用户名
-        String password = ""; // 密码
+        List<OpenItemDTO> itemDtoList = new ArrayList<>();
+        // 地址
+        String hostname = "";
+        // 用户名
+        String port = "";
+        // 密码
+        String password = "";
 
         for (RedisInstance instance : redisInstanceList) {
             hostname = instance.getIp();
@@ -183,21 +192,22 @@ public class ApolloService {
             break;
         }
         // 连接地址
-        itemDTOList.add(this.buildItem(ApolloConstants.REDIS_HOST, hostname));
+        itemDtoList.add(this.buildItem(ApolloConstants.REDIS_HOST, hostname));
         // 端口
-        itemDTOList.add(this.buildItem(ApolloConstants.REDIS_PORT, port));
+        itemDtoList.add(this.buildItem(ApolloConstants.REDIS_PORT, port));
         // 密码
-        itemDTOList.add(this.buildItem(ApolloConstants.REDIS_PASSWORD, password));
+        itemDtoList.add(this.buildItem(ApolloConstants.REDIS_PASSWORD, password));
 
-        this.createItems(companyCode, ApolloConstants.REDIS_NAMESPACE, itemDTOList);
+        this.createItems(companyCode, ApolloConstants.REDIS_NAMESPACE, itemDtoList);
 
     }
 
     /**
      * 校验公司是否存在
+     *
      * @Author houzhen
      * @Date 10:57 2019/7/30
-    **/
+     **/
     private Company checkCompany(String companyCode) {
         RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode));
         // 查询公司信息
@@ -212,9 +222,10 @@ public class ApolloService {
 
     /**
      * 组建item
+     *
      * @Author houzhen
      * @Date 10:57 2019/7/30
-    **/
+     **/
     private OpenItemDTO buildItem(String key, String value) {
         OpenItemDTO item = new OpenItemDTO();
         item.setKey(key);
@@ -226,10 +237,11 @@ public class ApolloService {
 
     /**
      * 创建items
+     *
      * @Author houzhen
      * @Date 16:45 2019/7/29
-    **/
-    private void createItems(String companyCode, String namespace, List<OpenItemDTO> itemDTOList) {
+     **/
+    private void createItems(String companyCode, String namespace, List<OpenItemDTO> itemDtoList) {
         RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode, namespace));
 
         String appId = provisioningDataSourceConfig.provisioningApolloAppid;
@@ -250,7 +262,7 @@ public class ApolloService {
             namespaceDTO = openApiClient.createNamespace(appId, env, companyCode, toCreate);
         }
         // 创建items
-        for (OpenItemDTO itemDTO : itemDTOList) {
+        for (OpenItemDTO itemDTO : itemDtoList) {
             openApiClient.createOrUpdateItem(appId, env, companyCode, namespace, itemDTO);
         }
         // 发布
@@ -259,9 +271,10 @@ public class ApolloService {
 
     /**
      * 发布项目
+     *
      * @Author houzhen
      * @Date 17:08 2019/7/29
-    **/
+     **/
     private void publishNamespace(String appId, String evn, String clusterName, String namespaceName, String operate) {
         NamespaceReleaseDTO namespaceReleaseDTO = new NamespaceReleaseDTO();
         namespaceReleaseDTO.setReleaseTitle("namespace:" + namespaceName + " publish for " + clusterName);

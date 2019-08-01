@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class MenuPermissionDetails extends BaseEntity {
 
-    /** 菜单id **/
+    /**
+     * 菜单id
+     **/
     private Integer menuId;
 
-    /** 权限id **/
+    /**
+     * 权限id
+     **/
     private Integer permissionId;
 
     public Integer getMenuId() {

@@ -7,16 +7,24 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class UserGroupCondition extends BaseEntity {
 
-    /** 用户组条件id **/
+    /**
+     * 用户组条件id
+     **/
     private Integer searchConditionId;
 
-    /** 用户组id **/
+    /**
+     * 用户组id
+     **/
     private Integer userGroupId;
 
-    /** 运算符号 **/
+    /**
+     * 运算符号
+     **/
     private String operator;
 
-    /** 匹配值 **/
+    /**
+     * 匹配值
+     **/
     private String matchValue;
 
     public Integer getSearchConditionId() {

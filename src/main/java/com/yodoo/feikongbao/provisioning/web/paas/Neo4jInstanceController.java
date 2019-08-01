@@ -2,7 +2,6 @@ package com.yodoo.feikongbao.provisioning.web.paas;
 
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
-import com.yodoo.feikongbao.provisioning.domain.paas.dto.MqVhostDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.Neo4jInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.Neo4jInstanceService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
@@ -29,12 +28,13 @@ public class Neo4jInstanceController {
 
     /**
      * 条件分页查询
+     *
      * @param neo4jInstanceDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> queryNeo4jInstanceList(Neo4jInstanceDto neo4jInstanceDto){
+    public ProvisioningDto<?> queryNeo4jInstanceList(Neo4jInstanceDto neo4jInstanceDto) {
         PageInfoDto<Neo4jInstanceDto> pageInfoDto = neo4jInstanceService.queryNeo4jInstanceList(neo4jInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), Neo4jInstanceController.class);
@@ -46,25 +46,27 @@ public class Neo4jInstanceController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> getNeo4jInstanceDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getNeo4jInstanceDetails(@PathVariable Integer id) {
         Neo4jInstanceDto neo4jInstanceDto = neo4jInstanceService.getNeo4jInstanceDetails(id);
         return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDto);
     }
 
     /**
      * 创建公司后 创建 eno4j
+     *
      * @param neo4jInstanceDto
      * @return
      */
     @RequestMapping(value = "/useNeo4jInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto){
-        Neo4jInstanceDto neo4jInstanceDto1 = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
-        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDto1);
+    public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto) {
+        Neo4jInstanceDto neo4jInstanceDtoResponse = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDtoResponse);
     }
 }

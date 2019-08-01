@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class UserGroup extends BaseEntity {
 
-    /** 用户组code **/
+    /**
+     * 用户组code
+     **/
     private String groupCode;
 
-    /** 用户组名称 **/
+    /**
+     * 用户组名称
+     **/
     private String groupName;
 
     public String getGroupCode() {

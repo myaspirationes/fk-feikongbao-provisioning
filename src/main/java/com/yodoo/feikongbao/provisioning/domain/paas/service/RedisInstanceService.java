@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +54,7 @@ public class RedisInstanceService {
 
     /**
      * 条件分页查询
+     *
      * @param redisInstanceDto
      * @return
      */
@@ -70,13 +70,14 @@ public class RedisInstanceService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     public RedisInstanceDto getRedisInstanceDetails(Integer id) {
         RedisInstance redisInstance = selectByPrimaryKey(id);
         RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
-        if (redisInstance != null){
+        if (redisInstance != null) {
             BeanUtils.copyProperties(redisInstance, redisInstanceDto);
             redisInstanceDto.setTid(redisInstance.getId());
         }
@@ -85,15 +86,17 @@ public class RedisInstanceService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public RedisInstance selectByPrimaryKey(Integer id){
+    public RedisInstance selectByPrimaryKey(Integer id) {
         return redisInstanceMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 使用缓存
+     *
      * @param redisInstanceDto
      * @return
      */
@@ -116,6 +119,7 @@ public class RedisInstanceService {
 
     /**
      * 通过 redisGroupId 查询
+     *
      * @param redisGroupId
      * @return
      */
@@ -127,27 +131,28 @@ public class RedisInstanceService {
 
     /**
      * 使用缓存校验
+     *
      * @param redisInstanceDto
      */
     private RedisInstance useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
         if (redisInstanceDto == null || redisInstanceDto.getCompanyId() == null || redisInstanceDto.getCompanyId() < 0
-                || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0){
+                || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询 redis实例 是否存在，不存在不操作
         RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
-        if (redisInstance == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (redisInstance == null) {
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
         }
         // 查询redis 组是否存在，不存在不操作
         RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstance.getRedisGroupId());
-        if (redisGroup == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (redisGroup == null) {
+            throw new ProvisioningException(BundleKey.REDIS_GROUP_NOT_EXIST, BundleKey.REDIS_GROUP_NOT_EXIST_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(redisInstanceDto.getCompanyId());
-        if (company == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (company == null) {
+            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         redisInstanceDto.setCompanyCode(company.getCompanyCode());
         return redisInstance;
@@ -155,19 +160,20 @@ public class RedisInstanceService {
 
     /**
      * 条件查询
+     *
      * @param redisInstance
      * @return
      */
     private List<RedisInstanceDto> selectRedisInstance(RedisInstance redisInstance) {
         List<RedisInstance> select = redisInstanceMapper.select(redisInstance);
         List<RedisInstanceDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)){
+        if (!CollectionUtils.isEmpty(select)) {
             collect = select.stream()
                     .filter(Objects::nonNull)
-                    .map(redisInstance1 -> {
+                    .map(redisInstanceResponse -> {
                         RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
-                        BeanUtils.copyProperties(redisInstance1, redisInstanceDto);
-                        redisInstanceDto.setTid(redisInstance1.getId());
+                        BeanUtils.copyProperties(redisInstanceResponse, redisInstanceDto);
+                        redisInstanceDto.setTid(redisInstanceResponse.getId());
                         return redisInstanceDto;
                     }).filter(Objects::nonNull).collect(Collectors.toList());
         }

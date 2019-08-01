@@ -11,7 +11,7 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
-import com.yodoo.feikongbao.provisioning.util.BASE64Util;
+import com.yodoo.feikongbao.provisioning.util.Base64Util;
 import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ import java.sql.*;
 /**
  * @Author houzhen
  * @Date 16:53 2019/7/30
-**/
+ **/
 @Service
 @Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
 public class CompanySuperUserService {
@@ -48,9 +48,10 @@ public class CompanySuperUserService {
 
     /**
      * 创建超级用户
+     *
      * @Author houzhen
      * @Date 16:59 2019/7/30
-    **/
+     **/
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public void createSuperUser(Integer companyId) {
         logger.info("CompanySuperUserService.createSuperUser companyId:{}", companyId);
@@ -93,7 +94,7 @@ public class CompanySuperUserService {
                 continue;
             }
             if (itemDTO.getKey().equalsIgnoreCase(ApolloConstants.COMPANY_DB_CONNECTION_PASSWORD)) {
-                password = BASE64Util.base64Encoder(itemDTO.getValue());
+                password = Base64Util.base64Encoder(itemDTO.getValue());
                 continue;
             }
         }

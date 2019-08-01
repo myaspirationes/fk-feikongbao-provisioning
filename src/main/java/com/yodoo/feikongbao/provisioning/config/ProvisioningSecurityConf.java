@@ -33,7 +33,7 @@ public class ProvisioningSecurityConf extends WebSecurityConfigurerAdapter {
 
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         // 加入自定义的安全认证
         auth.authenticationProvider(authenticationProvider);
     }

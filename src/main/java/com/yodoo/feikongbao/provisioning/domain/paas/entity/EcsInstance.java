@@ -9,89 +9,140 @@ import java.util.Date;
  */
 public class EcsInstance extends BaseEntity {
 
-    /** ecs 实例类型 **/
+    /**
+     * ecs 实例类型
+     **/
     private String ecsType;
 
-    /** 实例id **/
+    /**
+     * 实例id
+     **/
     private String instanceId;
 
-    /** 地域ID **/
+    /**
+     * 地域ID
+     **/
     private String regionId;
 
-    /** 镜像ID **/
+    /**
+     * 镜像ID
+     **/
     private String imageId;
 
-    /** 安全组ID集合 **/
+    /**
+     * 安全组ID集合
+     **/
     private String securityGroupIds;
 
-    /** 到期日 **/
+    /**
+     * 到期日
+     **/
     private Date expireDate;
 
-    /** 虚拟交换机ID **/
+    /**
+     * 虚拟交换机ID
+     **/
     private String vSwitchId;
 
-    /** 实例的资源规格 **/
+    /**
+     * 实例的资源规格
+     **/
     private String instanceType;
 
-    /** 公网出带宽最大值 **/
+    /**
+     * 公网出带宽最大值
+     **/
     private Integer internetMaxBandwidthIn;
 
-    /** 公网入带宽最大值 **/
+    /**
+     * 公网入带宽最大值
+     **/
     private Integer internetMaxBandwidthOut;
 
-    /** 实例名称 **/
+    /**
+     * 实例名称
+     **/
     private String instanceName;
 
-    /** 云服务器的主机名 **/
+    /**
+     * 云服务器的主机名
+     **/
     private String hostName;
 
-    /** 内网IP **/
+    /**
+     * 内网IP
+     **/
     private String innerIp;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
-    /** ssh登陆端口 **/
+    /**
+     * ssh登陆端口
+     **/
     private Integer port;
 
-    /** 实例的描述 **/
+    /**
+     * 实例的描述
+     **/
     private String description;
 
-    /** 系统盘大小 **/
+    /**
+     * 系统盘大小
+     **/
     private String systemDiskSize;
 
-    /** 系统盘的磁盘种类 **/
+    /**
+     * 系统盘的磁盘种类
+     **/
     private String systemDiskCategory;
 
-    /** 自动释放时间（按量） **/
+    /**
+     * 自动释放时间（按量）
+     **/
     private String autoReleaseTime;
 
-    /** 网络计费类型，PayByBandwidth：按固定带宽计费，PayByTraffic（默认）：按使用流量计费 **/
+    /**
+     * 网络计费类型，PayByBandwidth：按固定带宽计费，PayByTraffic（默认）：按使用流量计费
+     **/
     private String internetChargeType;
 
-    /** 购买资源的时长 **/
+    /**
+     * 购买资源的时长
+     **/
     private Integer period;
 
-    /** 是否要自动续费，0：不自动续费 1：自动续费 **/
+    /**
+     * 是否要自动续费，0：不自动续费 1：自动续费
+     **/
     private Byte autoRenew;
 
-    /** 实例的付费方式，PrePaid：预付费，包年包月，PostPaid（默认）：按量付费 **/
+    /**
+     * 实例的付费方式，PrePaid：预付费，包年包月，PostPaid（默认）：按量付费
+     **/
     private String instanceChargeType;
 
-    /** 状态，0什么都没做，
+    /**
+     * 状态，0什么都没做，
      * 1 准备中：Pending，
      * 2 启动中：Starting，
      * 3 运行中：Running，
      * 4 停止中：Stopping，
      * 5 已停止：Stopped，
      * 6 释放：deleted
-     * */
+     */
     private Integer status;
 
-    /** 购买资源的时长，Week Month **/
+    /**
+     * 购买资源的时长，Week Month
+     **/
     private String periodUnit;
 
     public String getEcsType() {

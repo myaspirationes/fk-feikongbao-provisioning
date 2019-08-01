@@ -9,5 +9,11 @@ import java.util.Set;
 
 public interface MenuMapper extends BaseMapper<Menu> {
 
-    public List<Menu> getMenuByPermission(@Param("permissionIds")Set<Integer> permissionIds);
+    /**
+     * 条件查询列表
+     *
+     * @param permissionIds
+     * @return
+     */
+    List<Menu> getMenuByPermission(@Param("permissionIds") Set<Integer> permissionIds);
 }

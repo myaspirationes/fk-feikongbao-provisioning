@@ -21,6 +21,7 @@ public class PermissionGroupDetailsService {
 
     /**
      * 通过权限组id 查询
+     *
      * @param permissionGroupId
      * @return
      */

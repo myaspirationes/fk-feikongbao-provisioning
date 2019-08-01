@@ -47,6 +47,7 @@ public class Neo4jInstanceService {
 
     /**
      * 条件分页查询
+     *
      * @param neo4jInstanceDto
      * @return
      */
@@ -75,13 +76,14 @@ public class Neo4jInstanceService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     public Neo4jInstanceDto getNeo4jInstanceDetails(Integer id) {
         Neo4jInstance neo4jInstance = selectByPrimaryKey(id);
         Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
-        if (neo4jInstance != null){
+        if (neo4jInstance != null) {
             BeanUtils.copyProperties(neo4jInstance, neo4jInstanceDto);
             neo4jInstanceDto.setTid(neo4jInstance.getId());
         }
@@ -90,15 +92,17 @@ public class Neo4jInstanceService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public Neo4jInstance selectByPrimaryKey(Integer id){
+    public Neo4jInstance selectByPrimaryKey(Integer id) {
         return neo4jInstanceMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 创建公司 创建流程定义 TODO
+     *
      * @param neo4jInstanceDto
      * @return
      */
@@ -126,24 +130,25 @@ public class Neo4jInstanceService {
 
     /**
      * 创建公司 创建流程定义参数校验
+     *
      * @param neo4jInstanceDto
      */
     private void useNeo4jInstanceParameterCheck(Neo4jInstanceDto neo4jInstanceDto) {
         if (neo4jInstanceDto == null || neo4jInstanceDto.getCompanyId() == null || neo4jInstanceDto.getCompanyId() < 0
                 || StringUtils.isBlank(neo4jInstanceDto.getNeo4jName()) || StringUtils.isBlank(neo4jInstanceDto.getIp())
-                || neo4jInstanceDto.getPort() != null || neo4jInstanceDto.getPort() < 0){
+                || neo4jInstanceDto.getPort() != null || neo4jInstanceDto.getPort() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Neo4jInstance neo4jInstance = new Neo4jInstance();
         neo4jInstance.setNeo4jName(neo4jInstanceDto.getNeo4jName());
-        Neo4jInstance neo4jInstance1 = neo4jInstanceMapper.selectOne(neo4jInstance);
-        if (neo4jInstance1 != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        Neo4jInstance neo4jInstanceResponse = neo4jInstanceMapper.selectOne(neo4jInstance);
+        if (neo4jInstanceResponse != null) {
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_ALREADY_EXIST, BundleKey.NEO4J_INSTANCE_ALREADY_EXIST_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(neo4jInstanceDto.getCompanyId());
-        if (company == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (company == null) {
+            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
     }
 }

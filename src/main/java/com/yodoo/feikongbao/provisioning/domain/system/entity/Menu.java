@@ -7,19 +7,29 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class Menu extends BaseEntity {
 
-    /** 父类id **/
+    /**
+     * 父类id
+     **/
     private Integer parentId;
 
-    /** 单code **/
+    /**
+     * 单code
+     **/
     private String menuCode;
 
-    /** 菜单名称 **/
+    /**
+     * 菜单名称
+     **/
     private String menuName;
 
-    /** 菜单目标 **/
+    /**
+     * 菜单目标
+     **/
     private String menuTarget;
 
-    /** 序号 **/
+    /**
+     * 序号
+     **/
     private String orderNo;
 
     public Integer getParentId() {

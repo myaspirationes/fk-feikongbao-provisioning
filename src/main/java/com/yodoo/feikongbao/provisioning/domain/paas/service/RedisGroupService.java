@@ -7,7 +7,6 @@ import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisGroupDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisGroup;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.RedisGroupMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
  * @Date ： 2019/7/30 0030
  */
 @Service
-@Transactional(rollbackFor = Exception.class,transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
 public class RedisGroupService {
 
     @Autowired
@@ -37,24 +36,25 @@ public class RedisGroupService {
 
     /**
      * 条件分页查询
+     *
      * @param redisGroupDto
      * @return
      */
     public PageInfoDto<RedisGroupDto> queryRedisGroupList(RedisGroupDto redisGroupDto) {
-        RedisGroup redisGroup = new RedisGroup();
+        RedisGroup redisGroupReq = new RedisGroup();
         if (redisGroupDto != null) {
-            BeanUtils.copyProperties(redisGroupDto, redisGroup);
+            BeanUtils.copyProperties(redisGroupDto, redisGroupReq);
         }
         Page<?> pages = PageHelper.startPage(redisGroupDto.getPageNum(), redisGroupDto.getPageSize());
-        List<RedisGroup> list = redisGroupMapper.select(redisGroup);
+        List<RedisGroup> list = redisGroupMapper.select(redisGroupReq);
         List<RedisGroupDto> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(list)) {
             collect = list.stream()
                     .filter(Objects::nonNull)
-                    .map(redisGroup1 -> {
+                    .map(redisGroup -> {
                         RedisGroupDto dto = new RedisGroupDto();
-                        BeanUtils.copyProperties(redisGroup1, dto);
-                        dto.setTid(redisGroup1.getId());
+                        BeanUtils.copyProperties(redisGroup, dto);
+                        dto.setTid(redisGroup.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -65,13 +65,14 @@ public class RedisGroupService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     public RedisGroupDto getRedisGroupDetails(Integer id) {
         RedisGroup redisGroup = selectByPrimaryKey(id);
         RedisGroupDto redisGroupDto = new RedisGroupDto();
-        if (redisGroup != null){
+        if (redisGroup != null) {
             BeanUtils.copyProperties(redisGroup, redisGroupDto);
             redisGroupDto.setTid(redisGroup.getId());
         }
@@ -80,26 +81,28 @@ public class RedisGroupService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public RedisGroup selectByPrimaryKey(Integer id){
+    public RedisGroup selectByPrimaryKey(Integer id) {
         return redisGroupMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 通过缓存组 id 查询
+     *
      * @param id
      * @return
      */
-    public RedisGroupDto selectRedisGroupByID(Integer id) {
+    public RedisGroupDto selectRedisGroupById(Integer id) {
         RedisGroup redisGroup = selectByPrimaryKey(id);
         RedisGroupDto redisGroupDto = new RedisGroupDto();
-        if (redisGroup != null){
+        if (redisGroup != null) {
             BeanUtils.copyProperties(redisGroup, redisGroupDto);
             redisGroupDto.setTid(redisGroup.getId());
             List<RedisInstanceDto> redisInstances = redisInstanceService.selectRedisInstanceListByRedisGroupId(redisGroup.getId());
-            if (!CollectionUtils.isEmpty(redisInstances)){
+            if (!CollectionUtils.isEmpty(redisInstances)) {
                 redisGroupDto.setRedisInstanceDtoList(redisInstances);
             }
         }

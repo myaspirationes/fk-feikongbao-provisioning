@@ -7,19 +7,29 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class Dictionary extends BaseEntity {
 
-    /** 类型 **/
+    /**
+     * 类型
+     **/
     private String type;
 
-    /** 编码 **/
+    /**
+     * 编码
+     **/
     private String code;
 
-    /** 名称 **/
+    /**
+     * 名称
+     **/
     private String name;
 
-    /** 值 **/
+    /**
+     * 值
+     **/
     private String value;
 
-    /** 备注 **/
+    /**
+     * 备注
+     **/
     private String remark;
 
     public String getType() {

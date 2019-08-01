@@ -8,6 +8,12 @@ import java.util.List;
 
 public interface PermissionMapper extends BaseMapper<Permission> {
 
-    public List<Permission> getPermissionByUserId(@Param("userId") Integer userId);
+    /**
+     * 条件查询列表
+     *
+     * @param userId
+     * @return
+     */
+    List<Permission> getPermissionByUserId(@Param("userId") Integer userId);
 
 }

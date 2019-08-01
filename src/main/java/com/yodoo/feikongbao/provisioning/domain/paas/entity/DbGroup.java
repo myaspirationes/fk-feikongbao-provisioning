@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class DbGroup extends BaseEntity {
 
-    /** 组code **/
+    /**
+     * 组code
+     **/
     private String groupCode;
 
-    /** 组名称 **/
+    /**
+     * 组名称
+     **/
     private String groupName;
 
     public String getGroupCode() {

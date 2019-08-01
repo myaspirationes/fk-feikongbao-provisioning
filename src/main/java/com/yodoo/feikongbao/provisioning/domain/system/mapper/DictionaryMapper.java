@@ -8,6 +8,7 @@ public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
     /**
      * 查询除自身以外是否有相同的数据
+     *
      * @param id
      * @param type
      * @param code

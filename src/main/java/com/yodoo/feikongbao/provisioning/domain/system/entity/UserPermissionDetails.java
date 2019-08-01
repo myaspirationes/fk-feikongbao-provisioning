@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class UserPermissionDetails extends BaseEntity {
 
-    /** 用户id **/
+    /**
+     * 用户id
+     **/
     private Integer userId;
 
-    /** 权限id **/
+    /**
+     * 权限id
+     **/
     private Integer permissionId;
 
     public Integer getUserId() {

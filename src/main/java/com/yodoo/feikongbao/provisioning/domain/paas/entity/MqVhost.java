@@ -7,13 +7,19 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class MqVhost extends BaseEntity {
 
-    /** vhost 名称 **/
+    /**
+     * vhost 名称
+     **/
     private String vhostName;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
     public String getVhostName() {

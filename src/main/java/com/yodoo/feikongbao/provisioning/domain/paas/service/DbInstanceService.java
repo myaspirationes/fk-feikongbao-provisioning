@@ -2,7 +2,6 @@ package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbSchema;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbInstanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class Permission extends BaseEntity {
 
-    /** 权限code **/
+    /**
+     * 权限code
+     **/
     private String permissionCode;
 
-    /** 权限名称 **/
+    /**
+     * 权限名称
+     **/
     private String permissionName;
 
     public String getPermissionCode() {

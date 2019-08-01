@@ -9,16 +9,24 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class FunctionModuleDto extends BaseDto {
 
-    /** 父类id **/
+    /**
+     * 父类id
+     **/
     private Integer parentId;
 
-    /** 功能模块名称 **/
+    /**
+     * 功能模块名称
+     **/
     private String name;
 
-    /** 描述 **/
+    /**
+     * 描述
+     **/
     private String description;
 
-    /** 序号 **/
+    /**
+     * 序号
+     **/
     private String orderNo;
 
     public Integer getParentId() {

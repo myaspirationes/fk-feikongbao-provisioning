@@ -11,13 +11,19 @@ import java.util.List;
  */
 public class RedisGroupDto extends BaseDto {
 
-    /** 组code **/
+    /**
+     * 组code
+     **/
     private String groupCode;
 
-    /** 组名称 **/
+    /**
+     * 组名称
+     **/
     private String groupName;
 
-    /** redis 实例 **/
+    /**
+     * redis 实例
+     **/
     private List<RedisInstanceDto> redisInstanceDtoList;
 
     public String getGroupCode() {

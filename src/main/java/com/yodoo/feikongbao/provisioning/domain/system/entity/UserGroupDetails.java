@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class UserGroupDetails extends BaseEntity {
 
-    /** 用户组id **/
+    /**
+     * 用户组id
+     **/
     private Integer userGroupId;
 
-    /** 用户id **/
+    /**
+     * 用户id
+     **/
     private Integer userId;
 
     public Integer getUserGroupId() {

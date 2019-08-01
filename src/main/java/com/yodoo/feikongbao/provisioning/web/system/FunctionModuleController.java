@@ -26,24 +26,26 @@ public class FunctionModuleController {
 
     /**
      * 添加:
+     *
      * @param functionModuleDto
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> addFunctionModule(@RequestBody FunctionModuleDto functionModuleDto){
+    public ProvisioningDto<?> addFunctionModule(@RequestBody FunctionModuleDto functionModuleDto) {
         functionModuleService.addFunctionModule(functionModuleDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
      * 修改:
+     *
      * @param functionModuleDto
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> editFunctionModule(@RequestBody FunctionModuleDto functionModuleDto){
+    public ProvisioningDto<?> editFunctionModule(@RequestBody FunctionModuleDto functionModuleDto) {
         functionModuleService.editFunctionModule(functionModuleDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }

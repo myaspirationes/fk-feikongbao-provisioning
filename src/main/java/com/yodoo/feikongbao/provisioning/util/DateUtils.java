@@ -20,6 +20,7 @@ public class DateUtils {
     public static final String YEAR_PATTERN = "yyyy";
     public static final String MINUTE_ONLY_PATTERN = "mm";
     public static final String HOUR_ONLY_PATTERN = "HH";
+    public static final String DATA_TIME = "00:00:00";
 
     /**
      * 日期相加减天数
@@ -50,9 +51,8 @@ public class DateUtils {
      * @param date    Date
      * @param pattern StrUtils.DATE_TIME_PATTERN || StrUtils.DATE_PATTERN， 如果为空，则为yyyy-MM-dd
      * @return
-     * @throws ParseException
      */
-    public static String dateFormat(Date date, String pattern) throws ParseException {
+    public static String dateFormat(Date date, String pattern) {
         if (StringUtils.isBlank(pattern)) {
             pattern = DateUtils.DATE_PATTERN;
         }
@@ -81,9 +81,8 @@ public class DateUtils {
      *
      * @param dateTime Date
      * @return
-     * @throws ParseException
      */
-    public static String dateTimeToDateString(Date dateTime) throws ParseException {
+    public static String dateTimeToDateString(Date dateTime) {
         String dateTimeString = DateUtils.dateFormat(dateTime, DateUtils.DATE_TIME_PATTERN);
         return dateTimeString.substring(0, 10);
     }
@@ -94,11 +93,10 @@ public class DateUtils {
      *
      * @param dateTime Date
      * @return
-     * @throws ParseException
      */
-    public static String dateTimeToDateStringIfTimeEndZero(Date dateTime) throws ParseException {
+    public static String dateTimeToDateStringIfTimeEndZero(Date dateTime) {
         String dateTimeString = DateUtils.dateFormat(dateTime, DateUtils.DATE_TIME_PATTERN);
-        if (dateTimeString.endsWith("00:00:00")) {
+        if (dateTimeString.endsWith(DATA_TIME)) {
             return dateTimeString.substring(0, 10);
         } else {
             return dateTimeString;
@@ -110,9 +108,8 @@ public class DateUtils {
      *
      * @param dateTime Date
      * @return Date
-     * @throws ParseException
      */
-    public static Date dateTimeToDate(Date dateTime) throws ParseException {
+    public static Date dateTimeToDate(Date dateTime) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dateTime);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -415,7 +412,7 @@ public class DateUtils {
         return parse;
     }
 
-    public static String getString2DateConvertW3cTime(Date date, String timeZone) throws ParseException {
+    public static String getString2DateConvertW3cTime(Date date, String timeZone) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CHINESE);
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         String w3cDateStr = format.format(date);

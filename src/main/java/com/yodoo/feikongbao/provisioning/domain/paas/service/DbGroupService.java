@@ -30,27 +30,29 @@ public class DbGroupService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public DbGroup selectByPrimaryKey(Integer id){
+    public DbGroup selectByPrimaryKey(Integer id) {
         return groupMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 查询数据库实例
+     *
      * @param dbGroupId
      * @return
      */
     public DbGroupDto selectDbGroupByCompanyId(Integer dbGroupId) {
         DbGroup dbGroup = groupMapper.selectByPrimaryKey(dbGroupId);
         DbGroupDto dbGroupDto = null;
-        if (dbGroup != null){
+        if (dbGroup != null) {
             dbGroupDto = new DbGroupDto();
             BeanUtils.copyProperties(dbGroup, dbGroupDto);
             dbGroupDto.setTid(dbGroup.getId());
             List<DbSchemaDto> dbSchemaDto = dbSchemaService.selectDbSchemaByDbGroupId(dbGroup.getId());
-            if (!CollectionUtils.isEmpty(dbSchemaDto)){
+            if (!CollectionUtils.isEmpty(dbSchemaDto)) {
                 dbGroupDto.setDbSchemaDtoList(dbSchemaDto);
             }
         }

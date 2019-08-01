@@ -51,6 +51,7 @@ public class MqVhostService {
 
     /**
      * 条件查询
+     *
      * @param mqVhostDto
      * @return
      */
@@ -61,15 +62,15 @@ public class MqVhostService {
             BeanUtils.copyProperties(mqVhostDto, mqVhost);
         }
         Page<?> pages = PageHelper.startPage(mqVhostDto.getPageNum(), mqVhostDto.getPageSize());
-        List<MqVhost> list = mqVhostMapper.select(mqVhost);
+        List<MqVhost> mqVhosts = mqVhostMapper.select(mqVhost);
         List<MqVhostDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            collect = list.stream()
+        if (!CollectionUtils.isEmpty(mqVhosts)) {
+            collect = mqVhosts.stream()
                     .filter(Objects::nonNull)
-                    .map(mqVhost1 -> {
+                    .map(mv -> {
                         MqVhostDto dto = new MqVhostDto();
-                        BeanUtils.copyProperties(mqVhost1, dto);
-                        dto.setTid(mqVhost1.getId());
+                        BeanUtils.copyProperties(mv, dto);
+                        dto.setTid(mv.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -80,13 +81,14 @@ public class MqVhostService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     public MqVhostDto getMqVhostDetails(Integer id) {
         MqVhost mqVhost = selectByPrimaryKey(id);
         MqVhostDto mqVhostDto = new MqVhostDto();
-        if (mqVhost != null){
+        if (mqVhost != null) {
             BeanUtils.copyProperties(mqVhost, mqVhostDto);
             mqVhostDto.setTid(mqVhost.getId());
         }
@@ -95,15 +97,17 @@ public class MqVhostService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public MqVhost selectByPrimaryKey(Integer id){
+    public MqVhost selectByPrimaryKey(Integer id) {
         return mqVhostMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 创建公司时，创建消息队列
+     *
      * @param mqVhostDto
      * @return
      */
@@ -112,7 +116,7 @@ public class MqVhostService {
         useMqVhostParameterCheck(mqVhostDto);
         // 创建vhost
         MqResponseEnum mqResponseEnum = rabbitMqVirtualHostService.createVirtualHost(mqVhostDto.getVhostName());
-        if (mqResponseEnum.code != MqResponseEnum.CREATE_SUCCESS.code){
+        if (mqResponseEnum.code != MqResponseEnum.CREATE_SUCCESS.code) {
             throw new ProvisioningException(BundleKey.UNDEFINED, BundleKey.UNDEFINED_MSG);
         }
         // 添加mqvhost表数据
@@ -135,24 +139,25 @@ public class MqVhostService {
 
     /**
      * 创建 vhost 参数校验
+     *
      * @param mqVhostDto
      */
     private void useMqVhostParameterCheck(MqVhostDto mqVhostDto) {
         if (mqVhostDto == null || mqVhostDto.getCompanyId() == null || mqVhostDto.getCompanyId() < 0
                 || StringUtils.isBlank(mqVhostDto.getVhostName()) || StringUtils.isBlank(mqVhostDto.getIp())
-                || mqVhostDto.getPort() != null || mqVhostDto.getPort() < 0){
+                || mqVhostDto.getPort() != null || mqVhostDto.getPort() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         MqVhost mqVhost = new MqVhost();
         mqVhost.setVhostName(mqVhostDto.getVhostName());
-        MqVhost mqVhost1 = mqVhostMapper.selectOne(mqVhost);
-        if (mqVhost1 != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        MqVhost selectOneMqVhost = mqVhostMapper.selectOne(mqVhost);
+        if (selectOneMqVhost != null) {
+            throw new ProvisioningException(BundleKey.MQ_VHOST_ALREADY_EXIST, BundleKey.MQ_VHOST_ALREADY_EXIST_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(mqVhostDto.getCompanyId());
-        if (company == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (company == null) {
+            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
     }
 }

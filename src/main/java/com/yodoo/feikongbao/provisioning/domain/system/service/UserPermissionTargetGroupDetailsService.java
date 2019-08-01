@@ -23,6 +23,7 @@ public class UserPermissionTargetGroupDetailsService {
 
     /**
      * 通过集团 id 查询
+     *
      * @param groupId
      * @return
      */
@@ -34,10 +35,11 @@ public class UserPermissionTargetGroupDetailsService {
 
     /**
      * 通过用户权限 id 查询
+     *
      * @param userPermissionId
      * @return
      */
-    public List<UserPermissionTargetGroupDetails> selectUserPermissionTargetGroupDetailsByUserPermissionId(Integer userPermissionId){
+    public List<UserPermissionTargetGroupDetails> selectUserPermissionTargetGroupDetailsByUserPermissionId(Integer userPermissionId) {
         UserPermissionTargetGroupDetails userPermissionTargetGroupDetails = new UserPermissionTargetGroupDetails();
         userPermissionTargetGroupDetails.setUserPermissionId(userPermissionId);
         return userPermissionTargetGroupDetailsMapper.select(userPermissionTargetGroupDetails);

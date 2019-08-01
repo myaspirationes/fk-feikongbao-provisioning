@@ -24,9 +24,10 @@ public class UserService {
 
     /**
      * 根据账号查询用户
+     *
      * @Author houzhen
      * @Date 13:09 2019/7/26
-    **/
+     **/
     public User getUserByAccount(String account) {
         logger.info("UserService.getUserByAccount account:{}", account);
         // 验证参数

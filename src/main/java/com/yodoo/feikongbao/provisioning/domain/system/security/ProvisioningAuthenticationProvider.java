@@ -3,7 +3,7 @@ package com.yodoo.feikongbao.provisioning.domain.system.security;
 import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto;
 import com.yodoo.feikongbao.provisioning.domain.system.service.MenuTreeService;
-import com.yodoo.feikongbao.provisioning.util.MD5Util;
+import com.yodoo.feikongbao.provisioning.util.Md5Util;
 import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +25,7 @@ import java.util.List;
 public class ProvisioningAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    ProvisioningUserDetailsService userDetailsService;
+    ProvisioningUserDetailsServiceImpl userDetailsService;
 
     @Autowired
     MenuTreeService menuTreeService;
@@ -42,7 +41,7 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
             throw new BadCredentialsException("请输入用户名或密码！");
         }
         ProvisioningUserDetails userInfo = userDetailsService.loadUserByUsername(userName);
-        if (!userInfo.getPassword().equals(MD5Util.MD5Encode(password))) {
+        if (!userInfo.getPassword().equals(Md5Util.md5Encode(password))) {
             throw new BadCredentialsException("密码不正确，请重新登陆！");
         }
         // 取得session，并将权限菜单增加到session中
@@ -50,9 +49,9 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
         // 添加link
         this.addLink("/", menuTree);
         userInfo.setMenuTree(menuTree);
-        ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-        HttpSession session= attr.getRequest().getSession(true);
-        session.setAttribute(ProvisioningConstants.authUser, userInfo);
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+        session.setAttribute(ProvisioningConstants.AUTH_USER, userInfo);
         // 返回
         return new UsernamePasswordAuthenticationToken(userName, password, userInfo.getAuthorities());
     }
@@ -62,7 +61,12 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
         return true;
     }
 
-    // 为菜单添加link
+    /**
+     * 为菜单添加link
+     *
+     * @param basePath
+     * @param menuList
+     */
     private void addLink(String basePath, List<MenuDto> menuList) {
         if (!CollectionUtils.isEmpty(menuList)) {
             for (MenuDto menuDto : menuList) {

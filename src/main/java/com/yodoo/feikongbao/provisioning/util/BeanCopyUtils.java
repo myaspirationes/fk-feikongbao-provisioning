@@ -43,8 +43,9 @@ public class BeanCopyUtils {
                     continue;
                 }
                 PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
-                Method wM = pd.getWriteMethod();//获得写方法
-                wM.invoke(obj, getClassTypeValue(field.getType(), value));
+                // 获得写方法
+                Method method = pd.getWriteMethod();
+                method.invoke(obj, getClassTypeValue(field.getType(), value));
             }
         } catch (Exception e) {
             e.printStackTrace();

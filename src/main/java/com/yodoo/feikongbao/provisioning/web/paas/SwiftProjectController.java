@@ -2,7 +2,6 @@ package com.yodoo.feikongbao.provisioning.web.paas;
 
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
-import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.SwiftProjectDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.SwiftProjectService;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
@@ -29,12 +28,13 @@ public class SwiftProjectController {
 
     /**
      * 条件分页查询
+     *
      * @param swiftProjectDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> querySwiftProjectList(SwiftProjectDto swiftProjectDto){
+    public ProvisioningDto<?> querySwiftProjectList(SwiftProjectDto swiftProjectDto) {
         PageInfoDto<SwiftProjectDto> pageInfoDto = swiftProjectService.querySwiftProjectList(swiftProjectDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), SwiftProjectController.class);
@@ -46,26 +46,28 @@ public class SwiftProjectController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> getSwiftProjectDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getSwiftProjectDetails(@PathVariable Integer id) {
         SwiftProjectDto swiftProjectDto = swiftProjectService.getSwiftProjectDetails(id);
         return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto);
     }
 
     /**
      * 创建存储对象
+     *
      * @param swiftProjectDto
      * @return
      */
     @RequestMapping(value = "/useSwiftProject", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto){
-        SwiftProjectDto swiftProjectDto1 = swiftProjectService.useSwiftProject(swiftProjectDto);
-        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto1);
+    public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto) {
+        SwiftProjectDto swiftProjectDtoResponse = swiftProjectService.useSwiftProject(swiftProjectDto);
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDtoResponse);
     }
 
 

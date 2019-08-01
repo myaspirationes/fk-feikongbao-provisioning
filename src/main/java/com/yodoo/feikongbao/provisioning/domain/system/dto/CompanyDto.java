@@ -2,68 +2,100 @@ package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
-import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author houzhen
  * @Date 13:10 2019/7/29
-**/
+ **/
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompanyDto extends BaseDto {
 
-    /** 集团id **/
+    /**
+     * 集团id
+     **/
     private Integer groupId;
 
-    /** 公司名称 **/
+    /**
+     * 公司名称
+     **/
     private String companyName;
 
-    /** 公司Code **/
+    /**
+     * 公司Code
+     **/
     private String companyCode;
 
-    /** 更新周期 **/
+    /**
+     * 更新周期
+     **/
     private String updateCycle;
 
-    /** 下次更新日期 **/
+    /**
+     * 下次更新日期
+     **/
     private Date nextUpdateDate;
 
-    /** 到期日 **/
+    /**
+     * 到期日
+     **/
     private Date expireDate;
 
-    /** DB数据库组id **/
+    /**
+     * DB数据库组id
+     **/
     private Integer dbGroupId;
 
-    /** redis组id **/
+    /**
+     * redis组id
+     **/
     private Integer redisGroupId;
 
-    /** swift租户id **/
+    /**
+     * swift租户id
+     **/
     private Integer swiftProjectId;
 
-    /** 消息队列vhost **/
+    /**
+     * 消息队列vhost
+     **/
     private Integer mqVhostId;
 
-    /** neo4j实例id **/
+    /**
+     * neo4j实例id
+     **/
     private Integer neo4jInstanceId;
 
-    /** 状态，0：创建中，1：创建完成,启用中， 2：停用 **/
+    /**
+     * 状态，0：创建中，1：创建完成,启用中， 2：停用
+     **/
     private Integer status;
 
-    /** DB 数据库组 **/
+    /**
+     * DB 数据库组
+     **/
     private DbGroupDto dbGroupDto;
 
-    /** redis 实例组 **/
+    /**
+     * redis 实例组
+     **/
     private RedisGroupDto redisGroupDto;
 
-    /** 对象存储**/
+    /**
+     * 对象存储
+     **/
     private SwiftProjectDto swiftProjectDto;
 
-    /** 消息信息 **/
+    /**
+     * 消息信息
+     **/
     private MqVhostDto mqVhostDto;
 
-    /** 流程实例信息 **/
+    /**
+     * 流程实例信息
+     **/
     private Neo4jInstanceDto neo4jInstanceDto;
 
     public Integer getGroupId() {

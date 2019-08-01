@@ -22,16 +22,18 @@ public class LinkUtils {
 
     /**
      * 设置自身link
+     *
      * @Author houzhen
      * @Date 10:40 2019/7/11
      **/
-    public static  <T extends ResourceSupport> void setSelfLink(T t, Class clazz) {
+    public static <T extends ResourceSupport> void setSelfLink(T t, Class clazz) {
         t.add(new Link(LinkUtils.getRequestMappingValue(clazz)).withSelfRel());
     }
 
 
     /**
      * 设置列表item link
+     *
      * @Author houzhen
      * @Date 10:40 2019/7/11
      **/

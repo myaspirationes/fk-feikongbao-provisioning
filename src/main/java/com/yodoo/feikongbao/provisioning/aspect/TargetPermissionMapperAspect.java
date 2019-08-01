@@ -1,13 +1,11 @@
 package com.yodoo.feikongbao.provisioning.aspect;
 
-import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.GroupsMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.UserGroupMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.UserMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.security.ProvisioningUserDetails;
-import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -21,7 +19,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Author houzhen
@@ -34,8 +33,12 @@ public class TargetPermissionMapperAspect {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // 目标数据
-    private final Map<String, String> TARGET_CONDITION_MAP = new HashMap<String, String>(){
+    public static final String METHOD_NAME_STARTS_WITH = "select";
+
+    /**
+     * 目标数据
+     */
+    private final Map<String, String> TARGET_CONDITION_MAP = new HashMap<String, String>() {
         {
             // 集团
             put("GroupsMapper",
@@ -61,7 +64,8 @@ public class TargetPermissionMapperAspect {
     };
 
     @Pointcut("execution(* com.yodoo.feikongbao.provisioning.domain.system.mapper.*.*(..))")
-    public void mapperPointCut() {}
+    public void mapperPointCut() {
+    }
 
     @Before("mapperPointCut()")
     public void before(JoinPoint joinPoint) {
@@ -71,7 +75,7 @@ public class TargetPermissionMapperAspect {
         Object[] args = joinPoint.getArgs();
         // 方法名称
         String methodName = joinPoint.getSignature().getName();
-        if (args != null && args.length > 0 && methodName.startsWith("select")) {
+        if (args != null && args.length > 0 && methodName.startsWith(METHOD_NAME_STARTS_WITH)) {
             // 集团目标
             if (targetObj instanceof GroupsMapper) {
                 this.setConditionToExample(args, "GroupsMapper");
@@ -94,8 +98,8 @@ public class TargetPermissionMapperAspect {
     private void setConditionToExample(Object[] args, String code) {
         // session中获取用户信息
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session= attr.getRequest().getSession(true);
-        Object userObj = session.getAttribute(ProvisioningConstants.authUser);
+        HttpSession session = attr.getRequest().getSession(true);
+        Object userObj = session.getAttribute(ProvisioningConstants.AUTH_USER);
         if (userObj != null) {
             ProvisioningUserDetails userInfo = (ProvisioningUserDetails) userObj;
             Integer userId = userInfo.getId();

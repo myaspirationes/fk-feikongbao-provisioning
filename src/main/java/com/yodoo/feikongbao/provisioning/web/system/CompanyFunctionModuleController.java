@@ -26,12 +26,13 @@ public class CompanyFunctionModuleController {
 
     /**
      * 启用 和禁用功能模块: status 状态，0：启用，1：停用
+     *
      * @param companyFunctionModuleDto
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> addOroEditCompanyFunctionModule(@RequestBody CompanyFunctionModuleDto companyFunctionModuleDto){
+    public ProvisioningDto<?> addOroEditCompanyFunctionModule(@RequestBody CompanyFunctionModuleDto companyFunctionModuleDto) {
         companyFunctionModuleService.addOroEditCompanyFunctionModule(companyFunctionModuleDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }

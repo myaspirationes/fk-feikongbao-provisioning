@@ -26,7 +26,7 @@ public class RequestUtils {
      * @Author houzhen
      * @Date 15:34 2019/7/10
      **/
-    public static String getRequestURL(HttpServletRequest request) {
+    public static String getRequestUrl(HttpServletRequest request) {
         return request.getRequestURL().toString();
     }
 }

@@ -34,7 +34,7 @@ import java.net.URISyntaxException;
 /**
  * @Author houzhen
  * @Date 17:30 2019/7/24
-**/
+ **/
 @Configuration
 @Import({SwiftStorageClientConfig.class})
 @ComponentScan(basePackages = {"com.yodoo.feikongbao.provisioning"})

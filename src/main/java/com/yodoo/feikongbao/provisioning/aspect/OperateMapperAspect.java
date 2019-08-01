@@ -27,19 +27,25 @@ public class OperateMapperAspect {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // 批量插入
+    /**
+     * 批量插入
+     */
     private final Set<String> INSERTLIST_SET = new HashSet<>(Arrays.asList("insertList"));
-    // 插入
+    /**
+     * 插入
+     */
     private final Set<String> INSERT_SET = new HashSet<>(Arrays.asList("insert", "insertSelective",
             "insertUseGeneratedKeys"));
-    // 更新
+    /**
+     * 更新
+     */
     private final Set<String> UPDATE_SET = new HashSet<>(Arrays.asList("updateByPrimaryKey",
             "updateByExampleSelective", "updateByExample", "updateByPrimaryKeySelective"));
 
 
-
     @Pointcut("execution(* com.yodoo.feikongbao.provisioning.domain.*.mapper.*.*(..))")
-    public void mapperPointCut() {}
+    public void mapperPointCut() {
+    }
 
     @Before("mapperPointCut()")
     public void before(JoinPoint joinPoint) {

@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class PermissionGroupDetails extends BaseEntity {
 
-    /** 权限组id **/
+    /**
+     * 权限组id
+     **/
     private Integer permissionGroupId;
 
-    /** 权限id **/
+    /**
+     * 权限id
+     **/
     private Integer permissionId;
 
     public PermissionGroupDetails() {

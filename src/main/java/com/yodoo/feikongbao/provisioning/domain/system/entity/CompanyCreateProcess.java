@@ -7,13 +7,19 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class CompanyCreateProcess extends BaseEntity {
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** 过程序号 **/
+    /**
+     * 过程序号
+     **/
     private Integer processOrder;
 
-    /** 过程code **/
+    /**
+     * 过程code
+     **/
     private String processCode;
 
     public CompanyCreateProcess() {

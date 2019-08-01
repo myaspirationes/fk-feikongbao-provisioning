@@ -9,19 +9,29 @@ import java.util.Date;
  */
 public class Groups extends BaseEntity {
 
-    /** 集团名称 **/
+    /**
+     * 集团名称
+     **/
     private String groupName;
 
-    /** 集团Code **/
+    /**
+     * 集团Code
+     **/
     private String groupCode;
 
-    /** 到期日 **/
+    /**
+     * 到期日
+     **/
     private Date expireDate;
 
-    /** 更新周期 **/
+    /**
+     * 更新周期
+     **/
     private String updateCycle;
 
-    /** 下次更新日期 **/
+    /**
+     * 下次更新日期
+     **/
     private Date nextUpdateDate;
 
     public Groups() {

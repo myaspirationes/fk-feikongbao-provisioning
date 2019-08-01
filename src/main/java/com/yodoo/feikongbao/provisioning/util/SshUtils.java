@@ -12,7 +12,7 @@ import java.util.Vector;
  * @Author houzhen
  * @Date 10:18 2019/6/12
  **/
-public class SSHUtils {
+public class SshUtils {
 
     private static final String ENCODING = "UTF-8";
 
@@ -20,33 +20,34 @@ public class SSHUtils {
 
     private static final int TIMEOUT = 60 * 60 * 1000;
 
-    public static Session getJSchSession(DestHost destHost) throws JSchException {
+    public static Session getJschSession(DestHost destHost) throws JSchException {
         JSch jsch = new JSch();
         Session session = jsch.getSession(destHost.getUsername(), destHost.getHost(), destHost.getPort());
         session.setPassword(destHost.getPassword());
-        session.setConfig("StrictHostKeyChecking", "no");  // 第一次访问服务器时不用输入yes
+        // 第一次访问服务器时不用输入yes
+        session.setConfig("StrictHostKeyChecking", "no");
         session.setTimeout(destHost.getTimeout());
         session.connect();
         return session;
     }
 
-    public static String execCommandByJSch(DestHost destHost, String command) throws IOException, JSchException {
-        return execCommandByJSch(destHost, command, ENCODING);
+    public static String execCommandByJsch(DestHost destHost, String command) throws IOException, JSchException {
+        return execCommandByJsch(destHost, command, ENCODING);
     }
 
-    public static String execCommandByJSch(DestHost destHost, String command, String resultEncoding) throws IOException, JSchException {
-        Session session = getJSchSession(destHost);
-        String result = execCommandByJSch(session, command, resultEncoding);
+    public static String execCommandByJsch(DestHost destHost, String command, String resultEncoding) throws IOException, JSchException {
+        Session session = getJschSession(destHost);
+        String result = execCommandByJsch(session, command, resultEncoding);
         session.disconnect();
 
         return result;
     }
 
-    public static String execCommandByJSch(Session session, String command) throws IOException, JSchException {
-        return execCommandByJSch(session, command, ENCODING);
+    public static String execCommandByJsch(Session session, String command) throws IOException, JSchException {
+        return execCommandByJsch(session, command, ENCODING);
     }
 
-    public static String execCommandByJSch(Session session, String command, String resultEncoding) throws IOException, JSchException {
+    public static String execCommandByJsch(Session session, String command, String resultEncoding) throws IOException, JSchException {
         ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
         InputStream in = channelExec.getInputStream();
         channelExec.setCommand(command);
@@ -60,13 +61,13 @@ public class SSHUtils {
         return result;
     }
 
-    public static void closeJSchSession(Session session) {
+    public static void closeJSChSession(Session session) {
         if (session != null && session.isConnected()) {
             session.disconnect();
         }
     }
 
-    public static void makeFileByJSch(Session session, String filePath, String fileContent) throws JSchException, SftpException {
+    public static void makeFileByJSCh(Session session, String filePath, String fileContent) throws JSchException, SftpException {
         ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
         channelSftp.connect();
         // 文件输入流
@@ -78,7 +79,7 @@ public class SSHUtils {
             // 截取目录 如：/xxx/xxx/
             String dir = filePath.substring(0, filePath.lastIndexOf("/") + 1);
             // 创建文件夹
-            SSHUtils.makeDirsByJSch(channelSftp, dir);
+            SshUtils.makeDirsByJSCh(channelSftp, dir);
             // 文件内容输入
             in = new ByteArrayInputStream(fileContent.getBytes());
             // 上传文件
@@ -97,7 +98,7 @@ public class SSHUtils {
         }
     }
 
-    private static boolean makeDirsByJSch(ChannelSftp channelSftp, String dir) throws SftpException {
+    private static boolean makeDirsByJSCh(ChannelSftp channelSftp, String dir) throws SftpException {
         String dirs = dir.substring(1, dir.length() - 1);
         String[] dirArr = dirs.split("/");
         String base = "";
@@ -115,11 +116,7 @@ public class SSHUtils {
     private static boolean dirExist(final String dir, final ChannelSftp sftp) {
         try {
             Vector<?> vector = sftp.ls(dir);
-            if (null == vector) {
-                return false;
-            } else {
-                return true;
-            }
+            return null != vector;
         } catch (SftpException e) {
             return false;
         }

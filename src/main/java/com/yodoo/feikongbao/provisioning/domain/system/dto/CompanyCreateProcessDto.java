@@ -7,15 +7,21 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  * @Author ：jinjun_luo
  * @Date ： 2019/7/29 0029
  */
-public class CompanyCreateProcessDto  extends BaseDto {
+public class CompanyCreateProcessDto extends BaseDto {
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** 过程序号 **/
+    /**
+     * 过程序号
+     **/
     private Integer processOrder;
 
-    /** 过程code **/
+    /**
+     * 过程code
+     **/
     private String processCode;
 
     public Integer getCompanyId() {

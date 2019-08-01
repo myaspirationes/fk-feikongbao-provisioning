@@ -56,7 +56,7 @@ public class MenuTreeService {
             return null;
         }
         // 查询权限菜单
-        List<Menu> menuPermissionList =this.getPermissionMenu(allMenuList, userId);
+        List<Menu> menuPermissionList = this.getPermissionMenu(allMenuList, userId);
 
         // 补全菜单集合
         List<Menu> menuList = this.completeMenu(allMenuList, menuPermissionList);
@@ -77,7 +77,7 @@ public class MenuTreeService {
 
         // 查询有权限的菜单
         List<MenuPermissionDetails> menuPermissionDetailsList = menuPermissionDetailsMapper.selectAll();
-        if(CollectionUtils.isEmpty(menuPermissionDetailsList)) {
+        if (CollectionUtils.isEmpty(menuPermissionDetailsList)) {
             return rsMenuList;
         }
         Map<Integer, List<MenuPermissionDetails>> menuPermissionList = menuPermissionDetailsList.stream()
@@ -87,7 +87,7 @@ public class MenuTreeService {
             if (menuPermissionList.containsKey(menu.getId())) {
                 boolean addFlag = true;
                 List<MenuPermissionDetails> tempList = menuPermissionList.get(menu.getId());
-                for (MenuPermissionDetails temp: tempList) {
+                for (MenuPermissionDetails temp : tempList) {
                     if (!userPermissionSet.contains(temp.getPermissionId())) {
                         addFlag = false;
                         break;
@@ -100,7 +100,6 @@ public class MenuTreeService {
         }
         return rsMenuList;
     }
-
 
 
     private List<MenuDto> buildMenuListToTree(List<Menu> menuList) {
@@ -119,11 +118,11 @@ public class MenuTreeService {
         return menuDtoeList;
     }
 
-    private List<MenuDto> buildMenuDtoToTree(List<MenuDto> List) {
+    private List<MenuDto> buildMenuDtoToTree(List<MenuDto> list) {
         List<MenuDto> roots = new ArrayList<MenuDto>();
-        if (CollectionUtils.isNotEmpty(List)) {
-            roots = findRoots(List);
-            List<MenuDto> notRoots = this.removeListFromList(List, roots);
+        if (CollectionUtils.isNotEmpty(list)) {
+            roots = findRoots(list);
+            List<MenuDto> notRoots = this.removeListFromList(list, roots);
             for (MenuDto root : roots) {
                 root.setChildren(findChildren(root, notRoots));
             }

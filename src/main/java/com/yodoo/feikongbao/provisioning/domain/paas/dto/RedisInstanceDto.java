@@ -9,35 +9,52 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class RedisInstanceDto extends BaseDto {
 
-    /** redis组id **/
+    /**
+     * redis组id
+     **/
     private Integer redisGroupId;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
-    /** 实例类型，0：主，1：从 **/
+    /**
+     * 实例类型，0：主，1：从
+     **/
     private Integer type;
 
-    /** 状态，
+    /**
+     * 状态，
      * 0 没状态，
      * 1 运行中：Running，
      * 2 已停止：Stopped
-     * */
+     */
     private Integer status;
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** 公司Code **/
+    /**
+     * 公司Code
+     **/
     private String companyCode;
 
     public Integer getRedisGroupId() {

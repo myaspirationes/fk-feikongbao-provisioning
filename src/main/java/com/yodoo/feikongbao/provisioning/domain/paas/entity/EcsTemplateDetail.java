@@ -7,16 +7,24 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class EcsTemplateDetail extends BaseEntity {
 
-    /** 模板id **/
+    /**
+     * 模板id
+     **/
     private Integer templateId;
 
-    /** 请求参数code **/
+    /**
+     * 请求参数code
+     **/
     private String requestCode;
 
-    /** 请求参数名称 **/
+    /**
+     * 请求参数名称
+     **/
     private String requestName;
 
-    /** 请求参数value **/
+    /**
+     * 请求参数value
+     **/
     private String requestValue;
 
     public Integer getTemplateId() {

@@ -97,7 +97,13 @@ public class StringUtils {
         return true;
     }
 
-    public static interface StringFormatter<T> {
+    public interface StringFormatter<T> {
+        /**
+         * 格式化
+         *
+         * @param obj
+         * @return
+         */
         String format(T obj);
     }
 
@@ -126,7 +132,8 @@ public class StringUtils {
         }
 
         // two or more elements
-        StringBuilder buf = new StringBuilder(256); // Java default is 16, probably too small
+        // Java default is 16, probably too small
+        StringBuilder buf = new StringBuilder(256);
         if (first != null) {
             buf.append(formatter.format(first));
         }

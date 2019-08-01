@@ -17,7 +17,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -30,27 +29,28 @@ import java.util.stream.Collectors;
 public class CompanyCreateProcessService {
 
     @Autowired
-   private CompanyCreateProcessMapper companyCreateProcessMapper;
+    private CompanyCreateProcessMapper companyCreateProcessMapper;
 
 
     /**
      * 条件查询
+     *
      * @param companyCreateProcessDto
      * @return
      */
     public PageInfoDto<CompanyCreateProcessDto> queryCompanyCreateProcessList(CompanyCreateProcessDto companyCreateProcessDto) {
-        CompanyCreateProcess companyCreateProcess = new CompanyCreateProcess();
-        BeanUtils.copyProperties(companyCreateProcessDto, companyCreateProcess);
+        CompanyCreateProcess companyCreateProcessReq = new CompanyCreateProcess();
+        BeanUtils.copyProperties(companyCreateProcessDto, companyCreateProcessReq);
         Page<?> pages = PageHelper.startPage(companyCreateProcessDto.getPageNum(), companyCreateProcessDto.getPageSize());
-        List<CompanyCreateProcess> select = companyCreateProcessMapper.select(companyCreateProcess);
+        List<CompanyCreateProcess> select = companyCreateProcessMapper.select(companyCreateProcessReq);
         List<CompanyCreateProcessDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)){
+        if (!CollectionUtils.isEmpty(select)) {
             collect = select.stream()
                     .filter(Objects::nonNull)
-                    .map(companyCreateProcess1 -> {
+                    .map(companyCreateProcess -> {
                         CompanyCreateProcessDto dto = new CompanyCreateProcessDto();
-                        BeanUtils.copyProperties(companyCreateProcess1, dto);
-                        dto.setTid(companyCreateProcess1.getId());
+                        BeanUtils.copyProperties(companyCreateProcess, dto);
+                        dto.setTid(companyCreateProcess.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -61,6 +61,7 @@ public class CompanyCreateProcessService {
 
     /**
      * 添加公司创建步骤记录表
+     *
      * @param companyCreateProcess
      */
     public void insertCompanyCreateProcess(CompanyCreateProcess companyCreateProcess) {

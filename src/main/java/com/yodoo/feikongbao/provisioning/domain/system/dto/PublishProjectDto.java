@@ -7,19 +7,29 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class PublishProjectDto extends BaseDto {
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** ecs实例id **/
+    /**
+     * ecs实例id
+     **/
     private Integer vmInstanceId;
 
-    /** 项目名称 **/
+    /**
+     * 项目名称
+     **/
     private String projectName;
 
-    /** 项目类型 **/
+    /**
+     * 项目类型
+     **/
     private String projectType;
 
-    /** 版本 **/
+    /**
+     * 版本
+     **/
     private String version;
 
     public Integer getCompanyId() {

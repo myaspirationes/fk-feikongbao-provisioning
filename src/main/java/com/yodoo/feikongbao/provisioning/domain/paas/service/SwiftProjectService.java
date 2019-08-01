@@ -52,24 +52,25 @@ public class SwiftProjectService {
 
     /**
      * 条件分页查询
+     *
      * @param swiftProjectDto
      * @return
      */
     public PageInfoDto<SwiftProjectDto> querySwiftProjectList(SwiftProjectDto swiftProjectDto) {
-        SwiftProject swiftProject = new SwiftProject();
+        SwiftProject swiftProjectReq = new SwiftProject();
         if (swiftProjectDto != null) {
-            BeanUtils.copyProperties(swiftProjectDto, swiftProject);
+            BeanUtils.copyProperties(swiftProjectDto, swiftProjectReq);
         }
         Page<?> pages = PageHelper.startPage(swiftProjectDto.getPageNum(), swiftProjectDto.getPageSize());
-        List<SwiftProject> list = swiftProjectMapper.select(swiftProject);
+        List<SwiftProject> list = swiftProjectMapper.select(swiftProjectReq);
         List<SwiftProjectDto> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(list)) {
             collect = list.stream()
                     .filter(Objects::nonNull)
-                    .map(swiftProject1 -> {
+                    .map(swiftProject -> {
                         SwiftProjectDto dto = new SwiftProjectDto();
-                        BeanUtils.copyProperties(swiftProject1, dto);
-                        dto.setTid(swiftProject1.getId());
+                        BeanUtils.copyProperties(swiftProject, dto);
+                        dto.setTid(swiftProject.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -80,13 +81,14 @@ public class SwiftProjectService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     public SwiftProjectDto getSwiftProjectDetails(Integer id) {
         SwiftProject swiftProject = selectByPrimaryKey(id);
         SwiftProjectDto swiftProjectDto = new SwiftProjectDto();
-        if (swiftProject != null){
+        if (swiftProject != null) {
             BeanUtils.copyProperties(swiftProject, swiftProjectDto);
             swiftProjectDto.setTid(swiftProject.getId());
         }
@@ -95,15 +97,17 @@ public class SwiftProjectService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
-    public SwiftProject selectByPrimaryKey(Integer id){
+    public SwiftProject selectByPrimaryKey(Integer id) {
         return swiftProjectMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 使用存储对象 TODO swift 的 ip 和 端口 数据来源还没定
+     *
      * @param swiftProjectDto
      * @return
      */
@@ -113,13 +117,13 @@ public class SwiftProjectService {
 
         // 创建租户
         ProjectEntity project = storageManagerApi.createProject(new ProjectEntity(swiftProjectDto.getProjectName()));
-        if (project == null|| StringUtils.isBlank(project.getId())){
+        if (project == null || StringUtils.isBlank(project.getId())) {
             throw new ProvisioningException(BundleKey.SWIFT_PROJECT_ERROR, BundleKey.SWIFT_PROJECT_ERROR_MSG);
         }
 
         // 添加租户名
         SwiftProject swiftProject = new SwiftProject();
-        BeanUtils.copyProperties(swiftProjectDto,swiftProject);
+        BeanUtils.copyProperties(swiftProjectDto, swiftProject);
         swiftProjectMapper.insertSelective(swiftProject);
 
         // 更新公司表
@@ -137,24 +141,25 @@ public class SwiftProjectService {
 
     /**
      * 使用存储对象参数校验 TODO 参数校验
+     *
      * @param swiftProjectDto
      */
     private void useSwiftProjectParameterCheck(SwiftProjectDto swiftProjectDto) {
         if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0
-                || StringUtils.isBlank(swiftProjectDto.getProjectName())){
+                || StringUtils.isBlank(swiftProjectDto.getProjectName())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询公司名是否存在，存在不操作
         SwiftProject swiftProject = new SwiftProject();
         swiftProject.setProjectName(swiftProjectDto.getProjectName());
-        SwiftProject swiftProject1 = swiftProjectMapper.selectOne(swiftProject);
-        if (swiftProject1 != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        SwiftProject swiftProjectResponse = swiftProjectMapper.selectOne(swiftProject);
+        if (swiftProjectResponse != null) {
+            throw new ProvisioningException(BundleKey.SWIFT_PROJECT_ALREADY_EXIST, BundleKey.SWIFT_PROJECT_ALREADY_EXIST_MSG);
         }
         // 查询公司数据是否存在
         Company company = companyService.selectByPrimaryKey(swiftProjectDto.getCompanyId());
-        if (company == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (company == null) {
+            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
     }
 }

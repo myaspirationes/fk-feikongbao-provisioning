@@ -7,10 +7,14 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class SearchCondition extends BaseEntity {
 
-    /** 条件code **/
+    /**
+     * 条件code
+     **/
     private String conditionCode;
 
-    /** 条件名称 **/
+    /**
+     * 条件名称
+     **/
     private String conditionName;
 
     public String getConditionCode() {

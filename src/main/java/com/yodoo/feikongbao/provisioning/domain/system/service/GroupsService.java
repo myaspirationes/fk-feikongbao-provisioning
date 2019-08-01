@@ -4,9 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
-import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.GroupsDto;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionTargetGroupDetails;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,23 +47,24 @@ public class GroupsService {
 
     /**
      * 条件分页查询
+     *
      * @param groupDto
      * @return
      */
     @PreAuthorize("hasAnyAuthority('group_manage')")
     public PageInfoDto<GroupsDto> queryGroupList(GroupsDto groupDto) {
-        Groups group = new Groups();
-        BeanUtils.copyProperties(groupDto, group);
+        Groups groupReq = new Groups();
+        BeanUtils.copyProperties(groupDto, groupReq);
         Page<?> pages = PageHelper.startPage(groupDto.getPageNum(), groupDto.getPageSize());
-        List<Groups> select = groupsMapper.select(group);
+        List<Groups> select = groupsMapper.select(groupReq);
         List<GroupsDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)){
+        if (!CollectionUtils.isEmpty(select)) {
             collect = select.stream()
                     .filter(Objects::nonNull)
-                    .map(group1 -> {
+                    .map(group -> {
                         GroupsDto dto = new GroupsDto();
-                        BeanUtils.copyProperties(group1, dto);
-                        dto.setTid(group1.getId());
+                        BeanUtils.copyProperties(group, dto);
+                        dto.setTid(group.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -77,6 +75,7 @@ public class GroupsService {
 
     /**
      * 通过主键查询
+     *
      * @param id
      * @return
      */
@@ -86,6 +85,7 @@ public class GroupsService {
 
     /**
      * 添加
+     *
      * @param groupDto
      */
     @PreAuthorize("hasAnyAuthority('group_manage')")
@@ -99,6 +99,7 @@ public class GroupsService {
 
     /**
      * 修改
+     *
      * @param groupDto
      * @return
      */
@@ -119,13 +120,14 @@ public class GroupsService {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     public GroupsDto getGroupDetails(Integer id) {
         Groups group = selectByPrimaryKey(id);
         GroupsDto groupsDto = new GroupsDto();
-        if (group != null){
+        if (group != null) {
             BeanUtils.copyProperties(group, groupsDto);
             groupsDto.setTid(group.getId());
         }
@@ -134,49 +136,51 @@ public class GroupsService {
 
     /**
      * 通过 groupCode 查询
+     *
      * @param groupCode
      * @return
      */
     public GroupsDto getGroupsByGroupCode(String groupCode) {
-        if (StringUtils.isBlank(groupCode)){
+        if (StringUtils.isBlank(groupCode)) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Groups groups = new Groups();
         groups.setGroupCode(groupCode);
-        Groups groups1 = groupsMapper.selectOne(groups);
+        Groups groupsResponse = groupsMapper.selectOne(groups);
         GroupsDto groupsDto = null;
-        if (groups1 != null){
+        if (groupsResponse != null) {
             groupsDto = new GroupsDto();
-            BeanUtils.copyProperties(groups1, groupsDto);
-            groupsDto.setTid(groups1.getId());
+            BeanUtils.copyProperties(groupsResponse, groupsDto);
+            groupsDto.setTid(groupsResponse.getId());
         }
         return groupsDto;
     }
 
     /**
      * 获取当前用户下管理的集团列表
+     *
      * @return
      */
     public List<GroupsDto> getGroupListByUserId() {
         // TODO 用户id 从  session中获取
         Integer userId = 1;
         // 通过用户id 查询用户权限表
-        List<UserPermissionDetails> userPermissionDetails = userPermissionDetailsService.selectUserPermissionDetailsByUserId(userId);
+        List<UserPermissionDetails> userPermissionDetailsList = userPermissionDetailsService.selectUserPermissionDetailsByUserId(userId);
         List<GroupsDto> groupsDtoList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(userPermissionDetails)){
-            userPermissionDetails.stream()
+        if (!CollectionUtils.isEmpty(userPermissionDetailsList)) {
+            userPermissionDetailsList.stream()
                     .filter(Objects::nonNull)
-                    .map(userPermissionDetails1 -> {
+                    .map(userPermissionDetails -> {
                         // 通过用户权限id 查询目标集团表
-                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetails = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails1.getId());
-                        if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetails)) {
-                            List<GroupsDto> collect1 = userPermissionTargetGroupDetails.stream()
+                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
+                        if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetailsList)) {
+                            List<GroupsDto> collect1 = userPermissionTargetGroupDetailsList.stream()
                                     .filter(Objects::nonNull)
-                                    .map(userPermissionTargetGroupDetails1 -> {
+                                    .map(userPermissionTargetGroupDetails -> {
                                         // 通过集团id查询集团表
-                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails1.getGroupId());
+                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails.getGroupId());
                                         GroupsDto groupsDto = null;
-                                        if (groups != null){
+                                        if (groups != null) {
                                             groupsDto = new GroupsDto();
                                             BeanUtils.copyProperties(groups, groupsDto);
                                             groupsDto.setTid(groups.getId());
@@ -185,7 +189,7 @@ public class GroupsService {
                                     })
                                     .filter(Objects::nonNull)
                                     .collect(Collectors.toList());
-                            if (!CollectionUtils.isEmpty(collect1)){
+                            if (!CollectionUtils.isEmpty(collect1)) {
                                 groupsDtoList.addAll(collect1);
                             }
                         }
@@ -199,25 +203,26 @@ public class GroupsService {
 
     /**
      * 删除参数校验
+     *
      * @param id
      */
     private void deleteGroupParameterCheck(Integer id) {
-        if (id == null || id < 0){
+        if (id == null || id < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Groups groups = selectByPrimaryKey(id);
-        if (groups == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (groups == null) {
+            throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
         }
         // 查询公司表，如果存在使用，不能删除
         Integer selectGroupsCount = companyService.selectGroupCountByGroupId(id);
-        if (selectGroupsCount != null && selectGroupsCount > 0){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        if (selectGroupsCount != null && selectGroupsCount > 0) {
+            throw new ProvisioningException(BundleKey.THE_DATA_IS_STILL_IN_USE, BundleKey.THE_DATA_IS_STILL_IN_USE_MEG);
         }
         // 查询目标集团表，如果存在使用不能删除
         Integer userPermissionTargetGroupsDetailsCount = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsCountByGroupId(id);
-        if (userPermissionTargetGroupsDetailsCount != null && userPermissionTargetGroupsDetailsCount > 0){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST);
+        if (userPermissionTargetGroupsDetailsCount != null && userPermissionTargetGroupsDetailsCount > 0) {
+            throw new ProvisioningException(BundleKey.THE_DATA_IS_STILL_IN_USE, BundleKey.THE_DATA_IS_STILL_IN_USE_MEG);
         }
     }
 
@@ -228,58 +233,60 @@ public class GroupsService {
      */
     private Groups editGroupParameterCheck(GroupsDto groupsDto) {
         if (groupsDto == null || groupsDto.getTid() == null || groupsDto.getTid() < 0 || StringUtils.isBlank(groupsDto.getGroupName())
-                || groupsDto.getExpireDate() == null){
+                || groupsDto.getExpireDate() == null) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Groups groups = selectByPrimaryKey(groupsDto.getTid());
-        if (groups == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (groups == null) {
+            throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
         }
         Groups groupsItself = groupsMapper.selectGroupsInAdditionToItself(groupsDto.getTid(), groupsDto.getGroupName(), groupsDto.getGroupCode());
-        if (groupsItself != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        if (groupsItself != null) {
+            throw new ProvisioningException(BundleKey.GROUPS_ALREADY_EXIST, BundleKey.GROUPS_ALREADY_EXIST_MSG);
         }
-        buildUpdateParameter(groups,groupsDto);
+        buildUpdateParameter(groups, groupsDto);
         return groups;
     }
 
     /**
      * 更新参数封装
+     *
      * @param groups
      * @param groupsDto
      */
     private void buildUpdateParameter(Groups groups, GroupsDto groupsDto) {
         /** 集团名称 **/
-        if (StringUtils.isNoneBlank(groupsDto.getGroupName())){
+        if (StringUtils.isNoneBlank(groupsDto.getGroupName())) {
             groups.setGroupName(groupsDto.getGroupName());
         }
         /** 到期日 **/
-        if (groupsDto.getExpireDate() != null){
+        if (groupsDto.getExpireDate() != null) {
             groups.setExpireDate(groupsDto.getExpireDate());
         }
         /** 更新周期 **/
-        if (StringUtils.isNoneBlank(groupsDto.getUpdateCycle())){
+        if (StringUtils.isNoneBlank(groupsDto.getUpdateCycle())) {
             groups.setUpdateCycle(groupsDto.getUpdateCycle());
         }
         /** 下次更新日期 **/
-        if (groupsDto.getNextUpdateDate() != null){
+        if (groupsDto.getNextUpdateDate() != null) {
             groups.setNextUpdateDate(groupsDto.getNextUpdateDate());
         }
     }
 
     /**
      * 添加参数校验
+     *
      * @param groupsDto
      */
     private void addGroupParameterCheck(GroupsDto groupsDto) {
         if (groupsDto == null || StringUtils.isBlank(groupsDto.getGroupName()) || StringUtils.isBlank(groupsDto.getGroupCode())
-                || groupsDto.getExpireDate() == null){
+                || groupsDto.getExpireDate() == null) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
         Groups groups = groupsMapper.selectOne(new Groups(groupsDto.getGroupName(), groupsDto.getGroupCode()));
-        if (groups != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        if (groups != null) {
+            throw new ProvisioningException(BundleKey.GROUPS_ALREADY_EXIST, BundleKey.GROUPS_ALREADY_EXIST_MSG);
         }
     }
 }

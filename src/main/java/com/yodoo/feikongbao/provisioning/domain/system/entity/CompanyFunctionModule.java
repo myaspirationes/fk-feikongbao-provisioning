@@ -7,13 +7,19 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class CompanyFunctionModule extends BaseEntity {
 
-    /** 功能模块id **/
+    /**
+     * 功能模块id
+     **/
     private Integer functionModuleId;
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** 状态，0：启用，1：停用 **/
+    /**
+     * 状态，0：启用，1：停用
+     **/
     private Integer status;
 
     public CompanyFunctionModule() {

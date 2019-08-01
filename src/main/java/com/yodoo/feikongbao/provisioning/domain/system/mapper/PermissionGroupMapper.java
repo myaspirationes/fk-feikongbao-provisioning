@@ -8,6 +8,7 @@ public interface PermissionGroupMapper extends BaseMapper<PermissionGroup> {
 
     /**
      * 查询除自身以外是否有相同的数据
+     *
      * @param id
      * @param groupCode
      * @param groupName

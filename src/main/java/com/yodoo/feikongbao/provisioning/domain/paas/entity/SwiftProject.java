@@ -9,19 +9,29 @@ import java.math.BigDecimal;
  */
 public class SwiftProject extends BaseEntity {
 
-    /** 租户名称 **/
+    /**
+     * 租户名称
+     **/
     private String projectName;
 
-    /** 最大使用范围（单位M，1M=1024B） **/
+    /**
+     * 最大使用范围（单位M，1M=1024B）
+     **/
     private BigDecimal maxSize;
 
-    /** 所属用户使用范围 **/
+    /**
+     * 所属用户使用范围
+     **/
     private BigDecimal userSize;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
     public String getProjectName() {

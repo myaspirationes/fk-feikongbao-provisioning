@@ -7,13 +7,19 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class Neo4jInstance extends BaseEntity {
 
-    /** neo4j名称 **/
+    /**
+     * neo4j名称
+     **/
     private String neo4jName;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
     public String getNeo4jName() {

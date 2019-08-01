@@ -11,13 +11,19 @@ import java.util.List;
  */
 public class DbGroupDto extends BaseDto {
 
-    /** 组code **/
+    /**
+     * 组code
+     **/
     private String groupCode;
 
-    /** 组名称 **/
+    /**
+     * 组名称
+     **/
     private String groupName;
 
-    /** DB 数据库表 **/
+    /**
+     * DB 数据库表
+     **/
     private List<DbSchemaDto> dbSchemaDtoList;
 
     public String getGroupCode() {

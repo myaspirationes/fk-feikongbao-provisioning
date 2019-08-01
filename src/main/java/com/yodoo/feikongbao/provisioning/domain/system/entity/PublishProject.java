@@ -7,28 +7,44 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class PublishProject extends BaseEntity {
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** ecs实例id **/
+    /**
+     * ecs实例id
+     **/
     private Integer vmInstanceId;
 
-    /** 项目名称 **/
+    /**
+     * 项目名称
+     **/
     private String projectName;
 
-    /** 项目类型 **/
+    /**
+     * 项目类型
+     **/
     private String projectType;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
-    /** 版本 **/
+    /**
+     * 版本
+     **/
     private String version;
 
-    /** 状态，0 待发布，1 运行中，2：已停止 **/
+    /**
+     * 状态，0 待发布，1 运行中，2：已停止
+     **/
     private Integer status;
 
     public Integer getCompanyId() {

@@ -7,7 +7,9 @@ package com.yodoo.feikongbao.provisioning.domain.paas.dto;
  **/
 public class MqDto {
 
-    /** vhosts 名称**/
+    /**
+     * vhosts 名称
+     **/
     private String name;
 
     public String getName() {

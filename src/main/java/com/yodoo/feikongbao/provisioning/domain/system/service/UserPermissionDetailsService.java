@@ -23,10 +23,11 @@ public class UserPermissionDetailsService {
 
     /**
      * 通过用户 id 查询 用户权限列表
+     *
      * @param userId
      * @return
      */
-    public List<UserPermissionDetails> selectUserPermissionDetailsByUserId(Integer userId){
+    public List<UserPermissionDetails> selectUserPermissionDetailsByUserId(Integer userId) {
         UserPermissionDetails userPermissionDetails = new UserPermissionDetails();
         userPermissionDetails.setUserId(userId);
         return userPermissionDetailsMapper.select(userPermissionDetails);

@@ -36,23 +36,24 @@ public class DictionaryService {
 
     /**
      * 分页条件查询
+     *
      * @param dictionaryDto
      * @return
      */
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public PageInfoDto<DictionaryDto> queryDictionaryList(DictionaryDto dictionaryDto) {
-        Dictionary dictionary = new Dictionary();
-        BeanUtils.copyProperties(dictionaryDto, dictionary);
+        Dictionary dictionaryReq = new Dictionary();
+        BeanUtils.copyProperties(dictionaryDto, dictionaryReq);
         Page<?> pages = PageHelper.startPage(dictionaryDto.getPageNum(), dictionaryDto.getPageSize());
-        List<Dictionary> select = dictionaryMapper.select(dictionary);
+        List<Dictionary> select = dictionaryMapper.select(dictionaryReq);
         List<DictionaryDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)){
+        if (!CollectionUtils.isEmpty(select)) {
             collect = select.stream()
                     .filter(Objects::nonNull)
-                    .map(dictionary1 -> {
+                    .map(dictionary -> {
                         DictionaryDto dto = new DictionaryDto();
-                        BeanUtils.copyProperties(dictionary1, dto);
-                        dto.setTid(dictionary1.getId());
+                        BeanUtils.copyProperties(dictionary, dto);
+                        dto.setTid(dictionary.getId());
                         return dto;
                     })
                     .filter(Objects::nonNull)
@@ -63,6 +64,7 @@ public class DictionaryService {
 
     /**
      * 添加
+     *
      * @param dictionaryDto
      * @return
      */
@@ -71,12 +73,13 @@ public class DictionaryService {
         addDictionaryParameterCheck(dictionaryDto);
 
         Dictionary dictionary = new Dictionary();
-        BeanUtils.copyProperties(dictionaryDto,dictionary);
+        BeanUtils.copyProperties(dictionaryDto, dictionary);
         return dictionaryMapper.insertSelective(dictionary);
     }
 
     /**
      * 更新
+     *
      * @param dictionaryDto
      * @return
      */
@@ -88,6 +91,7 @@ public class DictionaryService {
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
@@ -99,14 +103,15 @@ public class DictionaryService {
 
     /**
      * 详情
+     *
      * @param id
      * @return
      */
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public DictionaryDto getDictionaryDetails(Integer id) {
         Dictionary dictionary = selectByPrimaryKey(id);
-        DictionaryDto dictionaryDto = new DictionaryDto();;
-        if (dictionary != null){
+        DictionaryDto dictionaryDto = new DictionaryDto();
+        if (dictionary != null) {
             BeanUtils.copyProperties(dictionary, dictionaryDto);
             dictionaryDto.setTid(dictionary.getId());
         }
@@ -115,30 +120,33 @@ public class DictionaryService {
 
     /**
      * 删除参数校验
+     *
      * @param id
      * @return
      */
     private void deleteDictionaryParameterCheck(Integer id) {
-        if (id == null || id < 0){
+        if (id == null || id < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Dictionary dictionary = selectByPrimaryKey(id);
-        if (dictionary == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (dictionary == null) {
+            throw new ProvisioningException(BundleKey.DICTIONARY_NOT_EXIST, BundleKey.DICTIONARY_NOT_EXIST_MSG);
         }
     }
 
     /**
      * 通过id查询
+     *
      * @param id
      * @return
      */
-    private Dictionary selectByPrimaryKey(Integer id){
+    private Dictionary selectByPrimaryKey(Integer id) {
         return dictionaryMapper.selectByPrimaryKey(id);
     }
 
     /**
      * 更新参数校验
+     *
      * @param dictionaryDto
      * @return
      */
@@ -146,30 +154,30 @@ public class DictionaryService {
         if (dictionaryDto == null || dictionaryDto.getTid() == null || dictionaryDto.getTid() < 0
                 || StringUtils.isBlank(dictionaryDto.getType()) || StringUtils.isBlank(dictionaryDto.getCode())
                 || StringUtils.isBlank(dictionaryDto.getName()) || StringUtils.isBlank(dictionaryDto.getValue())
-                || StringUtils.isBlank(dictionaryDto.getRemark())){
+                || StringUtils.isBlank(dictionaryDto.getRemark())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         Dictionary dictionary = selectByPrimaryKey(dictionaryDto.getTid());
-        if (dictionary == null){
-            throw new ProvisioningException(BundleKey.ON_EXIST, BundleKey.ON_EXIST_MEG);
+        if (dictionary == null) {
+            throw new ProvisioningException(BundleKey.DICTIONARY_NOT_EXIST, BundleKey.DICTIONARY_NOT_EXIST_MSG);
         }
-        Dictionary dictionarySelf = dictionaryMapper.selectDictionaryInAdditionToItself(dictionaryDto.getTid(),dictionaryDto.getType(), dictionaryDto.getCode(), dictionaryDto.getName(),dictionaryDto.getValue());
-        if (dictionarySelf != null){
-            throw new ProvisioningException(BundleKey.EXIST, BundleKey.EXIST_MEG);
+        Dictionary dictionarySelf = dictionaryMapper.selectDictionaryInAdditionToItself(dictionaryDto.getTid(), dictionaryDto.getType(), dictionaryDto.getCode(), dictionaryDto.getName(), dictionaryDto.getValue());
+        if (dictionarySelf != null) {
+            throw new ProvisioningException(BundleKey.DICTIONARY_ALREADY_EXIST, BundleKey.DICTIONARY_ALREADY_EXIST_MSG);
         }
-        if (StringUtils.isNoneBlank(dictionaryDto.getType())){
+        if (StringUtils.isNoneBlank(dictionaryDto.getType())) {
             dictionary.setType(dictionaryDto.getType());
         }
-        if (StringUtils.isNoneBlank(dictionaryDto.getCode())){
+        if (StringUtils.isNoneBlank(dictionaryDto.getCode())) {
             dictionary.setCode(dictionaryDto.getCode());
         }
-        if (StringUtils.isNoneBlank(dictionaryDto.getName())){
+        if (StringUtils.isNoneBlank(dictionaryDto.getName())) {
             dictionary.setName(dictionaryDto.getName());
         }
-        if (StringUtils.isNoneBlank(dictionaryDto.getValue())){
+        if (StringUtils.isNoneBlank(dictionaryDto.getValue())) {
             dictionary.setValue(dictionaryDto.getValue());
         }
-        if (StringUtils.isNoneBlank(dictionaryDto.getRemark())){
+        if (StringUtils.isNoneBlank(dictionaryDto.getRemark())) {
             dictionary.setRemark(dictionaryDto.getRemark());
         }
         return dictionary;
@@ -177,13 +185,14 @@ public class DictionaryService {
 
     /**
      * 添加参数校验
+     *
      * @param dictionaryDto
      * @return
      */
     private void addDictionaryParameterCheck(DictionaryDto dictionaryDto) {
         if (dictionaryDto == null || StringUtils.isBlank(dictionaryDto.getType()) || StringUtils.isBlank(dictionaryDto.getCode())
                 || StringUtils.isBlank(dictionaryDto.getName()) || StringUtils.isBlank(dictionaryDto.getValue())
-                || StringUtils.isBlank(dictionaryDto.getRemark())){
+                || StringUtils.isBlank(dictionaryDto.getRemark())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
@@ -192,9 +201,9 @@ public class DictionaryService {
         dictionary.setCode(dictionaryDto.getCode());
         dictionary.setName(dictionaryDto.getName());
         dictionary.setValue(dictionaryDto.getValue());
-        Dictionary dictionary1 = dictionaryMapper.selectOne(dictionary);
-        if (dictionary1 != null){
-            throw new ProvisioningException(BundleKey.DICTIONARY_EXIST, BundleKey.DICTIONARY_EXIST_MSG);
+        Dictionary dictionaryResponse = dictionaryMapper.selectOne(dictionary);
+        if (dictionaryResponse != null) {
+            throw new ProvisioningException(BundleKey.DICTIONARY_ALREADY_EXIST, BundleKey.DICTIONARY_ALREADY_EXIST_MSG);
         }
     }
 }

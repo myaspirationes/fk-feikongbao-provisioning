@@ -7,9 +7,21 @@ package com.yodoo.feikongbao.provisioning.enums;
  */
 public enum ProjectStatusEnum {
 
+    /**
+     * 待发布
+     **/
     TOPUBLISH(0, "待发布"),
+    /**
+     * 运行中
+     **/
     RUNNING(1, "运行中"),
+    /**
+     * 失败
+     **/
     FAIL(2, "失败"),
+    /**
+     * 已停止
+     **/
     STOP(3, "已停止");
 
     private Integer code;
@@ -24,7 +36,7 @@ public enum ProjectStatusEnum {
         return name;
     }
 
-    private ProjectStatusEnum(Integer code, String name) {
+    ProjectStatusEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }

@@ -7,16 +7,24 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class DbInstance extends BaseEntity {
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
     public String getIp() {

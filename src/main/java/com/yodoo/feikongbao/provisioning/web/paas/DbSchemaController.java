@@ -26,13 +26,14 @@ public class DbSchemaController {
 
     /**
      * 创建公司，选用数据库
+     *
      * @param dbSchemaDto
      * @return
      */
     @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto){
-        DbSchemaDto dbSchemaDto1 = dbSchemaService.useDbSchema(dbSchemaDto);
-        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDto1);
+    public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto) {
+        DbSchemaDto dbSchemaDtoResponse = dbSchemaService.useDbSchema(dbSchemaDto);
+        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDtoResponse);
     }
 }

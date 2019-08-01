@@ -6,7 +6,7 @@ import sun.misc.BASE64Encoder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-public class BASE64Util {
+public class Base64Util {
     /**
      * base64编码
      *

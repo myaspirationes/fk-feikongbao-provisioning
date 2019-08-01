@@ -9,16 +9,24 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class MqVhostDto extends BaseDto {
 
-    /** vhost 名称 **/
+    /**
+     * vhost 名称
+     **/
     private String vhostName;
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
     public String getVhostName() {

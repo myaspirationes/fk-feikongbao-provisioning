@@ -12,24 +12,38 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MenuDto extends BaseDto {
 
-    /** 父类id **/
+    /**
+     * 父类id
+     **/
     private Integer parentId;
 
-    /** 菜单code **/
+    /**
+     * 菜单code
+     **/
     private String menuCode;
 
-    /** 菜单名称 **/
+    /**
+     * 菜单名称
+     **/
     private String menuName;
 
-    /** 菜单目标 **/
+    /**
+     * 菜单目标
+     **/
     private String menuTarget;
 
-    /** 菜单顺序 **/
+    /**
+     * 菜单顺序
+     **/
     private String orderNo;
 
-    /** 子菜单 **/
+    /**
+     * 子菜单
+     **/
     private List<MenuDto> children;
-    /** 是否选中 true：选中，false：未选中 **/
+    /**
+     * 是否选中 true：选中，false：未选中
+     **/
     private Boolean isChecked;
 
     public Integer getParentId() {

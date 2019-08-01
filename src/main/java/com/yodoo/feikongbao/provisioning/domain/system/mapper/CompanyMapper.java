@@ -8,6 +8,7 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     /**
      * 查询除自已以外是否有相同的数据
+     *
      * @param id
      * @param companyCode
      * @param companyName

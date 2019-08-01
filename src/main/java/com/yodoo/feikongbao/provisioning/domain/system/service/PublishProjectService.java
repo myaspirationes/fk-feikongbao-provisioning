@@ -11,7 +11,7 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.ProjectStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
-import com.yodoo.feikongbao.provisioning.util.BASE64Util;
+import com.yodoo.feikongbao.provisioning.util.Base64Util;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
 import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * @Author houzhen
  * @Date 10:30 2019/7/31
-**/
+ **/
 @Service
 @Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
 public class PublishProjectService {
@@ -51,9 +51,10 @@ public class PublishProjectService {
 
     /**
      * 创建所需部署的项目
+     *
      * @Author houzhen
      * @Date 10:38 2019/7/31
-    **/
+     **/
     public void createPublishProjects(List<PublishProjectDto> projectList) {
         if (CollectionUtils.isEmpty(projectList)) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
@@ -84,7 +85,7 @@ public class PublishProjectService {
         if (!CollectionUtils.isEmpty(oldPublishProjectList)) {
             Example example = new Example(PublishProject.class);
             Example.Criteria criteria = example.createCriteria();
-            criteria.andEqualTo("companyId",projectList.get(0).getCompanyId());
+            criteria.andEqualTo("companyId", projectList.get(0).getCompanyId());
             example.and(criteria);
             publishProjectMapper.deleteByExample(example);
         }
@@ -96,8 +97,12 @@ public class PublishProjectService {
 
     }
 
-    // 校验参数
-    private void checkArgs(PublishProjectDto dto)  {
+    /**
+     * 校验参数
+     *
+     * @param dto
+     */
+    private void checkArgs(PublishProjectDto dto) {
         if (dto == null || dto.getCompanyId() == null || dto.getVmInstanceId() == null
                 || StringUtils.isEmpty(dto.getProjectName()) || StringUtils.isEmpty(dto.getProjectType())
                 || StringUtils.isEmpty(dto.getVersion())) {
@@ -107,9 +112,10 @@ public class PublishProjectService {
 
     /**
      * 公司创建完成后，发布项目
+     *
      * @Author houzhen
      * @Date 11:25 2019/7/31
-    **/
+     **/
     public void publishProjectsForCompanyCreateFinish(Integer companyId) {
         if (companyId == null) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
@@ -128,30 +134,43 @@ public class PublishProjectService {
         }
     }
 
-
-    // 根据公司id查询公司发布的项目信息
+    /**
+     * 根据公司id查询公司发布的项目信息
+     *
+     * @param companyId
+     * @return
+     */
     private List<PublishProject> getPublishProjectByCompanyId(Integer companyId) {
         Example example = new Example(PublishProject.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("companyId",companyId);
+        criteria.andEqualTo("companyId", companyId);
         example.and(criteria);
         return publishProjectMapper.selectByExample(example);
     }
 
-    // TODO 此发布方法需要修改
-    private String buildJob(String targetServerIP){
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("Authorization", "Basic " +BASE64Util.base64Encoder(jenkinsConfig.jenkinsUsername + ":" + jenkinsConfig.jenkinsPassword));
+    /**
+     * TODO 此发布方法需要修改
+     *
+     * @param targetServerIp
+     * @return
+     */
+    private String buildJob(String targetServerIp) {
+        Map<String, String> parameters = new HashMap<>(2);
+        parameters.put("Authorization", "Basic " + Base64Util.base64Encoder(jenkinsConfig.jenkinsUsername + ":" + jenkinsConfig.jenkinsPassword));
         // TODO 参数需要填写
-        parameters.put("IP", targetServerIP);
+        parameters.put("IP", targetServerIp);
         // TODO 不同的项目，需要不同的job
         return jenkinsUtils.buildJobWithParameters(jenkinsConfig.jenkinsBuildJobName, parameters);
     }
 
-    // 检查job状态
+    /**
+     * 检查job状态
+     *
+     * @param jobNameMap
+     */
     public void checkJobStatus(Map<String, PublishProject> jobNameMap) {
         Long startTime = System.currentTimeMillis();
-        for(;;) {
+        for (; ; ) {
             sleepSomeTime(jenkinsConfig.jenkinsCheckRunWaitTime);
             Iterator<Map.Entry<String, PublishProject>> iterator = jobNameMap.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -178,16 +197,20 @@ public class PublishProjectService {
             if (timeStamp - startTime > jenkinsConfig.jenkinsCheckRunWaitTimeTotal) {
                 if (jobNameMap.size() > 0) {
                     logger.error(String.format("build jenkins failed within %s jobName: %s", jenkinsConfig.jenkinsCheckRunWaitTimeTotal / 60000, jobNameMap));
-                    jobNameMap.forEach((key, value) ->{
+                    jobNameMap.forEach((key, value) -> {
                         this.updateProjectStatus(value, ProjectStatusEnum.FAIL.getCode());
                     });
                 }
-                return ;
+                return;
             }
         }
     }
 
-    // 休眠
+    /**
+     * 休眠
+     *
+     * @param sleepTime
+     */
     public void sleepSomeTime(int sleepTime) {
         try {
             Thread.sleep(sleepTime);
@@ -196,7 +219,12 @@ public class PublishProjectService {
         }
     }
 
-    // 更新项目状态
+    /**
+     * 更新项目状态
+     *
+     * @param publishProject
+     * @param status
+     */
     private void updateProjectStatus(PublishProject publishProject, Integer status) {
         publishProject.setStatus(status);
         publishProjectMapper.updateByPrimaryKey(publishProject);

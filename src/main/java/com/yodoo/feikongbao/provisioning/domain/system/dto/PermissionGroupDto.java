@@ -9,10 +9,14 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class PermissionGroupDto extends BaseDto {
 
-    /** 权限组code **/
+    /**
+     * 权限组code
+     **/
     private String groupCode;
 
-    /** 权限组名称 **/
+    /**
+     * 权限组名称
+     **/
     private String groupName;
 
     public PermissionGroupDto() {

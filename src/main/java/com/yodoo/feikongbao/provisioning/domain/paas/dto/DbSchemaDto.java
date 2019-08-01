@@ -9,37 +9,59 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class DbSchemaDto extends BaseDto {
 
-    /** DB实例id **/
+    /**
+     * DB实例id
+     **/
     private Integer dbInstanceId;
 
-    /** DB数据库组id **/
+    /**
+     * DB数据库组id
+     **/
     private Integer dbGroupId;
 
-    /** 数据库名 **/
+    /**
+     * 数据库名
+     **/
     private String schemaName;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
-    /** 状态 **/
+    /**
+     * 状态
+     **/
     private Integer status;
 
-    /** 类型，0：主，1：从 **/
+    /**
+     * 类型，0：主，1：从
+     **/
     private Integer type;
 
-    /** 公司id **/
+    /**
+     * 公司id
+     **/
     private Integer companyId;
 
-    /** 公司Code **/
+    /**
+     * 公司Code
+     **/
     private String companyCode;
 
-    /** 初始化数据库版本 **/
+    /**
+     * 初始化数据库版本
+     **/
     private String targetVersion;
 
-    /** DB实例表 **/
+    /**
+     * DB实例表
+     **/
     private DbInstanceDto dbInstanceDto;
 
     public Integer getDbInstanceId() {

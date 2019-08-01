@@ -183,16 +183,16 @@ public class JenkinsUtils {
      * @Date 17:43 2019/6/28
      **/
     public boolean isSuccess(String jobName, int number) {
-        int LastSuccessfulNumber = 0;
-        int LastUnsuccessfulNumber = 0;
+        int lastSuccessfulNumber = 0;
+        int lastUnsuccessfulNumber = 0;
         JobWithDetails job = getJobWithDetails(jobName);
-        LastSuccessfulNumber = job.getLastSuccessfulBuild().getNumber();
-        LastUnsuccessfulNumber = job.getLastUnsuccessfulBuild().getNumber();
+        lastSuccessfulNumber = job.getLastSuccessfulBuild().getNumber();
+        lastUnsuccessfulNumber = job.getLastUnsuccessfulBuild().getNumber();
         boolean flag = false;
-        if (LastSuccessfulNumber == number) {
+        if (lastSuccessfulNumber == number) {
             flag = true;
         }
-        if (LastUnsuccessfulNumber == number) {
+        if (lastUnsuccessfulNumber == number) {
             flag = false;
         }
         return flag;
@@ -204,7 +204,7 @@ public class JenkinsUtils {
      * @Author houzhen
      * @Date 17:45 2019/6/28
      **/
-    public boolean delJob(String jobName) {
+    public Boolean delJob(String jobName) {
         Boolean flag = false;
         try {
             jenkins.deleteJob(jobName);
@@ -221,7 +221,7 @@ public class JenkinsUtils {
      * @Author houzhen
      * @Date 17:45 2019/6/28
      **/
-    public boolean updateJob(String jobName, String config) {
+    public Boolean updateJob(String jobName, String config) {
         Boolean flag = false;
         try {
             jenkins.updateJob(jobName, config);
@@ -303,6 +303,7 @@ public class JenkinsUtils {
 
     /**
      * 休眠
+     *
      * @Author houzhen
      * @Date 15:32 2019/6/4
      **/
@@ -319,25 +320,25 @@ public class JenkinsUtils {
      * @param jobName ： job 名称
      * @return boolean
      */
-    public Boolean checkRunningStatusToJenkins(String jobName){
+    public Boolean checkRunningStatusToJenkins(String jobName) {
         // 校验参数
         RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(jobName));
         // 开始时间
         Long startTime = System.currentTimeMillis();
-        for(;;) {
+        for (; ; ) {
             // 要睡时间长点，要不然获取到的是上一次 build 的数据
             sleepSomeTime(jenkinsConfig.jenkinsCheckRunWaitTime);
             String jobRunResult = getJobRunResult(jobName);
-            if (org.apache.commons.lang3.StringUtils.isNoneBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())){
+            if (org.apache.commons.lang3.StringUtils.isNoneBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())) {
                 return true;
-            }else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
+            } else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
                     || BuildResult.ABORTED.name().equalsIgnoreCase(jobRunResult)
-                    || BuildResult.CANCELLED.name().equalsIgnoreCase(jobRunResult)){
+                    || BuildResult.CANCELLED.name().equalsIgnoreCase(jobRunResult)) {
                 return false;
             }
             // 超过一点时间，认为 build 失败
-            if(System.currentTimeMillis() - startTime > jenkinsConfig.jenkinsCheckRunWaitTimeTotal) {
-                logger.error(String.format("build jenkins failed within %s jobName: %s", jenkinsConfig.jenkinsCheckRunWaitTimeTotal /60000, jobName));
+            if (System.currentTimeMillis() - startTime > jenkinsConfig.jenkinsCheckRunWaitTimeTotal) {
+                logger.error(String.format("build jenkins failed within %s jobName: %s", jenkinsConfig.jenkinsCheckRunWaitTimeTotal / 60000, jobName));
                 return false;
             }
         }

@@ -28,12 +28,13 @@ public class MqVhostController {
 
     /**
      * 条件分页查询
+     *
      * @param mqVhostDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> queryMqVhostList(MqVhostDto mqVhostDto){
+    public ProvisioningDto<?> queryMqVhostList(MqVhostDto mqVhostDto) {
         PageInfoDto<MqVhostDto> pageInfoDto = mqVhostService.queryMqVhostList(mqVhostDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), MqVhostController.class);
@@ -45,25 +46,27 @@ public class MqVhostController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> getMqVhostDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getMqVhostDetails(@PathVariable Integer id) {
         MqVhostDto mqVhostDto = mqVhostService.getMqVhostDetails(id);
         return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto);
     }
 
     /**
      * 创建公司后 创建 消息队列
+     *
      * @param mqVhostDto
      * @return
      */
     @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto){
-        MqVhostDto mqVhostDto1 = mqVhostService.useMqVhost(mqVhostDto);
-        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto1);
+    public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto) {
+        MqVhostDto mqVhostDtoResponse = mqVhostService.useMqVhost(mqVhostDto);
+        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDtoResponse);
     }
 }

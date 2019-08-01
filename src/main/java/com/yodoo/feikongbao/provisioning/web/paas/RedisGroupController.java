@@ -31,12 +31,13 @@ public class RedisGroupController {
 
     /**
      * 条件分页查询
+     *
      * @param redisGroupDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> queryRedisGroupList(RedisGroupDto redisGroupDto){
+    public ProvisioningDto<?> queryRedisGroupList(RedisGroupDto redisGroupDto) {
         PageInfoDto<RedisGroupDto> pageInfoDto = redisGroupService.queryRedisGroupList(redisGroupDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), RedisGroupController.class);
@@ -48,12 +49,13 @@ public class RedisGroupController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> getRedisGroupDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getRedisGroupDetails(@PathVariable Integer id) {
         RedisGroupDto redisGroupDto = redisGroupService.getRedisGroupDetails(id);
         return new ProvisioningDto<RedisGroupDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisGroupDto);
     }

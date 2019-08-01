@@ -28,12 +28,13 @@ public class RedisInstanceController {
 
     /**
      * 条件分页查询
+     *
      * @param redisInstanceDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> queryRedisInstanceList(RedisInstanceDto redisInstanceDto){
+    public ProvisioningDto<?> queryRedisInstanceList(RedisInstanceDto redisInstanceDto) {
         PageInfoDto<RedisInstanceDto> pageInfoDto = redisInstanceService.queryRedisInstanceList(redisInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), RedisInstanceController.class);
@@ -45,26 +46,28 @@ public class RedisInstanceController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> getRedisInstanceDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getRedisInstanceDetails(@PathVariable Integer id) {
         RedisInstanceDto redisInstanceDto = redisInstanceService.getRedisInstanceDetails(id);
         return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
     }
 
     /**
      * 使用缓存
+     *
      * @param redisInstanceDto
      * @return
      */
     @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
-        RedisInstanceDto redisInstanceDto1 = redisInstanceService.useRedisInstance(redisInstanceDto);
-        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
+    public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto) {
+        RedisInstanceDto redisInstanceDtoResponse = redisInstanceService.useRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDtoResponse);
     }
 
 }

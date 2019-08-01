@@ -7,25 +7,39 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
  */
 public class DbSchema extends BaseEntity {
 
-    /** DB实例id **/
+    /**
+     * DB实例id
+     **/
     private Integer dbInstanceId;
 
-    /** DB数据库组id **/
+    /**
+     * DB数据库组id
+     **/
     private Integer dbGroupId;
 
-    /** 数据库名 **/
+    /**
+     * 数据库名
+     **/
     private String schemaName;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
-    /** 状态 **/
+    /**
+     * 状态
+     **/
     private Integer status;
 
-    /** 类型，0：主，1：从 **/
+    /**
+     * 类型，0：主，1：从
+     **/
     private Integer type;
 
     public Integer getDbInstanceId() {

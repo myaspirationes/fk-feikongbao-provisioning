@@ -7,9 +7,13 @@ package com.yodoo.feikongbao.provisioning.enums;
  */
 public enum ScriptMigrationDataEnum {
 
-    /** 执行 */
+    /**
+     * 执行
+     */
     ROLL_FORWARD("roll-forward"),
-    /** 回滚 */
+    /**
+     * 回滚
+     */
     ROLL_BACK("rollback");
 
     private String action;
@@ -18,7 +22,7 @@ public enum ScriptMigrationDataEnum {
         return action;
     }
 
-    private ScriptMigrationDataEnum(String action){
+    ScriptMigrationDataEnum(String action) {
         this.action = action;
     }
 }

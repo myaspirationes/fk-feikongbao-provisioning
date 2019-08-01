@@ -21,7 +21,7 @@ import java.util.Set;
  * @Created by houzhen
  */
 @Service
-public class ProvisioningUserDetailsService implements UserDetailsService {
+public class ProvisioningUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserService userService;

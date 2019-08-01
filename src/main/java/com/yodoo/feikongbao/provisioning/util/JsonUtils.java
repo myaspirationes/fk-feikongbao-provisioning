@@ -13,14 +13,14 @@ import java.util.Map;
 
 public class JsonUtils {
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * javaBean,list,array convert to json string
      */
     public static String obj2json(Object obj) {
         try {
-            return objectMapper.writeValueAsString(obj);
+            return OBJECT_MAPPER.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class JsonUtils {
      */
     public static <T> T json2pojo(String jsonStr, Class<T> clazz) {
         try {
-            return objectMapper.readValue(jsonStr, clazz);
+            return OBJECT_MAPPER.readValue(jsonStr, clazz);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +66,7 @@ public class JsonUtils {
      */
     public static <T> Map<String, Object> json2map(String jsonStr) {
         try {
-            return objectMapper.readValue(jsonStr, Map.class);
+            return OBJECT_MAPPER.readValue(jsonStr, Map.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,7 +79,7 @@ public class JsonUtils {
     public static <T> Map<String, T> json2map(String jsonStr, Class<T> clazz) {
         Map<String, T> result = new HashMap<String, T>();
         try {
-            Map<String, Map<String, Object>> map = objectMapper.readValue(jsonStr, new TypeReference<Map<String, T>>() {
+            Map<String, Map<String, Object>> map = OBJECT_MAPPER.readValue(jsonStr, new TypeReference<Map<String, T>>() {
             });
             for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
                 result.put(entry.getKey(), map2pojo(entry.getValue(), clazz));
@@ -96,7 +96,7 @@ public class JsonUtils {
     public static <T> List<T> json2list(String jsonArrayStr, Class<T> clazz) {
         List<T> result = new ArrayList<T>();
         try {
-            result = objectMapper.readValue(jsonArrayStr, objectMapper.getTypeFactory().constructParametricType(ArrayList.class, clazz));
+            result = OBJECT_MAPPER.readValue(jsonArrayStr, OBJECT_MAPPER.getTypeFactory().constructParametricType(ArrayList.class, clazz));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,6 +118,6 @@ public class JsonUtils {
      * map convert to javaBean
      */
     public static <T> T map2pojo(Map map, Class<T> clazz) {
-        return objectMapper.convertValue(map, clazz);
+        return OBJECT_MAPPER.convertValue(map, clazz);
     }
 }

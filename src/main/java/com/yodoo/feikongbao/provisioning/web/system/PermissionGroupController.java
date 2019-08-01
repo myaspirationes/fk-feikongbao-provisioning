@@ -28,12 +28,13 @@ public class PermissionGroupController {
 
     /**
      * 条件分页查询
+     *
      * @param permissionGroupDto
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
-    public ProvisioningDto<?> queryPermissionGroupList(PermissionGroupDto permissionGroupDto){
+    public ProvisioningDto<?> queryPermissionGroupList(PermissionGroupDto permissionGroupDto) {
         PageInfoDto<PermissionGroupDto> pageInfoDto = permissionGroupService.queryPermissionGroupList(permissionGroupDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), PermissionGroupController.class);
@@ -45,48 +46,52 @@ public class PermissionGroupController {
 
     /**
      * 添加
+     *
      * @param permissionGroupDto
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
-    public ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
+    public ProvisioningDto<?> addPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto) {
         permissionGroupService.addPermissionGroup(permissionGroupDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
      * 更新
+     *
      * @param permissionGroupDto
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
-    public ProvisioningDto<?> editPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto){
+    public ProvisioningDto<?> editPermissionGroup(@RequestBody PermissionGroupDto permissionGroupDto) {
         permissionGroupService.editPermissionGroup(permissionGroupDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
-    public ProvisioningDto<?> deletePermissionGroup(@PathVariable Integer id){
+    public ProvisioningDto<?> deletePermissionGroup(@PathVariable Integer id) {
         permissionGroupService.deletePermissionGroup(id);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
-    public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id){
+    public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id) {
         PermissionGroupDto permissionGroupDetails = permissionGroupService.getPermissionGroupDetails(id);
         return new ProvisioningDto<PermissionGroupDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, permissionGroupDetails);
     }

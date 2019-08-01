@@ -13,7 +13,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -43,6 +42,7 @@ public class RabbitMqVirtualHostService {
 
     /**
      * 创建 virtualHost
+     *
      * @param virtualHostName
      * @return
      * @throws Exception
@@ -51,12 +51,12 @@ public class RabbitMqVirtualHostService {
         // 判断此 virtualHostName 是否存在,存在不创建
         try {
             MqResponseEnum mqEnum = vhostsNameExist(virtualHostName);
-            if (mqEnum.code == MqResponseEnum.NO_EXIST.code){
+            if (mqEnum.code == MqResponseEnum.NO_EXIST.code) {
                 return execute(virtualHostName, HttpMethod.PUT);
-            }else if (mqEnum.code == MqResponseEnum.EXIST.code){
+            } else if (mqEnum.code == MqResponseEnum.EXIST.code) {
                 throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR, BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR_MSG);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("创建 Virtual host 失败，vhostName ： {}", virtualHostName, e);
         }
         throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR, BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG);
@@ -64,6 +64,7 @@ public class RabbitMqVirtualHostService {
 
     /**
      * 删除virtualHost
+     *
      * @param virtualHostName
      * @return
      * @throws UnsupportedEncodingException
@@ -72,12 +73,12 @@ public class RabbitMqVirtualHostService {
         // 判断此 virtualHostName 是否存在,存在不创建
         try {
             MqResponseEnum mqEnum = vhostsNameExist(virtualHostName);
-            if (mqEnum.code == MqResponseEnum.EXIST.code){
+            if (mqEnum.code == MqResponseEnum.EXIST.code) {
                 return execute(virtualHostName, HttpMethod.DELETE);
-            }else if (mqEnum.code == MqResponseEnum.NO_EXIST.code){
+            } else if (mqEnum.code == MqResponseEnum.NO_EXIST.code) {
                 throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_NOT_EXIST_ERROR, BundleKey.RABBITMQ_VHOST_NAME_NOT_EXIST_ERROR_MSG);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("删除 Virtual host 失败，vhostName ： {}", virtualHostName, e);
         }
         throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR, BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG);
@@ -85,6 +86,7 @@ public class RabbitMqVirtualHostService {
 
     /**
      * 执行 http 请求
+     *
      * @param virtualHostName
      * @param method
      * @return
@@ -92,11 +94,12 @@ public class RabbitMqVirtualHostService {
     private MqResponseEnum execute(String virtualHostName, HttpMethod method) {
         StringBuilder createUrl = buildUrl();
         createUrl.append(virtualHostName);
-        ParameterizedTypeReference<String> entity = new ParameterizedTypeReference<String>() {};
+        ParameterizedTypeReference<String> entity = new ParameterizedTypeReference<String>() {
+        };
         ResponseEntity<String> exchange = restTemplate.exchange(URI.create(createUrl.toString()), method, buildHttpEntityHeaders(), entity);
-        if (exchange.getStatusCodeValue() == MqResponseEnum.CREATE_SUCCESS.code){
+        if (exchange.getStatusCodeValue() == MqResponseEnum.CREATE_SUCCESS.code) {
             return MqResponseEnum.CREATE_SUCCESS;
-        }else if (exchange.getStatusCodeValue() == MqResponseEnum.DELETE_SUCCESS.code){
+        } else if (exchange.getStatusCodeValue() == MqResponseEnum.DELETE_SUCCESS.code) {
             return MqResponseEnum.DELETE_SUCCESS;
         }
         throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR, BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG);
@@ -108,13 +111,14 @@ public class RabbitMqVirtualHostService {
      * @return
      */
     private MqResponseEnum vhostsNameExist(String virtualHostName) {
-        if (StringUtils.isBlank(virtualHostName)){
+        if (StringUtils.isBlank(virtualHostName)) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         StringBuilder existUrl = buildUrl();
-        ParameterizedTypeReference<List<MqDto>> entity = new ParameterizedTypeReference<List<MqDto>>() {};
+        ParameterizedTypeReference<List<MqDto>> entity = new ParameterizedTypeReference<List<MqDto>>() {
+        };
         ResponseEntity<List<MqDto>> getList = restTemplate.exchange(URI.create(existUrl.toString()), HttpMethod.GET, buildHttpEntityHeaders(), entity);
-        if (getList.getStatusCodeValue() <= MqResponseEnum.SUCCESS.code){
+        if (getList.getStatusCodeValue() <= MqResponseEnum.SUCCESS.code) {
             List<String> collect = getList.getBody().stream()
                     .filter(Objects::nonNull)
                     .filter(b -> StringUtils.isNotBlank(b.getName()))
@@ -127,6 +131,7 @@ public class RabbitMqVirtualHostService {
 
     /**
      * 拼接 url
+     *
      * @return
      */
     private StringBuilder buildUrl() {
@@ -141,6 +146,7 @@ public class RabbitMqVirtualHostService {
 
     /**
      * 创建请求头
+     *
      * @return
      * @throws UnsupportedEncodingException
      */
@@ -151,23 +157,24 @@ public class RabbitMqVirtualHostService {
         usernameAndPassword.append(":");
         usernameAndPassword.append(rabbitMqConfig.rabbitmqAdminPassword);
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Authorization", "Basic "+ buildBase64Encoder(usernameAndPassword.toString()));
+        headers.add("Authorization", "Basic " + buildBase64Encoder(usernameAndPassword.toString()));
         headers.add("Content-Type", "application/json");
         return new HttpEntity<>(headers);
     }
 
     /**
      * 转 base64
+     *
      * @param str
      * @return
      */
     private String buildBase64Encoder(String str) {
-        if (StringUtils.isBlank(str)){
+        if (StringUtils.isBlank(str)) {
             return null;
         }
         try {
             return new BASE64Encoder().encode(str.getBytes("UTF-8"));
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(" RabbitMq username ,password  转 BASE64Encoder 失败 ： {}", str, e);
         }
         return null;

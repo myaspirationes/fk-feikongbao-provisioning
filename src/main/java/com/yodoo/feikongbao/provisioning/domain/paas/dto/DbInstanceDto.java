@@ -9,16 +9,24 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
  */
 public class DbInstanceDto extends BaseDto {
 
-    /** IP **/
+    /**
+     * IP
+     **/
     private String ip;
 
-    /** 端口 **/
+    /**
+     * 端口
+     **/
     private Integer port;
 
-    /** 用户名 **/
+    /**
+     * 用户名
+     **/
     private String username;
 
-    /** 密码 **/
+    /**
+     * 密码
+     **/
     private String password;
 
     public String getIp() {
