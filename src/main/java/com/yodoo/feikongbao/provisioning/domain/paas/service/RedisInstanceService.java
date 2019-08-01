@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,20 +64,7 @@ public class RedisInstanceService {
             BeanUtils.copyProperties(redisInstanceDto, redisInstance);
         }
         Page<?> pages = PageHelper.startPage(redisInstanceDto.getPageNum(), redisInstanceDto.getPageSize());
-        List<RedisInstance> list = redisInstanceMapper.select(redisInstance);
-        List<RedisInstanceDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            collect = list.stream()
-                    .filter(Objects::nonNull)
-                    .map(redisInstance1 -> {
-                        RedisInstanceDto dto = new RedisInstanceDto();
-                        BeanUtils.copyProperties(redisInstance1, dto);
-                        dto.setTid(redisInstance1.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
+        List<RedisInstanceDto> collect = selectRedisInstance(redisInstance);
         return new PageInfoDto<RedisInstanceDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -127,6 +115,17 @@ public class RedisInstanceService {
     }
 
     /**
+     * 通过 redisGroupId 查询
+     * @param redisGroupId
+     * @return
+     */
+    public List<RedisInstanceDto> selectRedisInstanceListByRedisGroupId(Integer redisGroupId) {
+        RedisInstance redisInstance = new RedisInstance();
+        redisInstance.setRedisGroupId(redisGroupId);
+        return selectRedisInstance(redisInstance);
+    }
+
+    /**
      * 使用缓存校验
      * @param redisInstanceDto
      */
@@ -152,5 +151,26 @@ public class RedisInstanceService {
         }
         redisInstanceDto.setCompanyCode(company.getCompanyCode());
         return redisInstance;
+    }
+
+    /**
+     * 条件查询
+     * @param redisInstance
+     * @return
+     */
+    private List<RedisInstanceDto> selectRedisInstance(RedisInstance redisInstance) {
+        List<RedisInstance> select = redisInstanceMapper.select(redisInstance);
+        List<RedisInstanceDto> collect = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(select)){
+            collect = select.stream()
+                    .filter(Objects::nonNull)
+                    .map(redisInstance1 -> {
+                        RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
+                        BeanUtils.copyProperties(redisInstance1, redisInstanceDto);
+                        redisInstanceDto.setTid(redisInstance1.getId());
+                        return redisInstanceDto;
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+        return collect;
     }
 }

@@ -39,6 +39,9 @@ public class DbSchemaDto extends BaseDto {
     /** 初始化数据库版本 **/
     private String targetVersion;
 
+    /** DB实例表 **/
+    private DbInstanceDto dbInstanceDto;
+
     public Integer getDbInstanceId() {
         return dbInstanceId;
     }
@@ -126,6 +129,15 @@ public class DbSchemaDto extends BaseDto {
 
     public DbSchemaDto setTargetVersion(String targetVersion) {
         this.targetVersion = targetVersion;
+        return this;
+    }
+
+    public DbInstanceDto getDbInstanceDto() {
+        return dbInstanceDto;
+    }
+
+    public DbSchemaDto setDbInstanceDto(DbInstanceDto dbInstanceDto) {
+        this.dbInstanceDto = dbInstanceDto;
         return this;
     }
 }

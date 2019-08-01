@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbSchemaDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbGroup;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
@@ -20,12 +21,16 @@ import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
 import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description ：数据库信息
@@ -91,6 +96,37 @@ public class DbSchemaService {
                 CompanyCreationStepsEnum.DATABASE_STEP.getOrder(),CompanyCreationStepsEnum.DATABASE_STEP.getCode()));
 
         return dbSchemaDto;
+    }
+
+    /**
+     * 通过 dbGroupId 查询
+     * @param dbGroupId
+     * @return
+     */
+    public List<DbSchemaDto> selectDbSchemaByDbGroupId(Integer dbGroupId){
+        Example example = new Example(DbSchema.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("dbGroupId", dbGroupId);
+        List<DbSchema> dbSchemas = dbSchemaMapper.selectByExample(example);
+        List<DbSchemaDto> collect = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(dbSchemas)){
+            collect = dbSchemas.stream()
+                    .filter(Objects::nonNull)
+                    .map(dbSchema -> {
+                        DbSchemaDto dbSchemaDto = new DbSchemaDto();
+                        BeanUtils.copyProperties(dbSchema, dbSchemaDto);
+                        dbSchemaDto.setTid(dbSchema.getId());
+                        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
+                        if (dbInstance != null){
+                            DbInstanceDto dbInstanceDto = new DbInstanceDto();
+                            BeanUtils.copyProperties(dbInstanceDto, dbInstance);
+                            dbInstanceDto.setTid(dbInstance.getId());
+                            dbSchemaDto.setDbInstanceDto(dbInstanceDto);
+                        }
+                        return dbSchemaDto;
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+        return collect;
     }
 
     /**

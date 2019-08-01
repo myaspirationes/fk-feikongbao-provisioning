@@ -5,7 +5,9 @@ import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisGroupDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisGroup;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.RedisGroupMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class RedisGroupService {
 
     @Autowired
     private RedisGroupMapper redisGroupMapper;
+
+    @Autowired
+    private RedisInstanceService redisInstanceService;
 
     /**
      * 条件分页查询
@@ -80,5 +85,24 @@ public class RedisGroupService {
      */
     public RedisGroup selectByPrimaryKey(Integer id){
         return redisGroupMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 通过缓存组 id 查询
+     * @param id
+     * @return
+     */
+    public RedisGroupDto selectRedisGroupByID(Integer id) {
+        RedisGroup redisGroup = selectByPrimaryKey(id);
+        RedisGroupDto redisGroupDto = new RedisGroupDto();
+        if (redisGroup != null){
+            BeanUtils.copyProperties(redisGroup, redisGroupDto);
+            redisGroupDto.setTid(redisGroup.getId());
+            List<RedisInstanceDto> redisInstances = redisInstanceService.selectRedisInstanceListByRedisGroupId(redisGroup.getId());
+            if (!CollectionUtils.isEmpty(redisInstances)){
+                redisGroupDto.setRedisInstanceDtoList(redisInstances);
+            }
+        }
+        return redisGroupDto;
     }
 }

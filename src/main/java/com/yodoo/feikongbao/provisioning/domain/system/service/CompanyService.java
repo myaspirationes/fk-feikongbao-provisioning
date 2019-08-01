@@ -4,6 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.*;
+import com.yodoo.feikongbao.provisioning.domain.paas.service.*;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
@@ -43,6 +46,21 @@ public class CompanyService {
 
     @Autowired
     private ApolloService apolloService;
+
+    @Autowired
+    private DbGroupService dbGroupService;
+
+    @Autowired
+    private RedisGroupService redisGroupService;
+
+    @Autowired
+    private SwiftProjectService swiftProjectService;
+
+    @Autowired
+    private MqVhostService mqVhostService;
+
+    @Autowired
+    private Neo4jInstanceService neo4jInstanceService;
 
     /**
      * 分页查询
@@ -140,22 +158,6 @@ public class CompanyService {
     }
 
     /**
-     * 详情
-     * @param id
-     * @return
-     */
-    @PreAuthorize("hasAnyAuthority('company_manage')")
-    public CompanyDto getCompanyDetails(Integer id) {
-        Company company = selectByPrimaryKey(id);
-        CompanyDto companyDto = new CompanyDto();
-        if (company != null){
-            BeanUtils.copyProperties(company, companyDto);
-            companyDto.setTid(company.getId());
-        }
-        return companyDto;
-    }
-
-    /**
      * 通过集团id 查询
      * @param groupsId
      * @return
@@ -186,6 +188,115 @@ public class CompanyService {
             companyDto.setTid(company1.getId());
         }
         return companyDto;
+    }
+
+    /**
+     * 详情：
+     * dbGroupId ：DB 数据库组id
+     * redisGroupId ： redis 组id
+     * swiftProjectId ：swift 租户id
+     * mqVhostId ： 消息队列 vhost
+     * neo4jInstanceId ：neo4j 实例id
+     * @param id
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public CompanyDto getCompanyDetails(Integer id) {
+        Company company = selectByPrimaryKey(id);
+        CompanyDto companyDto = new CompanyDto();
+        if (company != null){
+            BeanUtils.copyProperties(company, companyDto);
+            companyDto.setTid(company.getId());
+            // DB 数据库组
+            getDbGroupDto(companyDto);
+
+            // redisGroupId ： redis 组id
+            getRedisGroupDto(companyDto);
+
+            // swiftProjectId ：swift 租户id
+            getSwiftProjectDto(companyDto);
+
+            // mqVhostId ： 消息队列 vhost
+            getMqVhostDto(companyDto);
+
+            // neo4jInstanceId ：neo4j 实例id
+            getNeo4jInstanceDto(companyDto);
+        }
+        return companyDto;
+    }
+
+    /**
+     * neo4jInstanceId ：neo4j 实例id
+     * @param companyDto
+     */
+    private void getNeo4jInstanceDto(CompanyDto companyDto) {
+        if (companyDto.getNeo4jInstanceId() != null && companyDto.getNeo4jInstanceId() > 0){
+            Neo4jInstance neo4jInstance = neo4jInstanceService.selectByPrimaryKey(companyDto.getNeo4jInstanceId());
+            if (neo4jInstance != null){
+                Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
+                BeanUtils.copyProperties(neo4jInstance, neo4jInstanceDto);
+                neo4jInstanceDto.setTid(neo4jInstance.getId());
+                companyDto.setNeo4jInstanceDto(neo4jInstanceDto);
+            }
+        }
+    }
+
+    /**
+     * mqVhostId ： 消息队列 vhost
+     * @param companyDto
+     */
+    private void getMqVhostDto(CompanyDto companyDto) {
+        if (companyDto.getMqVhostId() != null && companyDto.getMqVhostId() > 0){
+            MqVhost mqVhost = mqVhostService.selectByPrimaryKey(companyDto.getMqVhostId());
+            if (mqVhost != null){
+                MqVhostDto mqVhostDto = new MqVhostDto();
+                BeanUtils.copyProperties(mqVhost, mqVhostDto);
+                mqVhostDto.setTid(mqVhost.getId());
+                companyDto.setMqVhostDto(mqVhostDto);
+            }
+        }
+    }
+
+    /**
+     * swiftProjectId ：swift 租户id
+     * @param companyDto
+     */
+    private void getSwiftProjectDto(CompanyDto companyDto) {
+        if (companyDto.getSwiftProjectId() != null && companyDto.getSwiftProjectId() > 0){
+            SwiftProject swiftProject = swiftProjectService.selectByPrimaryKey(companyDto.getSwiftProjectId());
+            if (swiftProject != null){
+                SwiftProjectDto swiftProjectDto = new SwiftProjectDto();
+                BeanUtils.copyProperties(swiftProject, swiftProjectDto);
+                swiftProjectDto.setTid(swiftProject.getId());
+                companyDto.setSwiftProjectDto(swiftProjectDto);
+            }
+        }
+    }
+
+    /**
+     * redisGroupId ： redis 组id
+     * @param companyDto
+     */
+    private void getRedisGroupDto(CompanyDto companyDto) {
+        if (companyDto.getRedisGroupId() != null && companyDto.getRedisGroupId() > 0){
+            RedisGroupDto redisGroupDto = redisGroupService.selectRedisGroupByID(companyDto.getRedisGroupId());
+            if (redisGroupDto != null){
+                companyDto.setRedisGroupDto(redisGroupDto);
+            }
+        }
+    }
+
+    /**
+     * DB 数据库组
+     * @param companyDto
+     */
+    private void getDbGroupDto(CompanyDto companyDto) {
+        if (companyDto.getDbGroupId() != null && companyDto.getDbGroupId() > 0){
+            DbGroupDto dbGroupDto = dbGroupService.selectDbGroupByCompanyId(companyDto.getDbGroupId());
+            if (dbGroupDto != null){
+                companyDto.setDbGroupDto(dbGroupDto);
+            }
+        }
     }
 
     /**
