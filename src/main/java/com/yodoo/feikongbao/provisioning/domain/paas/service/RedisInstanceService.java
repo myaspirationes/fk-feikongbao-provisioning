@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,7 +166,15 @@ public class RedisInstanceService {
      * @return
      */
     private List<RedisInstanceDto> selectRedisInstance(RedisInstance redisInstance) {
-        List<RedisInstance> select = redisInstanceMapper.select(redisInstance);
+        return getRedisInstanceDtoList(redisInstanceMapper.select(redisInstance));
+    }
+
+    /**
+     * 转 Dto
+     * @param select
+     * @return
+     */
+    private List<RedisInstanceDto> getRedisInstanceDtoList(List<RedisInstance> select) {
         List<RedisInstanceDto> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(select)) {
             collect = select.stream()
@@ -178,5 +187,18 @@ public class RedisInstanceService {
                     }).filter(Objects::nonNull).collect(Collectors.toList());
         }
         return collect;
+    }
+
+    /**
+     * 根据 类型 查询 redis 实例 列表
+     * @param type
+     * @return
+     */
+    public List<RedisInstanceDto> getRedisInstanceByType(Integer type) {
+        Example example = new Example(RedisInstance.class);
+        example.setOrderByClause("ORDER BY create_time ASC");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("type", type == null ? 0 : type);
+        return getRedisInstanceDtoList(redisInstanceMapper.selectByExample(example));
     }
 }

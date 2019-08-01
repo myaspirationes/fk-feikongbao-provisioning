@@ -6,6 +6,7 @@ import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbSchemaDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbGroup;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbSchema;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbSchemaMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
@@ -124,6 +125,31 @@ public class DbSchemaService {
                             dbInstanceDto.setTid(dbInstance.getId());
                             dbSchemaDto.setDbInstanceDto(dbInstanceDto);
                         }
+                        return dbSchemaDto;
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+        return collect;
+    }
+
+    /**
+     * 根据 类型 查询 db_schema 实例 列表
+     * @param type
+     * @return
+     */
+    public List<DbSchemaDto> getDbSchemaByType(Integer type) {
+        Example example = new Example(DbSchema.class);
+        example.setOrderByClause("ORDER BY create_time ASC");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("type", type == null ? 0 : type);
+        List<DbSchema> dbSchemas = dbSchemaMapper.selectByExample(example);
+        List<DbSchemaDto> collect = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(dbSchemas)){
+            collect = dbSchemas.stream()
+                    .filter(Objects::nonNull)
+                    .map(dbSchema -> {
+                        DbSchemaDto dbSchemaDto = new DbSchemaDto();
+                        BeanUtils.copyProperties(dbSchema, dbSchemaDto);
+                        dbSchemaDto.setTid(dbSchema.getId());
                         return dbSchemaDto;
                     }).filter(Objects::nonNull).collect(Collectors.toList());
         }
