@@ -94,5 +94,4 @@ public class SwiftProjectDto extends BaseDto {
         this.companyId = companyId;
         return this;
     }
-
 }

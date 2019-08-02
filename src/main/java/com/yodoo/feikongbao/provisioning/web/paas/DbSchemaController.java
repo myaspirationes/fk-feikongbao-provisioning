@@ -37,8 +37,7 @@ public class DbSchemaController {
     @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto) {
-        DbSchemaDto dbSchemaDtoResponse = dbSchemaService.useDbSchema(dbSchemaDto);
-        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDtoResponse);
+        return dbSchemaService.useDbSchema(dbSchemaDto);
     }
 
     /**

@@ -5,18 +5,18 @@ import com.feikongbao.storageclient.entity.ProjectEntity;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.SwiftProjectDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.SwiftProject;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.SwiftProjectMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
+import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
-import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,20 +111,28 @@ public class SwiftProjectService {
      * @param swiftProjectDto
      * @return
      */
-    public SwiftProjectDto useSwiftProject(SwiftProjectDto swiftProjectDto) {
+    public ProvisioningDto<?> useSwiftProject(SwiftProjectDto swiftProjectDto) {
         // 参数校验
-        useSwiftProjectParameterCheck(swiftProjectDto);
-
-        // 创建租户
-        ProjectEntity project = storageManagerApi.createProject(new ProjectEntity(swiftProjectDto.getProjectName()));
-        if (project == null || StringUtils.isBlank(project.getId())) {
-            throw new ProvisioningException(BundleKey.SWIFT_PROJECT_ERROR, BundleKey.SWIFT_PROJECT_ERROR_MSG);
+        ProvisioningDto provisioningDto = useSwiftProjectParameterCheck(swiftProjectDto);
+        if (provisioningDto != null){
+            return provisioningDto;
         }
 
-        // 添加租户名
-        SwiftProject swiftProject = new SwiftProject();
-        BeanUtils.copyProperties(swiftProjectDto, swiftProject);
-        swiftProjectMapper.insertSelective(swiftProject);
+        // 创建租户  todo 如果租户在swift服务器已经存在，存在模块抛异常，无法进行上下步
+        ProjectEntity project = storageManagerApi.createProject(new ProjectEntity(swiftProjectDto.getProjectName(),null));
+        if (project == null || StringUtils.isBlank(project.getId())) {
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.SWIFT_PROJECT_ERROR, BundleKey.SWIFT_PROJECT_ERROR_MSG);
+        }
+        // 查询公司名是否存在
+        SwiftProject swiftProject = swiftProjectMapper.selectOne(new SwiftProject(swiftProjectDto.getProjectName()));
+        if (swiftProject != null) {
+            BeanUtils.copyProperties(swiftProjectDto,swiftProject);
+            swiftProjectMapper.updateByPrimaryKeySelective(swiftProject);
+        }else {
+            swiftProject = new SwiftProject();
+            BeanUtils.copyProperties(swiftProjectDto, swiftProject);
+            swiftProjectMapper.insertSelective(swiftProject);
+        }
 
         // 更新公司表
         CompanyDto companyDto = new CompanyDto();
@@ -133,10 +141,10 @@ public class SwiftProjectService {
         companyService.updateCompany(companyDto);
 
         // 添加创建公司流程记录表
-        companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(swiftProjectDto.getCompanyId(),
-                CompanyCreationStepsEnum.SWIFT_STEP.getOrder(), CompanyCreationStepsEnum.SWIFT_STEP.getCode()));
+        companyCreateProcessService.insertCompanyCreateProcess(swiftProjectDto.getCompanyId(),
+                CompanyCreationStepsEnum.SWIFT_STEP.getOrder(), CompanyCreationStepsEnum.SWIFT_STEP.getCode());
 
-        return swiftProjectDto;
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDto);
     }
 
     /**
@@ -144,22 +152,18 @@ public class SwiftProjectService {
      *
      * @param swiftProjectDto
      */
-    private void useSwiftProjectParameterCheck(SwiftProjectDto swiftProjectDto) {
+    private ProvisioningDto<?> useSwiftProjectParameterCheck(SwiftProjectDto swiftProjectDto) {
         if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0
-                || StringUtils.isBlank(swiftProjectDto.getProjectName())) {
-            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
-        }
-        // 查询公司名是否存在，存在不操作
-        SwiftProject swiftProject = new SwiftProject();
-        swiftProject.setProjectName(swiftProjectDto.getProjectName());
-        SwiftProject swiftProjectResponse = swiftProjectMapper.selectOne(swiftProject);
-        if (swiftProjectResponse != null) {
-            throw new ProvisioningException(BundleKey.SWIFT_PROJECT_ALREADY_EXIST, BundleKey.SWIFT_PROJECT_ALREADY_EXIST_MSG);
+                || StringUtils.isBlank(swiftProjectDto.getIp())) {
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询公司数据是否存在
         Company company = companyService.selectByPrimaryKey(swiftProjectDto.getCompanyId());
         if (company == null) {
-            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
+        swiftProjectDto.setProjectName(company.getCompanyCode());
+        swiftProjectDto.setTid(company.getId());
+        return null;
     }
 }

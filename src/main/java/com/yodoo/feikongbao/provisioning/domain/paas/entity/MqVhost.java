@@ -22,6 +22,13 @@ public class MqVhost extends BaseEntity {
      **/
     private Integer port;
 
+    public MqVhost() {
+    }
+
+    public MqVhost(String vhostName) {
+        this.vhostName = vhostName;
+    }
+
     public String getVhostName() {
         return vhostName;
     }

@@ -66,7 +66,6 @@ public class MqVhostController {
     @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto) {
-        MqVhostDto mqVhostDtoResponse = mqVhostService.useMqVhost(mqVhostDto);
-        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDtoResponse);
+        return mqVhostService.useMqVhost(mqVhostDto);
     }
 }

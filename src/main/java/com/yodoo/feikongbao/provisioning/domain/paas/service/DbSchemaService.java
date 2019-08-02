@@ -1,21 +1,20 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbSchemaDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbGroup;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbSchema;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbSchemaMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
 import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
-import com.yodoo.feikongbao.provisioning.enums.ScriptMigrationDataEnum;
+import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
@@ -66,37 +65,39 @@ public class DbSchemaService {
     private JenkinsUtils jenkinsUtils;
 
     /**
-     * 创建数据库
+     * 创建数据库 TODO 目前测试先注掉初始化数据库表，最后测试记得放开，返回上一步，
      *
      * @param dbSchemaDto
      * @return
      */
-    public DbSchemaDto useDbSchema(DbSchemaDto dbSchemaDto) {
+    public ProvisioningDto<?> useDbSchema(DbSchemaDto dbSchemaDto) {
         // 参数校验
-        DbSchema dbSchema = useDbSchemaParameterCheck(dbSchemaDto);
-
-        // 初始化数据库表
-        buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
-        // 查询 build 状态成功做下步动作
-        if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)) {
-            buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_BACK.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
-            throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
+        ProvisioningDto provisioningDto = useDbSchemaParameterCheck(dbSchemaDto);
+        if (provisioningDto != null){
+            return provisioningDto;
         }
 
         // 更新公司表信息
         CompanyDto companyDto = new CompanyDto();
         companyDto.setTid(dbSchemaDto.getCompanyId());
-        companyDto.setDbGroupId(dbSchema.getDbGroupId());
+        companyDto.setDbGroupId(dbSchemaDto.getDbGroupId());
         companyService.updateCompany(companyDto);
 
         // 添加apollo参数
         apolloService.createdbItems(dbSchemaDto.getCompanyCode());
 
         // 添加公司创建过程记录表信息
-        companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(dbSchemaDto.getCompanyId(),
-                CompanyCreationStepsEnum.DATABASE_STEP.getOrder(), CompanyCreationStepsEnum.DATABASE_STEP.getCode()));
+        companyCreateProcessService.insertCompanyCreateProcess(dbSchemaDto.getCompanyId(),
+                CompanyCreationStepsEnum.DATABASE_STEP.getOrder(), CompanyCreationStepsEnum.DATABASE_STEP.getCode());
 
-        return dbSchemaDto;
+        // 初始化数据库表 TODO 如果返回上一步，待解决
+        // buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+        // 查询 build 状态成功做下步动作
+        // if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)) {
+        //     throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
+        // }
+
+        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDto);
     }
 
     /**
@@ -210,32 +211,34 @@ public class DbSchemaService {
      * @param dbSchemaDto
      * @return
      */
-    private DbSchema useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+    private ProvisioningDto<?> useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
         if (dbSchemaDto == null || dbSchemaDto.getCompanyId() == null || dbSchemaDto.getCompanyId() < 0
                 || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
-            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询Schema 数据是否存在，不存在不操作
         DbSchema dbSchema = dbSchemaMapper.selectByPrimaryKey(dbSchemaDto.getTid());
         if (dbSchema == null) {
-            throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
         }
         // 查询DB数据库组是否存在
         DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchema.getDbGroupId());
         if (dbGroup == null) {
-            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
         }
         //  查询DB实例表是否存在，不存在不操作
         DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchema.getDbInstanceId());
         if (dbInstance == null) {
-            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(dbSchemaDto.getCompanyId());
         if (company == null) {
-            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         dbSchemaDto.setCompanyCode(company.getCompanyCode());
-        return dbSchema;
+        dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
+
+        return null;
     }
 }

@@ -34,6 +34,13 @@ public class SwiftProject extends BaseEntity {
      **/
     private Integer port;
 
+    public SwiftProject() {
+    }
+
+    public SwiftProject(String projectName) {
+        this.projectName = projectName;
+    }
+
     public String getProjectName() {
         return projectName;
     }

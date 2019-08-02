@@ -54,7 +54,7 @@ public class RabbitMqVirtualHostService {
             if (mqEnum.code == MqResponseEnum.NO_EXIST.code) {
                 return execute(virtualHostName, HttpMethod.PUT);
             } else if (mqEnum.code == MqResponseEnum.EXIST.code) {
-                throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR, BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR_MSG);
+                return MqResponseEnum.EXIST;
             }
         } catch (Exception e) {
             logger.error("创建 Virtual host 失败，vhostName ： {}", virtualHostName, e);

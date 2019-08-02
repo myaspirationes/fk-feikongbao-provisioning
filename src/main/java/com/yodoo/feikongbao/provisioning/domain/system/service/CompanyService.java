@@ -3,6 +3,7 @@ package com.yodoo.feikongbao.provisioning.domain.system.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
@@ -11,11 +12,11 @@ import com.yodoo.feikongbao.provisioning.domain.paas.entity.SwiftProject;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.*;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
+import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
@@ -97,9 +98,13 @@ public class CompanyService {
      * @param companyDto
      */
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public CompanyDto addCompany(CompanyDto companyDto) {
+    public ProvisioningDto<?> addCompany(CompanyDto companyDto) {
         // 校验
-        addCompanyParameterCheck(companyDto);
+        ProvisioningDto provisioningDto = addCompanyParameterCheck(companyDto);
+        if (provisioningDto != null){
+            return provisioningDto;
+        }
+
         // 公司基础数据先落库
         Company company = new Company();
         BeanUtils.copyProperties(companyDto, company);
@@ -110,12 +115,13 @@ public class CompanyService {
         apolloService.createCluster(company.getCompanyCode());
 
         // 添加公司创建过程 记录表
-        companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(company.getId(),
-                CompanyCreationStepsEnum.COMPANY_STEP.getOrder(), CompanyCreationStepsEnum.COMPANY_STEP.getCode()));
+        companyCreateProcessService.insertCompanyCreateProcess(company.getId(),
+                CompanyCreationStepsEnum.COMPANY_STEP.getOrder(), CompanyCreationStepsEnum.COMPANY_STEP.getCode());
 
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
-        return companyDto;
+
+        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto);
     }
 
     /**
@@ -435,16 +441,16 @@ public class CompanyService {
      *
      * @param companyDto
      */
-    private void addCompanyParameterCheck(CompanyDto companyDto) {
+    private ProvisioningDto<?> addCompanyParameterCheck(CompanyDto companyDto) {
         if (companyDto == null || StringUtils.isBlank(companyDto.getCompanyName()) || StringUtils.isBlank(companyDto.getCompanyCode())
                 || StringUtils.isBlank(companyDto.getUpdateCycle()) || companyDto.getNextUpdateDate() == null || companyDto.getExpireDate() == null) {
-            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 如果是集团 ， 查询集团是否存在
         if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0) {
             Groups group = groupService.selectByPrimaryKey(companyDto.getGroupId());
             if (group == null) {
-                throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
+                return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
             }
         }
         // 查询是否有相同的数据，有不添加
@@ -455,7 +461,8 @@ public class CompanyService {
         company.setCompanyCode(companyDto.getCompanyCode());
         Company selectOneCompany = companyMapper.selectOne(company);
         if (selectOneCompany != null) {
-            throw new ProvisioningException(BundleKey.COMPANY_ALREADY_EXIST, BundleKey.COMPANY_ALREADY_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_ALREADY_EXIST, BundleKey.COMPANY_ALREADY_EXIST_MSG);
         }
+        return null;
     }
 }

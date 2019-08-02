@@ -3,19 +3,19 @@ package com.yodoo.feikongbao.provisioning.domain.paas.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
+import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.MqVhostDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.MqVhostMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProcess;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.MqResponseEnum;
+import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
-import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,18 +111,30 @@ public class MqVhostService {
      * @param mqVhostDto
      * @return
      */
-    public MqVhostDto useMqVhost(MqVhostDto mqVhostDto) {
+    public ProvisioningDto<?> useMqVhost(MqVhostDto mqVhostDto) {
         // 参数校验
-        useMqVhostParameterCheck(mqVhostDto);
+        ProvisioningDto<?> provisioningDto = useMqVhostParameterCheck(mqVhostDto);
+        if (provisioningDto != null){
+            return provisioningDto;
+        }
         // 创建vhost
         MqResponseEnum mqResponseEnum = rabbitMqVirtualHostService.createVirtualHost(mqVhostDto.getVhostName());
-        if (mqResponseEnum.code != MqResponseEnum.CREATE_SUCCESS.code) {
-            throw new ProvisioningException(BundleKey.UNDEFINED, BundleKey.UNDEFINED_MSG);
+        if (mqResponseEnum.code == MqResponseEnum.EXIST.code) {
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR, BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR_MSG);
+        }else if (mqResponseEnum.code != MqResponseEnum.CREATE_SUCCESS.code){
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR, BundleKey.RABBITMQ_VHOST_NAME_FAIL_ERROR_MSG);
         }
         // 添加mqvhost表数据
-        MqVhost mqVhost = new MqVhost();
-        BeanUtils.copyProperties(mqVhostDto, mqVhost);
-        mqVhostMapper.insertSelective(mqVhost);
+        MqVhost mqVhost = mqVhostMapper.selectOne(new MqVhost(mqVhostDto.getVhostName()));
+        if (mqVhost != null){
+            mqVhost.setIp(mqVhostDto.getIp());
+            mqVhost.setPort(mqVhostDto.getPort());
+            mqVhostMapper.updateByPrimaryKeySelective(mqVhost);
+        }else {
+            mqVhost = new MqVhost();
+            BeanUtils.copyProperties(mqVhostDto, mqVhost);
+            mqVhostMapper.insertSelective(mqVhost);
+        }
 
         // 更新公司表数据
         CompanyDto companyDto = new CompanyDto();
@@ -131,10 +143,11 @@ public class MqVhostService {
         companyService.updateCompany(companyDto);
 
         // 添加公司创建过程记录表
-        companyCreateProcessService.insertCompanyCreateProcess(new CompanyCreateProcess(mqVhostDto.getCompanyId(),
-                CompanyCreationStepsEnum.RABBITMQ_STEP.getOrder(), CompanyCreationStepsEnum.RABBITMQ_STEP.getCode()));
+        companyCreateProcessService.insertCompanyCreateProcess(mqVhostDto.getCompanyId(),
+                CompanyCreationStepsEnum.RABBITMQ_STEP.getOrder(), CompanyCreationStepsEnum.RABBITMQ_STEP.getCode());
 
-        return mqVhostDto;
+        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto);
+
     }
 
     /**
@@ -142,22 +155,17 @@ public class MqVhostService {
      *
      * @param mqVhostDto
      */
-    private void useMqVhostParameterCheck(MqVhostDto mqVhostDto) {
-        if (mqVhostDto == null || mqVhostDto.getCompanyId() == null || mqVhostDto.getCompanyId() < 0
-                || StringUtils.isBlank(mqVhostDto.getVhostName()) || StringUtils.isBlank(mqVhostDto.getIp())
-                || mqVhostDto.getPort() != null || mqVhostDto.getPort() < 0) {
-            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
-        }
-        MqVhost mqVhost = new MqVhost();
-        mqVhost.setVhostName(mqVhostDto.getVhostName());
-        MqVhost selectOneMqVhost = mqVhostMapper.selectOne(mqVhost);
-        if (selectOneMqVhost != null) {
-            throw new ProvisioningException(BundleKey.MQ_VHOST_ALREADY_EXIST, BundleKey.MQ_VHOST_ALREADY_EXIST_MSG);
+    private ProvisioningDto<?> useMqVhostParameterCheck(MqVhostDto mqVhostDto) {
+        if (mqVhostDto == null || mqVhostDto.getCompanyId() == null || mqVhostDto.getCompanyId() < 0 || StringUtils.isBlank(mqVhostDto.getIp())
+                || mqVhostDto.getPort() == null || mqVhostDto.getPort() < 0) {
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(mqVhostDto.getCompanyId());
         if (company == null) {
-            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
+        mqVhostDto.setVhostName(company.getCompanyCode());
+        return null;
     }
 }

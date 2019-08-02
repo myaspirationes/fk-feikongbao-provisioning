@@ -133,7 +133,7 @@ public class ApolloService {
                     sbDbUrl.insert(offset, ",");
                     offset++;
                 }
-                sbDbUrl.insert(offset, "jdbc.url=jdbc:mysql:replication://" + dbInstance.getIp() + ":" + dbInstance.getPort());
+                sbDbUrl.insert(offset, "jdbc:mysql:replication://" + dbInstance.getIp() + ":" + dbInstance.getPort());
             } else {
                 if (sbDbUrl.length() > 0) {
                     sbDbUrl.append(",");

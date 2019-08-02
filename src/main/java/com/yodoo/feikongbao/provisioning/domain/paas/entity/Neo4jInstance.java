@@ -22,6 +22,13 @@ public class Neo4jInstance extends BaseEntity {
      **/
     private Integer port;
 
+    public Neo4jInstance() {
+    }
+
+    public Neo4jInstance(String neo4jName) {
+        this.neo4jName = neo4jName;
+    }
+
     public String getNeo4jName() {
         return neo4jName;
     }
