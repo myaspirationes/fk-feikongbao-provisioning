@@ -41,9 +41,10 @@ public class RedisInstanceDto extends BaseDto {
 
     /**
      * 状态，
-     * 0 没状态，
-     * 1 运行中：Running，
-     * 2 已停止：Stopped
+     * 0 未被使用，
+     * 1 已被使用
+     * 2 运行中：Running
+     * 3 已停止：Stopped
      */
     private Integer status;
 

@@ -14,6 +14,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
+import com.yodoo.feikongbao.provisioning.enums.SchemaStatusEnum;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
@@ -89,6 +90,11 @@ public class DbSchemaService {
         // 添加公司创建过程记录表信息
         companyCreateProcessService.insertCompanyCreateProcess(dbSchemaDto.getCompanyId(),
                 CompanyCreationStepsEnum.DATABASE_STEP.getOrder(), CompanyCreationStepsEnum.DATABASE_STEP.getCode());
+
+        // 更新 dbSchema 使用状态
+        DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
+        dbSchema.setStatus(SchemaStatusEnum.USED.getCode());
+        dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
 
         // 初始化数据库表 TODO 如果返回上一步，待解决
         // buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
@@ -216,10 +222,12 @@ public class DbSchemaService {
                 || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
-        // 查询Schema 数据是否存在，不存在不操作
-        DbSchema dbSchema = dbSchemaMapper.selectByPrimaryKey(dbSchemaDto.getTid());
+        // 查询Schema 数据是否存在，不存在不操作。或是不被使用
+        DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
         if (dbSchema == null) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
+        }else if (dbSchema.getStatus().equals(SchemaStatusEnum.USED.getCode())){
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
         }
         // 查询DB数据库组是否存在
         DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchema.getDbGroupId());
@@ -240,5 +248,14 @@ public class DbSchemaService {
         dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
 
         return null;
+    }
+
+    /**
+     * 通过主键查询
+     * @param id
+     * @return
+     */
+    private DbSchema selectByPrimaryKey(Integer id) {
+        return dbSchemaMapper.selectByPrimaryKey(id);
     }
 }

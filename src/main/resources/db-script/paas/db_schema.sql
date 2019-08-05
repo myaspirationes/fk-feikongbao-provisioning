@@ -6,7 +6,7 @@ CREATE TABLE `db_schema` (
   `schema_name` varchar(50) NOT NULL DEFAULT '' COMMENT '数据库名',
   `username` varchar(50) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(50) NOT NULL DEFAULT '' COMMENT '密码',
-  `status` int(1) NOT NULL DEFAULT 0 COMMENT '状态',
+  `status` int(1) NOT NULL DEFAULT 0 COMMENT '状态：0 未被使用，1 已被使用',
   `type` int(1) NOT NULL DEFAULT 0 COMMENT '类型，0：主，1：从',
   `create_user` varchar(150) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

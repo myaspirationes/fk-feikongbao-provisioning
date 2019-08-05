@@ -7,7 +7,7 @@ CREATE TABLE `redis_instance` (
   `username` varchar(50) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(100) NOT NULL DEFAULT '' COMMENT '密码',
   `type` int(1) NOT NULL DEFAULT 0 COMMENT '实例类型，0：主，1：从',
-  `status` int(1) NOT NULL DEFAULT 0 COMMENT '状态，0 没状态，1 运行中：Running，2 已停止：Stopped',
+  `status` int(1) NOT NULL DEFAULT 0 COMMENT '状态，0 未被使用，1 已被使用，2 运行中：Running，3 已停止：Stopped',
   `create_user` varchar(150) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(150) NOT NULL DEFAULT '' COMMENT '更新人',

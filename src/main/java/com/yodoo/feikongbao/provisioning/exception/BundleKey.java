@@ -123,6 +123,12 @@ public interface BundleKey {
     String DB_SCHEMA_NOT_EXIST_MSG = "dbSchema不存在";
 
     /**
+     * dbSchema 已被使用
+     **/
+    String DB_SCHEMA_USED = PAAS_PREFIX + "DB.SCHEMA.USED";
+    String DB_SCHEMA_USED_MSG = "dbSchema 已被使用";
+
+    /**
      * dbGroup 已存在
      */
     String DB_GROUP_ALREADY_EXIST = PAAS_PREFIX + "DB.GROUP.ALREADY.EXIST";
@@ -181,6 +187,12 @@ public interface BundleKey {
      **/
     String NEO4J_INSTANCE_ALREADY_EXIST = PAAS_PREFIX + "NEO4J.INSTANCE.ALREADY.EXIST";
     String NEO4J_INSTANCE_ALREADY_EXIST_MSG = "neo4jInstance 已存在";
+
+    /**
+     * redisInstance 已被使用
+     **/
+    String REDIS_INSTANCE_USED = PAAS_PREFIX + "REDIS.INSTANCE.USED";
+    String REDIS_INSTANCE_USED_MSG = "redisInstance 已被使用";
 
     /**
      * redisInstance 不存在

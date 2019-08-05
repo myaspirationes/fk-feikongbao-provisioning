@@ -15,6 +15,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
+import com.yodoo.feikongbao.provisioning.enums.SchemaStatusEnum;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import org.springframework.beans.BeanUtils;
@@ -102,7 +103,7 @@ public class RedisInstanceService {
      * @return
      */
     public ProvisioningDto<?> useRedisInstance(RedisInstanceDto redisInstanceDto) {
-
+        // 校验
         ProvisioningDto provisioningDto = useRedisInstanceParameterCheck(redisInstanceDto);
         if (provisioningDto != null){
             return provisioningDto;
@@ -119,6 +120,11 @@ public class RedisInstanceService {
         // 添加创建公司流程记录表
         companyCreateProcessService.insertCompanyCreateProcess(redisInstanceDto.getCompanyId(),
                 CompanyCreationStepsEnum.REDIS_STEP.getOrder(), CompanyCreationStepsEnum.REDIS_STEP.getCode());
+
+        // 更新 RedisInstance使用状态
+        RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
+        redisInstance.setStatus(SchemaStatusEnum.USED.getCode());
+        redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
 
         return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
     }
@@ -145,10 +151,12 @@ public class RedisInstanceService {
                 || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
-        // 查询 redis实例 是否存在，不存在不操作
+        // 查询 redis实例 是否存在，不存在不操作。或是否被使用
         RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
         if (redisInstance == null) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
+        }else if (redisInstance.getStatus().equals(SchemaStatusEnum.USED.getCode())){
+            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.REDIS_INSTANCE_USED, BundleKey.REDIS_INSTANCE_USED_MSG);
         }
         // 查询redis 组是否存在，不存在不操作
         RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstance.getRedisGroupId());

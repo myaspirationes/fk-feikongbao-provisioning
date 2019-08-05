@@ -33,7 +33,7 @@ public class DbSchema extends BaseEntity {
     private String password;
 
     /**
-     * 状态
+     * 状态：0 未被使用，1 已被使用
      **/
     private Integer status;
 
