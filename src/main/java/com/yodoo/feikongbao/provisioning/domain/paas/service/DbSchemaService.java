@@ -14,7 +14,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
-import com.yodoo.feikongbao.provisioning.enums.SchemaStatusEnum;
+import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
@@ -93,7 +93,7 @@ public class DbSchemaService {
 
         // 更新 dbSchema 使用状态
         DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
-        dbSchema.setStatus(SchemaStatusEnum.USED.getCode());
+        dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
         dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
 
         // 初始化数据库表 TODO 如果返回上一步，待解决
@@ -226,7 +226,7 @@ public class DbSchemaService {
         DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
         if (dbSchema == null) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
-        }else if (dbSchema.getStatus().equals(SchemaStatusEnum.USED.getCode())){
+        }else if (dbSchema.getStatus().equals(InstanceStatusEnum.USED.getCode())){
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
         }
         // 查询DB数据库组是否存在

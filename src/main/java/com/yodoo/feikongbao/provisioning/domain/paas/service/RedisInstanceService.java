@@ -15,7 +15,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
-import com.yodoo.feikongbao.provisioning.enums.SchemaStatusEnum;
+import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import org.springframework.beans.BeanUtils;
@@ -123,7 +123,7 @@ public class RedisInstanceService {
 
         // 更新 RedisInstance使用状态
         RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
-        redisInstance.setStatus(SchemaStatusEnum.USED.getCode());
+        redisInstance.setStatus(InstanceStatusEnum.USED.getCode());
         redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
 
         return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDto);
@@ -155,7 +155,7 @@ public class RedisInstanceService {
         RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
         if (redisInstance == null) {
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
-        }else if (redisInstance.getStatus().equals(SchemaStatusEnum.USED.getCode())){
+        }else if (redisInstance.getStatus().equals(InstanceStatusEnum.USED.getCode())){
             return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.REDIS_INSTANCE_USED, BundleKey.REDIS_INSTANCE_USED_MSG);
         }
         // 查询redis 组是否存在，不存在不操作

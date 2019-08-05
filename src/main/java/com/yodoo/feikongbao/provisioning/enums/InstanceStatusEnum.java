@@ -5,7 +5,7 @@ package com.yodoo.feikongbao.provisioning.enums;
  * @Author ：jinjun_luo
  * @Date ： 2019/8/5 0005
  */
-public enum  SchemaStatusEnum {
+public enum InstanceStatusEnum {
 
     /**
      * 未被使用
@@ -28,7 +28,7 @@ public enum  SchemaStatusEnum {
         return name;
     }
 
-    SchemaStatusEnum(Integer code, String name) {
+    InstanceStatusEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
