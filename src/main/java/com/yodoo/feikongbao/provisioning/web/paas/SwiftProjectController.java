@@ -66,7 +66,8 @@ public class SwiftProjectController {
     @RequestMapping(value = "/useSwiftProject", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto) {
-        return swiftProjectService.useSwiftProject(swiftProjectDto);
+        SwiftProjectDto swiftProjectDtoResponse = swiftProjectService.useSwiftProject(swiftProjectDto);
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDtoResponse);
     }
 
 

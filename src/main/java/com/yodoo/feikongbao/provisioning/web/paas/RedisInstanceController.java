@@ -66,7 +66,8 @@ public class RedisInstanceController {
     @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto) {
-        return redisInstanceService.useRedisInstance(redisInstanceDto);
+        RedisInstanceDto redisInstanceDtoResponse = redisInstanceService.useRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDtoResponse);
     }
 
 }

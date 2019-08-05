@@ -132,7 +132,8 @@ public class CompanyController {
     @RequestMapping(value = "/addCompany", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> addCompany(@RequestBody CompanyDto companyDto) {
-        return companyService.addCompany(companyDto);
+        CompanyDto companyDtoResponse = companyService.addCompany(companyDto);
+        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDtoResponse);
     }
 
     /**
@@ -144,7 +145,8 @@ public class CompanyController {
     @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto) {
-        return dbSchemaService.useDbSchema(dbSchemaDto);
+        DbSchemaDto dbSchemaDtoResponse = dbSchemaService.useDbSchema(dbSchemaDto);
+        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDtoResponse);
     }
 
     /**
@@ -156,7 +158,8 @@ public class CompanyController {
     @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto) {
-        return redisInstanceService.useRedisInstance(redisInstanceDto);
+        RedisInstanceDto redisInstanceDtoResponse = redisInstanceService.useRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<RedisInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, redisInstanceDtoResponse);
     }
 
     /**
@@ -168,7 +171,8 @@ public class CompanyController {
     @RequestMapping(value = "/useSwiftProject", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useSwiftProject(@RequestBody SwiftProjectDto swiftProjectDto) {
-        return swiftProjectService.useSwiftProject(swiftProjectDto);
+        SwiftProjectDto swiftProjectDtoResponse = swiftProjectService.useSwiftProject(swiftProjectDto);
+        return new ProvisioningDto<SwiftProjectDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, swiftProjectDtoResponse);
     }
 
     /**
@@ -180,7 +184,8 @@ public class CompanyController {
     @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto) {
-        return mqVhostService.useMqVhost(mqVhostDto);
+        MqVhostDto mqVhostDtoResponse = mqVhostService.useMqVhost(mqVhostDto);
+        return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDtoResponse);
     }
 
     /**
@@ -192,7 +197,8 @@ public class CompanyController {
     @RequestMapping(value = "/useNeo4jInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto) {
-        return neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        Neo4jInstanceDto neo4jInstanceDtoResponse = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDtoResponse);
     }
 
     /**
@@ -233,6 +239,4 @@ public class CompanyController {
         publishProjectService.publishProjectsForCompanyCreateFinish(companyId);
         return new ProvisioningDto<>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
-
-
 }

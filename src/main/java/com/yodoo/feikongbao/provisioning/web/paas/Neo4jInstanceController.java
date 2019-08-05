@@ -66,6 +66,7 @@ public class Neo4jInstanceController {
     @RequestMapping(value = "/useNeo4jInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto) {
-        return neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        Neo4jInstanceDto neo4jInstanceDtoResponse = neo4jInstanceService.useNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, neo4jInstanceDtoResponse);
     }
 }

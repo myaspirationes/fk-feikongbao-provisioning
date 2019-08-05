@@ -1,6 +1,5 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
-import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbSchemaDto;
@@ -15,7 +14,6 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProc
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
-import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
@@ -71,12 +69,9 @@ public class DbSchemaService {
      * @param dbSchemaDto
      * @return
      */
-    public ProvisioningDto<?> useDbSchema(DbSchemaDto dbSchemaDto) {
+    public DbSchemaDto useDbSchema(DbSchemaDto dbSchemaDto) {
         // 参数校验
-        ProvisioningDto provisioningDto = useDbSchemaParameterCheck(dbSchemaDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
+        useDbSchemaParameterCheck(dbSchemaDto);
 
         // 更新公司表信息
         CompanyDto companyDto = new CompanyDto();
@@ -96,14 +91,14 @@ public class DbSchemaService {
         dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
         dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
 
-        // 初始化数据库表 TODO 如果返回上一步，待解决
-        // buildScriptMigrationData(dbSchemaDto.getCompanyCode(), ScriptMigrationDataEnum.ROLL_FORWARD.getAction(), dbSchemaDto.getTargetVersion(), Arrays.asList(dbSchema.getSchemaName()));
+        // 初始化数据库表 TODO 如果返回上一步，待解决确定 String appInstanceName, String releaseVersion
+        // buildScriptMigrationData(dbSchemaDto.getCompanyCode(), dbSchemaDto.getTargetVersion());
         // 查询 build 状态成功做下步动作
         // if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)) {
         //     throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
         // }
 
-        return new ProvisioningDto<DbSchemaDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, dbSchemaDto);
+        return dbSchemaDto;
     }
 
     /**
@@ -164,50 +159,30 @@ public class DbSchemaService {
     }
 
     /**
-     * 数据脚本迁移，json 串不能用双引或单引号，可以用其它符号，目前用#号
-     * json : {"instanceId":"dev_mysql","schemas":[{"schema":"migrate_database"}]}
-     *
-     * @param instanceId : 实例名
-     * @param action     ：执行的动作 ScriptMigrationDataEnum
-     * @param version    ： 版本
-     * @param schemaList ：schemas 可以传多个
+     * @param appInstanceName : 实例名
+     * @param releaseVersion ： 版本
      * @return
      */
-    private String buildScriptMigrationData(String instanceId, String action, String version, List<String> schemaList) {
+    private String buildScriptMigrationData(String appInstanceName, String releaseVersion) {
         // 校验参数
-        RequestPrecondition.checkArguments(!com.yodoo.feikongbao.provisioning.util.StringUtils.isContainEmpty(instanceId, action, version));
-        if (CollectionUtils.isEmpty(schemaList)) {
-            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
-        }
+        RequestPrecondition.checkArguments(!com.yodoo.feikongbao.provisioning.util.StringUtils.isContainEmpty(appInstanceName, releaseVersion));
         // 封装参数
-        Map<String, String> parameters = encapsulatingRequestParameters(instanceId, action, version, schemaList);
+        Map<String, String> parameters = encapsulatingRequestParameters(appInstanceName, releaseVersion);
         return jenkinsUtils.buildJobWithParameters(jenkinsConfig.jenkinsScriptMigrationDataJobName, parameters);
     }
 
     /**
      * 封装参数
      *
-     * @param instanceId : 实例名
-     * @param action     ：执行的动作 ScriptMigrationDataEnum
-     * @param version    ： 版本
-     * @param schemaList ：schemas 可以传多个
+     * @param appInstanceName : 实例名
+     * @param releaseVersion  ： 版本
      * @return
      */
-    private Map<String, String> encapsulatingRequestParameters(String instanceId, String action, String version, List<String> schemaList) {
-        // 把 schema拼接成json串
-        StringBuilder schemaStringBuilder = new StringBuilder();
-        schemaList.stream()
-                .filter(Objects::nonNull)
-                .forEach(schemaName -> {
-                    schemaStringBuilder.append(",{#schema#:#" + schemaName + "#}");
-                });
-        // 去掉第一个豆号
-        String schemas = schemaStringBuilder.toString().substring(1, schemaStringBuilder.toString().length());
+    private Map<String, String> encapsulatingRequestParameters(String appInstanceName, String releaseVersion) {
         // 封装 map 参数
-        Map<String, String> parameters = new HashMap<>(3);
-        parameters.put("instanceId", "{#instanceId#:#" + instanceId + "#,#schemas#:[" + schemas + "]}");
-        parameters.put("action", action);
-        parameters.put("version", version);
+        Map<String, String> parameters = new HashMap<>(2);
+        parameters.put("appInstanceName", appInstanceName);
+        parameters.put("releaseVersion", releaseVersion);
         return parameters;
     }
 
@@ -217,37 +192,35 @@ public class DbSchemaService {
      * @param dbSchemaDto
      * @return
      */
-    private ProvisioningDto<?> useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+    private void useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
         if (dbSchemaDto == null || dbSchemaDto.getCompanyId() == null || dbSchemaDto.getCompanyId() < 0
                 || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询Schema 数据是否存在，不存在不操作。或是不被使用
         DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
         if (dbSchema == null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
         }else if (dbSchema.getStatus().equals(InstanceStatusEnum.USED.getCode())){
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
         }
         // 查询DB数据库组是否存在
         DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchema.getDbGroupId());
         if (dbGroup == null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
         }
         //  查询DB实例表是否存在，不存在不操作
         DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchema.getDbInstanceId());
         if (dbInstance == null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(dbSchemaDto.getCompanyId());
         if (company == null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
+            throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         dbSchemaDto.setCompanyCode(company.getCompanyCode());
         dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
-
-        return null;
     }
 
     /**

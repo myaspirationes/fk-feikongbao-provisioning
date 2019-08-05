@@ -3,7 +3,6 @@ package com.yodoo.feikongbao.provisioning.domain.system.service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
-import com.yodoo.feikongbao.provisioning.common.dto.ProvisioningDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
@@ -16,7 +15,6 @@ import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
-import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
@@ -98,18 +96,27 @@ public class CompanyService {
      * @param companyDto
      */
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> addCompany(CompanyDto companyDto) {
+    public CompanyDto addCompany(CompanyDto companyDto) {
         // 校验
-        ProvisioningDto provisioningDto = addCompanyParameterCheck(companyDto);
-        if (provisioningDto != null){
-            return provisioningDto;
-        }
+        addCompanyParameterCheck(companyDto);
 
         // 公司基础数据先落库
         Company company = new Company();
-        BeanUtils.copyProperties(companyDto, company);
-        company.setStatus(CompanyStatusEnum.CREATING.getCode());
-        companyMapper.insertSelective(company);
+        if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0) {
+            company.setGroupId(companyDto.getGroupId());
+        }
+        company.setCompanyCode(companyDto.getCompanyCode());
+        Company selectOneCompany = companyMapper.selectOne(company);
+        if (selectOneCompany != null){
+            BeanUtils.copyProperties(companyDto, selectOneCompany);
+            company.setStatus(CompanyStatusEnum.CREATING.getCode());
+            companyMapper.updateByPrimaryKeySelective(selectOneCompany);
+        }else {
+            selectOneCompany = new Company();
+            BeanUtils.copyProperties(companyDto, selectOneCompany);
+            company.setStatus(CompanyStatusEnum.CREATING.getCode());
+            companyMapper.insertSelective(selectOneCompany);
+        }
 
         // 调用 apollo 创建环境
         apolloService.createCluster(company.getCompanyCode());
@@ -121,7 +128,7 @@ public class CompanyService {
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
 
-        return new ProvisioningDto<CompanyDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, companyDto);
+        return companyDto;
     }
 
     /**
@@ -441,28 +448,17 @@ public class CompanyService {
      *
      * @param companyDto
      */
-    private ProvisioningDto<?> addCompanyParameterCheck(CompanyDto companyDto) {
+    private void addCompanyParameterCheck(CompanyDto companyDto) {
         if (companyDto == null || StringUtils.isBlank(companyDto.getCompanyName()) || StringUtils.isBlank(companyDto.getCompanyCode())
                 || StringUtils.isBlank(companyDto.getUpdateCycle()) || companyDto.getNextUpdateDate() == null || companyDto.getExpireDate() == null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 如果是集团 ， 查询集团是否存在
         if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0) {
             Groups group = groupService.selectByPrimaryKey(companyDto.getGroupId());
             if (group == null) {
-                return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
+                throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
             }
         }
-        // 查询是否有相同的数据，有不添加
-        Company company = new Company();
-        if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0) {
-            company.setGroupId(companyDto.getGroupId());
-        }
-        company.setCompanyCode(companyDto.getCompanyCode());
-        Company selectOneCompany = companyMapper.selectOne(company);
-        if (selectOneCompany != null) {
-            return new ProvisioningDto(SystemStatus.FAIL.getStatus(), BundleKey.COMPANY_ALREADY_EXIST, BundleKey.COMPANY_ALREADY_EXIST_MSG);
-        }
-        return null;
     }
 }
