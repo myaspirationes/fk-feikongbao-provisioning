@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,12 +197,13 @@ public class DictionaryService {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
-        Dictionary dictionary = new Dictionary();
-        dictionary.setType(dictionaryDto.getType());
-        dictionary.setCode(dictionaryDto.getCode());
-        dictionary.setName(dictionaryDto.getName());
-        dictionary.setValue(dictionaryDto.getValue());
-        Dictionary dictionaryResponse = dictionaryMapper.selectOne(dictionary);
+        Example example = new Example(Dictionary.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("type", dictionaryDto.getType());
+        criteria.andEqualTo("code", dictionaryDto.getCode());
+        criteria.andEqualTo("name", dictionaryDto.getName());
+        criteria.andEqualTo("value", dictionaryDto.getValue());
+        Dictionary dictionaryResponse = dictionaryMapper.selectOneByExample(example);
         if (dictionaryResponse != null) {
             throw new ProvisioningException(BundleKey.DICTIONARY_ALREADY_EXIST, BundleKey.DICTIONARY_ALREADY_EXIST_MSG);
         }

@@ -3,7 +3,7 @@ package com.yodoo.feikongbao.provisioning.domain.system.entity;
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 /**
- * 用户组权限表
+ * 用户组权限组关系
  */
 public class UserGroupPermissionDetails extends BaseEntity {
 

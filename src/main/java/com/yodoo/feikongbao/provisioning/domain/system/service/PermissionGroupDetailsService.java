@@ -6,6 +6,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.mapper.PermissionGroupDet
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * @Description ：权限组明细
@@ -26,6 +27,9 @@ public class PermissionGroupDetailsService {
      * @return
      */
     public Integer selectPermissionGroupDetailsCountByPermissionGroupId(Integer permissionGroupId) {
-        return permissionGroupDetailsMapper.selectCount(new PermissionGroupDetails(permissionGroupId, null));
+        Example example = new Example(PermissionGroupDetails.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("permissionGroupId", permissionGroupId);
+        return permissionGroupDetailsMapper.selectCountByExample(example);
     }
 }

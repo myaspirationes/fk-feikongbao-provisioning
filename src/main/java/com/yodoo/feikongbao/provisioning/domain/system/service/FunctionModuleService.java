@@ -102,12 +102,13 @@ public class FunctionModuleService {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否存在
-        FunctionModule functionModule = new FunctionModule();
+        Example example = new Example(FunctionModule.class);
+        Example.Criteria criteria = example.createCriteria();
         if (functionModuleDto.getParentId() != null && functionModuleDto.getParentId() > 0) {
-            functionModule.setParentId(functionModuleDto.getParentId());
+            criteria.andEqualTo("parentId", functionModuleDto.getParentId());
         }
-        functionModule.setName(functionModuleDto.getName());
-        FunctionModule functionModuleResponse = functionModuleMapper.selectOne(functionModule);
+        criteria.andEqualTo("name", functionModuleDto.getName());
+        FunctionModule functionModuleResponse = functionModuleMapper.selectOneByExample(example);
         if (functionModuleResponse != null) {
             throw new ProvisioningException(BundleKey.FUNCTION_MODULE_ALREADY_EXIST, BundleKey.FUNCTION_MODULE_EXIST_MSG);
         }

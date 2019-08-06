@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,9 +145,10 @@ public class GroupsService {
         if (StringUtils.isBlank(groupCode)) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
-        Groups groups = new Groups();
-        groups.setGroupCode(groupCode);
-        Groups groupsResponse = groupsMapper.selectOne(groups);
+        Example example = new Example(Groups.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("groupCode", groupCode);
+        Groups groupsResponse = groupsMapper.selectOneByExample(example);
         GroupsDto groupsDto = null;
         if (groupsResponse != null) {
             groupsDto = new GroupsDto();
@@ -284,7 +286,11 @@ public class GroupsService {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
-        Groups groups = groupsMapper.selectOne(new Groups(groupsDto.getGroupName(), groupsDto.getGroupCode()));
+        Example example = new Example(Groups.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("groupName", groupsDto.getGroupName());
+        criteria.andEqualTo("groupCode", groupsDto.getGroupCode());
+        Groups groups = groupsMapper.selectOneByExample(example);
         if (groups != null) {
             throw new ProvisioningException(BundleKey.GROUPS_ALREADY_EXIST, BundleKey.GROUPS_ALREADY_EXIST_MSG);
         }

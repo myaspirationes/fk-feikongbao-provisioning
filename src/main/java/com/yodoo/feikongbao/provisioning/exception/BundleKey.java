@@ -111,6 +111,12 @@ public interface BundleKey {
     String PERMISSION_GROUP_NOT_EXIST_MSG = "权限组不存在";
 
     /**
+     * 权限不存在
+     **/
+    String PERMISSION_NOT_EXIST = PAAS_PREFIX + "PERMISSION.NOT.EXIST";
+    String PERMISSION_NOT_EXIST_MSG = "权限不存在";
+
+    /**
      * dbSchema已存在 dbSchema
      */
     String DB_SCHEMA_ALREADY_EXIST = PAAS_PREFIX + "DB.SCHEMA.ALREADY.EXIST";
@@ -259,6 +265,42 @@ public interface BundleKey {
      **/
     String ECS_NOT_EXIST = PAAS_PREFIX + "ECS.NOT.EXIST";
     String ECS_NOT_EXIST_MSG = "ecs实例不存在";
+
+    /**
+     *  User 用户已存在
+     **/
+    String USER_ALREADY_EXIST = PAAS_PREFIX + "USER.ALREADY.EXIST";
+    String USER_ALREADY_EXIST_MSG = "用户已存在";
+
+    /**
+     *  User 用户不存在
+     **/
+    String USER_NOT_EXIST = PAAS_PREFIX + "USER.NOT.EXIST";
+    String USER_NOT_EXIST_MSG = "用户不存在";
+
+    /**
+     *  userGroup 用户组已存在
+     **/
+    String USER_GROUP_ALREADY_EXIST = PAAS_PREFIX + "USER.GROUP.ALREADY.EXIST";
+    String USER_GROUP_ALREADY_EXIST_MSG = "用户组已存在";
+
+    /**
+     *  userGroup 用户组不存在
+     **/
+    String USER_GROUP_NOT_EXIST = PAAS_PREFIX + "USER.GROUP.NOT.EXIST";
+    String USER_GROUP_NOT_EXIST_MSG = "用户组不存在";
+
+    /**
+     *  邮箱格式错误 Email format error
+     **/
+    String EMAIL_FORMAT_ERROR = PAAS_PREFIX + "EMAIL.FORMAT.ERROR";
+    String EMAIL_FORMAT_ERROR_MSG = "邮箱格式错误";
+
+    /**
+     *  电话格式错误 phone format error
+     **/
+    String PHONE_FORMAT_ERROR = PAAS_PREFIX + "PHONE.FORMAT.ERROR";
+    String PHONE_FORMAT_ERROR_MSG = "电话格式错误";
 
 
 }

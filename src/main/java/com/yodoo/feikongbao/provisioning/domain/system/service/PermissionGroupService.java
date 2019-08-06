@@ -18,10 +18,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -174,7 +176,11 @@ public class PermissionGroupService {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询是否有相同的数据，有不添加
-        PermissionGroup permissionGroup = permissionGroupMapper.selectOne(new PermissionGroup(permissionGroupDto.getGroupCode(), permissionGroupDto.getGroupName()));
+        Example example = new Example(PermissionGroup.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("groupCode", permissionGroupDto.getGroupCode());
+        criteria.andEqualTo("groupName", permissionGroupDto.getGroupName());
+        PermissionGroup permissionGroup = permissionGroupMapper.selectOneByExample(example);
         if (permissionGroup != null) {
             throw new ProvisioningException(BundleKey.PERMISSION_GROUP_ALREADY_EXIST, BundleKey.PERMISSION_GROUP_ALREADY_EXIST_MSG);
         }
@@ -207,5 +213,24 @@ public class PermissionGroupService {
         if (userGroupPermissionDetailsCount != null && userGroupPermissionDetailsCount > 0) {
             throw new ProvisioningException(BundleKey.THE_DATA_IS_STILL_IN_USE, BundleKey.THE_DATA_IS_STILL_IN_USE_MEG);
         }
+    }
+
+    /**
+     * 通过id 查询，统计不存在的数量
+     * @param permissionGroupIds
+     * @return
+     */
+    public Long selectPermissionGroupNoExistCountByIds(Set<Integer> permissionGroupIds) {
+        Long count = null;
+        if (!CollectionUtils.isEmpty(permissionGroupIds)){
+            count = permissionGroupIds.stream()
+                    .filter(Objects::nonNull)
+                    .map(id -> {
+                        return selectByPrimaryKey(id);
+                    })
+                    .filter(permissionGroup -> permissionGroup == null)
+                    .count();
+        }
+        return count;
     }
 }

@@ -109,12 +109,12 @@ public class CompanyService {
         Company selectOneCompany = companyMapper.selectOne(company);
         if (selectOneCompany != null){
             BeanUtils.copyProperties(companyDto, selectOneCompany);
-            company.setStatus(CompanyStatusEnum.CREATING.getCode());
+            selectOneCompany.setStatus(CompanyStatusEnum.CREATING.getCode());
             companyMapper.updateByPrimaryKeySelective(selectOneCompany);
         }else {
             selectOneCompany = new Company();
             BeanUtils.copyProperties(companyDto, selectOneCompany);
-            company.setStatus(CompanyStatusEnum.CREATING.getCode());
+            selectOneCompany.setStatus(CompanyStatusEnum.CREATING.getCode());
             companyMapper.insertSelective(selectOneCompany);
         }
 

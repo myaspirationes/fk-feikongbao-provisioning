@@ -6,6 +6,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.mapper.UserPermissionTarg
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -28,9 +29,10 @@ public class UserPermissionTargetGroupDetailsService {
      * @return
      */
     public Integer selectUserPermissionTargetGroupDetailsCountByGroupId(Integer groupId) {
-        UserPermissionTargetGroupDetails userPermissionTargetGroupDetails = new UserPermissionTargetGroupDetails();
-        userPermissionTargetGroupDetails.setGroupId(groupId);
-        return userPermissionTargetGroupDetailsMapper.selectCount(userPermissionTargetGroupDetails);
+        Example example = new Example(UserPermissionTargetGroupDetails.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("groupId",groupId);
+        return userPermissionTargetGroupDetailsMapper.selectCountByExample(example);
     }
 
     /**
@@ -40,8 +42,9 @@ public class UserPermissionTargetGroupDetailsService {
      * @return
      */
     public List<UserPermissionTargetGroupDetails> selectUserPermissionTargetGroupDetailsByUserPermissionId(Integer userPermissionId) {
-        UserPermissionTargetGroupDetails userPermissionTargetGroupDetails = new UserPermissionTargetGroupDetails();
-        userPermissionTargetGroupDetails.setUserPermissionId(userPermissionId);
-        return userPermissionTargetGroupDetailsMapper.select(userPermissionTargetGroupDetails);
+        Example example = new Example(UserPermissionTargetGroupDetails.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("userPermissionId", userPermissionId);
+        return userPermissionTargetGroupDetailsMapper.selectByExample(example);
     }
 }
