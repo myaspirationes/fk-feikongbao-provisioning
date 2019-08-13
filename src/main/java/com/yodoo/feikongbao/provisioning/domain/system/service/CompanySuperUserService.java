@@ -29,7 +29,7 @@ import java.sql.*;
  * @Date 16:53 2019/7/30
  **/
 @Service
-@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
 public class CompanySuperUserService {
 
     private static Logger logger = LoggerFactory.getLogger(CompanySuperUserService.class);

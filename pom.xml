@@ -10,12 +10,17 @@
 
     <groupId>com.yodoo.feikongbao</groupId>
     <artifactId>fk-feikongbao-provisioning</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>feikongbao-provisioning</name>
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
-
+        <!-- 用户权限 -->
+        <dependency>
+            <groupId>com.yodoo.megalodon</groupId>
+            <artifactId>md-permission</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>

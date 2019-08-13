@@ -30,7 +30,7 @@ import java.util.*;
  * @Date 10:30 2019/7/31
  **/
 @Service
-@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
 public class PublishProjectService {
 
     private static Logger logger = LoggerFactory.getLogger(PublishProjectService.class);

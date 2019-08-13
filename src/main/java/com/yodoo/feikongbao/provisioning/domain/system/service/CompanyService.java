@@ -33,7 +33,7 @@ import java.util.List;
  * @Created by houzhen
  */
 @Service
-@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
 public class CompanyService {
 
     @Autowired

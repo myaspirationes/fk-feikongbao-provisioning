@@ -2,9 +2,10 @@ package com.yodoo.feikongbao.provisioning.domain.system.security;
 
 import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto;
-import com.yodoo.feikongbao.provisioning.domain.system.service.MenuTreeService;
+import com.yodoo.feikongbao.provisioning.domain.system.service.MenuManagerApiService;
 import com.yodoo.feikongbao.provisioning.util.Md5Util;
 import com.yodoo.feikongbao.provisioning.util.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,7 +20,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class ProvisioningAuthenticationProvider implements AuthenticationProvider {
@@ -27,8 +31,11 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
     @Autowired
     ProvisioningUserDetailsServiceImpl userDetailsService;
 
+//    @Autowired
+//    MenuTreeService menuTreeService;
+
     @Autowired
-    MenuTreeService menuTreeService;
+    private MenuManagerApiService menuManagerApiService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -45,10 +52,18 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
             throw new BadCredentialsException("密码不正确，请重新登陆！");
         }
         // 取得session，并将权限菜单增加到session中
-        List<MenuDto> menuTree = menuTreeService.getMenuTree(userInfo.getId());
+        List<com.yodoo.megalodon.permission.dto.MenuDto> menuTree = menuManagerApiService.getMenuTree(userInfo.getId());
+        List<MenuDto> menuTreeList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(menuTree)){
+            menuTreeList = menuTree.stream().filter(Objects::nonNull).map(menuDto -> {
+                MenuDto menuDtoResponse = new MenuDto();
+                BeanUtils.copyProperties(menuDto, menuDtoResponse);
+                return menuDtoResponse;
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
         // 添加link
-        this.addLink("/", menuTree);
-        userInfo.setMenuTree(menuTree);
+        this.addLink("/", menuTreeList);
+        userInfo.setMenuTree(menuTreeList);
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
         session.setAttribute(ProvisioningConstants.AUTH_USER, userInfo);

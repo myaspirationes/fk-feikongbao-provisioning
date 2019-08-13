@@ -1,11 +1,14 @@
-package com.yodoo.feikongbao.provisioning.domain.system.entity;
+package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
-import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
+
+import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
 
 /**
- * 权限表
- */
-public class Permission extends BaseEntity {
+ * 权限
+ * @Author houzhen
+ * @Date 15:22 2019/8/5
+**/
+public class PermissionDto extends BaseDto {
 
     /**
      * 权限code
@@ -22,7 +25,7 @@ public class Permission extends BaseEntity {
     }
 
     public void setPermissionCode(String permissionCode) {
-        this.permissionCode = permissionCode == null ? null : permissionCode.trim();
+        this.permissionCode = permissionCode;
     }
 
     public String getPermissionName() {
@@ -30,6 +33,6 @@ public class Permission extends BaseEntity {
     }
 
     public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName == null ? null : permissionName.trim();
+        this.permissionName = permissionName;
     }
 }

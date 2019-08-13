@@ -8,12 +8,14 @@ import com.offbytwo.jenkins.JenkinsServer;
 import com.yodoo.megalodon.datasource.annotation.*;
 import com.yodoo.megalodon.datasource.config.ApolloPortalConfig;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
+import com.yodoo.megalodon.permission.config.PermissionConfig;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,9 +38,9 @@ import java.net.URISyntaxException;
  * @Date 17:30 2019/7/24
  **/
 @Configuration
-@Import({SwiftStorageClientConfig.class})
+@Import({SwiftStorageClientConfig.class, PermissionConfig.class})
 @ComponentScan(basePackages = {"com.yodoo.feikongbao.provisioning"})
-@MapperScan(basePackages = "com.yodoo.feikongbao.provisioning.*.*.mapper", sqlSessionFactoryRef = ProvisioningConfig.SQL_SESSION_FACTORY_BEAN_NAME)
+@MapperScan(basePackages = "com.yodoo.feikongbao.provisioning.*.*.mapper", sqlSessionFactoryRef = ProvisioningConfig.PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
 @EnableTransactionManagement
 @EnableRabbitMqConfig
 @EnableProvisioningDataSource
@@ -50,9 +52,9 @@ public class ProvisioningConfig {
 
     private static Logger logger = LoggerFactory.getLogger(ProvisioningConfig.class);
 
-    public static final String TRANSACTION_MANAGER_BEAN_NAME = "provisioningTransactionManager";
+    public static final String PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME = "provisioningTransactionManager";
 
-    public static final String SQL_SESSION_FACTORY_BEAN_NAME = "provisioningSessionFactory";
+    public static final String PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME = "provisioningSessionFactory";
 
     public static final String REDIS_TEMPLATE_BEAN_NAME = "provisioningRedisTemplate";
 
@@ -74,12 +76,13 @@ public class ProvisioningConfig {
         return objectMapper;
     }
 
-    @Bean(TRANSACTION_MANAGER_BEAN_NAME)
+    @Bean(PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
     public DataSourceTransactionManager provisioningTransactionManager(DataSource provisioningDataSource) {
         return new DataSourceTransactionManager(provisioningDataSource);
     }
 
-    @Bean(SQL_SESSION_FACTORY_BEAN_NAME)
+    @Bean(PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
+    //@Qualifier(PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
     public SqlSessionFactory provisioningSqlSessionFactory(DataSource provisioningDataSource) throws Exception {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setTransactionFactory(new SpringManagedTransactionFactory());

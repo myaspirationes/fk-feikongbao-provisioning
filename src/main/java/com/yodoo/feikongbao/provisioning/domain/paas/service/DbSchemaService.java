@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @Date ： 2019/7/30 0030
  */
 @Service
-@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
 public class DbSchemaService {
 
     @Autowired

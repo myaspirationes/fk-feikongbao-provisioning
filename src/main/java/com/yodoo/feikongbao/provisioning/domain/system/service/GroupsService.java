@@ -6,11 +6,13 @@ import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.GroupsDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionDetails;
-import com.yodoo.feikongbao.provisioning.domain.system.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.GroupsMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import com.yodoo.megalodon.permission.entity.UserPermissionDetails;
+import com.yodoo.megalodon.permission.entity.UserPermissionTargetGroupDetails;
+import com.yodoo.megalodon.permission.service.UserPermissionDetailsService;
+import com.yodoo.megalodon.permission.service.UserPermissionTargetGroupDetailsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +34,7 @@ import java.util.stream.Collectors;
  * @Date ： 2019/7/29 0029
  */
 @Service
-@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.TRANSACTION_MANAGER_BEAN_NAME)
+@Transactional(rollbackFor = Exception.class, transactionManager = ProvisioningConfig.PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
 public class GroupsService {
 
     @Autowired
@@ -72,16 +75,6 @@ public class GroupsService {
                     .collect(Collectors.toList());
         }
         return new PageInfoDto<GroupsDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
-    }
-
-    /**
-     * 通过主键查询
-     *
-     * @param id
-     * @return
-     */
-    public Groups selectByPrimaryKey(Integer id) {
-        return groupsMapper.selectByPrimaryKey(id);
     }
 
     /**
@@ -174,7 +167,8 @@ public class GroupsService {
                     .filter(Objects::nonNull)
                     .map(userPermissionDetails -> {
                         // 通过用户权限id 查询目标集团表
-                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
+//                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
+                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = null;
                         if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetailsList)) {
                             List<GroupsDto> collect1 = userPermissionTargetGroupDetailsList.stream()
                                     .filter(Objects::nonNull)
@@ -201,6 +195,62 @@ public class GroupsService {
                     .collect(Collectors.toList());
         }
         return groupsDtoList;
+    }
+
+    /**
+     * 查询除ids 以外的集团
+     * @param groupsIdsListSet
+     * @return
+     */
+    public List<GroupsDto> selectGroupsNotInIds(Set<Integer> groupsIdsListSet) {
+        List<GroupsDto> groupsDtoList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(groupsIdsListSet)){
+            Example example = new Example(Groups.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andNotIn("id",groupsIdsListSet);
+            List<Groups> groupsList = groupsMapper.selectByExample(example);
+            if (!CollectionUtils.isEmpty(groupsList)){
+                groupsDtoList = groupsList.stream()
+                        .filter(Objects::nonNull)
+                        .map(groups -> {
+                            GroupsDto groupsDto = new GroupsDto();
+                            BeanUtils.copyProperties(groups, groupsDto);
+                            return groupsDto;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+            }
+        }
+        return groupsDtoList;
+    }
+
+    /**
+     * 通过主键查询
+     * @param groupsId
+     * @return
+     */
+    public GroupsDto selectGroupById(Integer groupsId) {
+        Example example = new Example(Groups.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("id", groupsId);
+        Groups groups = groupsMapper.selectOneByExample(example);
+        if (groups != null){
+            GroupsDto groupsDto = new GroupsDto();
+            BeanUtils.copyProperties(groupsDto, groups);
+            return groupsDto;
+        }
+        return null;
+    }
+
+    /**
+     * 通过主键查询
+     *
+     * @param id
+     * @return
+     */
+    public Groups selectByPrimaryKey(Integer id) {
+        return groupsMapper.selectByPrimaryKey(id);
     }
 
     /**
