@@ -13,6 +13,7 @@ import com.yodoo.megalodon.permission.entity.UserPermissionDetails;
 import com.yodoo.megalodon.permission.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.megalodon.permission.service.UserPermissionDetailsService;
 import com.yodoo.megalodon.permission.service.UserPermissionTargetGroupDetailsService;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -204,12 +206,8 @@ public class GroupsService {
      */
     public List<GroupsDto> selectGroupsNotInIds(Set<Integer> groupsIdsListSet) {
         List<GroupsDto> groupsDtoList = new ArrayList<>();
-
         if (!CollectionUtils.isEmpty(groupsIdsListSet)){
-            Example example = new Example(Groups.class);
-            Example.Criteria criteria = example.createCriteria();
-            criteria.andNotIn("id",groupsIdsListSet);
-            List<Groups> groupsList = groupsMapper.selectByExample(example);
+            List<Groups> groupsList = groupsMapper.selectGroupInNotIn(groupsIdsListSet);
             if (!CollectionUtils.isEmpty(groupsList)){
                 groupsDtoList = groupsList.stream()
                         .filter(Objects::nonNull)
@@ -237,7 +235,7 @@ public class GroupsService {
         Groups groups = groupsMapper.selectOneByExample(example);
         if (groups != null){
             GroupsDto groupsDto = new GroupsDto();
-            BeanUtils.copyProperties(groupsDto, groups);
+            BeanUtils.copyProperties(groups, groupsDto);
             return groupsDto;
         }
         return null;

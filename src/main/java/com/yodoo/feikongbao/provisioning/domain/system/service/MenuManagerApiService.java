@@ -1,12 +1,17 @@
 package com.yodoo.feikongbao.provisioning.domain.system.service;
 
 import com.yodoo.megalodon.permission.api.MenuManagerApi;
+import com.yodoo.megalodon.permission.common.PageInfoDto;
 import com.yodoo.megalodon.permission.dto.MenuDto;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Description ：菜单
@@ -18,6 +23,32 @@ public class MenuManagerApiService {
 
     @Autowired
     private MenuManagerApi menuManagerApi;
+
+    /**
+     * 条件分页查询权限组列表
+     * @param menuDto
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('permission_manage')")
+    public com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> queryPermissionGroupList(MenuDto menuDto){
+        com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> pageInfoDto = new com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto<>();
+        PageInfoDto<MenuDto> menuDtoPageInfoDto = menuManagerApi.queryMenuList(menuDto);
+        if (menuDtoPageInfoDto != null){
+            BeanUtils.copyProperties(menuDtoPageInfoDto, pageInfoDto);
+        }
+        if (menuDtoPageInfoDto != null && !CollectionUtils.isEmpty(menuDtoPageInfoDto.getList())){
+            List<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> collect = menuDtoPageInfoDto.getList().stream()
+                    .filter(Objects::nonNull)
+                    .map(menuDtoPermission -> {
+                        com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto menuDtoResponse = new com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto();
+                        BeanUtils.copyProperties(menuDtoPermission, menuDtoResponse);
+                        menuDtoResponse.setTid(menuDtoPermission.getId());
+                        return menuDtoResponse;
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
+            pageInfoDto.setList(collect);
+        }
+        return pageInfoDto;
+    }
 
     /**
      * 查询菜单树

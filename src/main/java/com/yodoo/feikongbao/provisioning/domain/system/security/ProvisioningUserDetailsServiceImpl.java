@@ -2,6 +2,7 @@ package com.yodoo.feikongbao.provisioning.domain.system.security;
 
 import com.yodoo.feikongbao.provisioning.domain.system.service.PermissionManagerApiService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.UserManagerApiService;
+import com.yodoo.megalodon.permission.entity.Permission;
 import com.yodoo.megalodon.permission.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,7 +46,7 @@ public class ProvisioningUserDetailsServiceImpl implements UserDetailsService {
         // 查询用户权限
         Set<GrantedAuthority> authoritiesSet = new HashSet<>();
 
-        List<com.yodoo.megalodon.permission.entity.Permission> permissionList = permissionManagerApiService.getPermissionByUserId(user.getId());
+        List<Permission> permissionList = permissionManagerApiService.getPermissionByUserId(user.getId());
         if (!CollectionUtils.isEmpty(permissionList)) {
             permissionList.forEach(permission -> {
                 GrantedAuthority authority = new SimpleGrantedAuthority(permission.getPermissionCode());

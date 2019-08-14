@@ -23,7 +23,7 @@ import java.util.List;
  * @Date ： 2019/8/13 0013
  */
 @RestController
-@RequestMapping(value = "/permissionManager")
+@RequestMapping(value = "/permission")
 public class PermissionController {
 
     @Autowired
@@ -90,7 +90,7 @@ public class PermissionController {
      * @param userId
      * @return
      */
-    @RequestMapping(value = "/getPermissionByUserId/{userId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/getPermissionByUserId/{userId}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> getPermissionByUserId(@PathVariable Integer userId) {
         List<Permission> permissionByUserId = permissionManagerService.getPermissionByUserId(userId);
@@ -118,7 +118,6 @@ public class PermissionController {
     public ProvisioningDto<?> getTargetGroupsByUserId(@PathVariable Integer userId){
         List<GroupsDto> targetGroupsByUserId = permissionManagerService.getTargetGroupsByUserId(userId);
         return new ProvisioningDto<List<GroupsDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, targetGroupsByUserId);
-
     }
 
     /**

@@ -8,7 +8,6 @@ import com.yodoo.megalodon.permission.common.PageInfoDto;
 import com.yodoo.megalodon.permission.dto.*;
 import com.yodoo.megalodon.permission.entity.Permission;
 import com.yodoo.megalodon.permission.entity.SearchCondition;
-import com.yodoo.megalodon.permission.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -191,7 +190,6 @@ public class PermissionManagerApiService {
      * @param userId
      * @return
      */
-    @PreAuthorize("hasAnyAuthority('permission_manage')")
     public List<Permission> getPermissionByUserId(Integer userId) {
         return permissionManagerApi.getPermissionByUserId(userId);
     }

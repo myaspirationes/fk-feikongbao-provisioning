@@ -90,7 +90,7 @@ public class PermissionGroupController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "item/{id}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> getPermissionGroupDetails(@PathVariable Integer id) {
         PermissionGroupDto permissionGroupDetails = permissionManagerService.getPermissionGroupDetails(id);

@@ -26,4 +26,14 @@
         #{groupCode,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectGroupInNotIn" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from groups
+        where id NOT IN
+        <foreach item="item" index="index" collection="groupIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

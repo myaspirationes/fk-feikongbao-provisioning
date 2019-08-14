@@ -42,4 +42,14 @@
         </if>
     </select>
 
+    <select id="selectCompanyNotInIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from company
+        where id NOT IN
+        <foreach item="item" index="index" collection="companyIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

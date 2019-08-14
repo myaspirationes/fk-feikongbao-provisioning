@@ -84,7 +84,7 @@ public class SearchConditionController {
      * 查询所有条件列表
      * @return
      */
-    @RequestMapping(value = "/getAllSearchCondition", method = RequestMethod.POST)
+    @RequestMapping(value = "/getAllSearchCondition", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('permission_manage')")
     public ProvisioningDto<?> getAllSearchCondition(){
         List<SearchCondition> list = permissionManagerService.getAllSearchCondition();

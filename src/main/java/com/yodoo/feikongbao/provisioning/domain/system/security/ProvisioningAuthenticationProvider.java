@@ -54,10 +54,21 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
         // 取得session，并将权限菜单增加到session中
         List<com.yodoo.megalodon.permission.dto.MenuDto> menuTree = menuManagerApiService.getMenuTree(userInfo.getId());
         List<MenuDto> menuTreeList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(menuTree)){
+        if (!CollectionUtils.isEmpty(menuTree)){
             menuTreeList = menuTree.stream().filter(Objects::nonNull).map(menuDto -> {
                 MenuDto menuDtoResponse = new MenuDto();
                 BeanUtils.copyProperties(menuDto, menuDtoResponse);
+                menuDtoResponse.setTid(menuDto.getId());
+                List<com.yodoo.megalodon.permission.dto.MenuDto> children = menuDto.getChildren();
+                if (!CollectionUtils.isEmpty(children)){
+                    List<MenuDto> menuDtoChildrenList = children.stream().filter(Objects::nonNull).map(menuDtoChildren -> {
+                        MenuDto menuDtoChildrenResponse = new MenuDto();
+                        BeanUtils.copyProperties(menuDtoChildren, menuDtoChildrenResponse);
+                        menuDtoChildrenResponse.setTid(menuDtoChildren.getId());
+                        return menuDtoChildrenResponse;
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
+                    menuDtoResponse.setChildren(menuDtoChildrenList);
+                }
                 return menuDtoResponse;
             }).filter(Objects::nonNull).collect(Collectors.toList());
         }
