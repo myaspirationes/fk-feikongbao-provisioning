@@ -22,6 +22,11 @@ public class UserGroupDto extends BaseDto {
     private String groupName;
 
     /**
+     * 当前组下用户总数
+     */
+    private Integer userTotal;
+
+    /**
      * 权限组 ids
      */
     private Set<Integer> permissionGroupIds;
@@ -41,6 +46,15 @@ public class UserGroupDto extends BaseDto {
 
     public UserGroupDto setGroupName(String groupName) {
         this.groupName = groupName;
+        return this;
+    }
+
+    public Integer getUserTotal() {
+        return userTotal;
+    }
+
+    public UserGroupDto setUserTotal(Integer userTotal) {
+        this.userTotal = userTotal;
         return this;
     }
 

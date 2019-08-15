@@ -41,7 +41,7 @@ public class UserGroupController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), UserGroupController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, UserGroupController.class, Arrays.asList("user_manage"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode(), "getUserGroupAll");
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode(), "getUserGroupAll","userGroupBatchProcessing");
         return new ProvisioningDto<PageInfoDto<com.yodoo.feikongbao.provisioning.domain.system.dto.UserGroupDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
 
@@ -90,5 +90,16 @@ public class UserGroupController {
     public ProvisioningDto<?> getUserGroupAll(){
         List<UserGroupDto> userGroupAll = userManagerApiService.getUserGroupAll();
         return new ProvisioningDto<List<UserGroupDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, userGroupAll);
+    }
+
+    /**
+     * 用户组批处理
+     * @param userGroupId
+     */
+    @RequestMapping(value = "/userGroupBatchProcessing", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('user_manage')")
+    public ProvisioningDto<?> userGroupBatchProcessing(Integer userGroupId){
+        userManagerApiService.userGroupBatchProcessing(userGroupId);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 }
