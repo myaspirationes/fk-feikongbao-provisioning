@@ -2,9 +2,12 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
+import javax.persistence.Table;
+
 /**
  * DB 数据库表
  */
+@Table(name = "db_schema")
 public class DbSchema extends BaseEntity {
 
     /**

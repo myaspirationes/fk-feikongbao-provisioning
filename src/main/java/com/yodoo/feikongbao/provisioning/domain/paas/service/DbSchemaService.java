@@ -19,6 +19,7 @@ import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
 import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
+import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,9 @@ public class DbSchemaService {
     @Autowired
     private JenkinsUtils jenkinsUtils;
 
+    @Autowired
+    private ProvisioningDataSourceConfig provisioningDataSourceConfig;
+
     /**
      * 创建数据库 TODO 目前测试先注掉初始化数据库表，最后测试记得放开，返回上一步，
      *
@@ -91,13 +95,27 @@ public class DbSchemaService {
         dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
         dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
 
-        // 初始化数据库表 TODO 如果返回上一步，待解决确定 String appInstanceName, String releaseVersion
-        // buildScriptMigrationData(dbSchemaDto.getCompanyCode(), dbSchemaDto.getTargetVersion());
+        // 初始化数据库表  如果返回上一步，待解决确定 String appInstanceName, String releaseVersion
+        String jobName;
+        switch (provisioningDataSourceConfig.provisioningApolloEvn.toUpperCase()) {
+            case "FAT":
+                jobName = "fat-md-db-upgrade";
+                break;
+            case "UAT":
+                jobName = "uat-md-db-upgrade";
+                break;
+            case "PRO":
+                jobName = "pro-md-db-upgrade";
+                break;
+            default:
+                jobName = "dev-md-db-upgrade";
+                break;
+        }
+        buildScriptMigrationData(jobName, dbSchemaDto.getCompanyCode(), dbSchemaDto.getTargetVersion());
         // 查询 build 状态成功做下步动作
-        // if (!jenkinsUtils.checkRunningStatusToJenkins(jenkinsConfig.jenkinsScriptMigrationDataJobName)) {
-        //     throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
-        // }
-
+        if (!jenkinsUtils.checkRunningStatusToJenkins(jobName)) {
+            throw new ProvisioningException(BundleKey.BUILD_SCRIPT_MIGRATION_DATA, BundleKey.BUILD_SCRIPT_MIGRATION_DATA_MSG);
+        }
         return dbSchemaDto;
     }
 
@@ -159,16 +177,17 @@ public class DbSchemaService {
     }
 
     /**
+     * @param jobName
      * @param appInstanceName : 实例名
-     * @param releaseVersion ： 版本
+     * @param releaseVersion  ： 版本
      * @return
      */
-    private String buildScriptMigrationData(String appInstanceName, String releaseVersion) {
+    private String buildScriptMigrationData(String jobName, String appInstanceName, String releaseVersion) {
         // 校验参数
         RequestPrecondition.checkArguments(!com.yodoo.feikongbao.provisioning.util.StringUtils.isContainEmpty(appInstanceName, releaseVersion));
         // 封装参数
         Map<String, String> parameters = encapsulatingRequestParameters(appInstanceName, releaseVersion);
-        return jenkinsUtils.buildJobWithParameters(jenkinsConfig.jenkinsScriptMigrationDataJobName, parameters);
+        return jenkinsUtils.buildJobWithParameters(jobName, parameters);
     }
 
     /**
