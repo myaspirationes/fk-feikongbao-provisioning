@@ -79,7 +79,7 @@ public class ProvisioningAuthenticationProvider implements AuthenticationProvide
         HttpSession session = attr.getRequest().getSession(true);
         session.setAttribute(ProvisioningConstants.AUTH_USER, userInfo);
         // 返回
-        return new UsernamePasswordAuthenticationToken(userName, password, userInfo.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userInfo.getId(), password, userInfo.getAuthorities());
     }
 
     @Override

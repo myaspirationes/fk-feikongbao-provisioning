@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yodoo.feikongbao.provisioning.domain.system.mapper.PublishProjectMapper">
-    <resultMap id="BaseResultMap" type="com.yodoo.feikongbao.provisioning.domain.system.entity.PublishProject">
+    <resultMap id="BaseResultMap"
+               extends="com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper.baseCommonResultMap"
+               type="com.yodoo.feikongbao.provisioning.domain.system.entity.PublishProject">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="vm_instance_id" jdbcType="INTEGER" property="vmInstanceId"/>
@@ -11,14 +13,10 @@
         <result column="port" jdbcType="INTEGER" property="port"/>
         <result column="version" jdbcType="VARCHAR" property="version"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="create_user" jdbcType="VARCHAR" property="createUser"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="update_user" jdbcType="VARCHAR" property="updateUser"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, company_id, vm_instance_id, project_name, project_type, ip, port, version, status, 
-    create_user, create_time, update_user, update_time
+        id, company_id, vm_instance_id, project_name, project_type, ip, port, version, status,
+        <include refid="com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper.baseCommonColumn"></include>
   </sql>
 
 

@@ -2,9 +2,15 @@ package com.yodoo.feikongbao.provisioning.domain.paas.entity;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * DB 实例表
  */
+@Table(name = "db_instance")
 public class DbInstance extends BaseEntity {
 
     /**
