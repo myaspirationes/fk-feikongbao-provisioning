@@ -81,14 +81,14 @@ public class BaseEntity {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    public void setCreateUser() {
+    public void setCreatedBy() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             this.createdBy = (Integer) authentication.getPrincipal();
         }
     }
 
-    public void setUpdateUser() {
+    public void setLastModifiedBy() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             this.lastModifiedBy = (Integer) authentication.getPrincipal();

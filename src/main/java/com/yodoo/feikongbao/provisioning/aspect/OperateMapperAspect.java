@@ -60,10 +60,10 @@ public class OperateMapperAspect {
                     List<BaseEntity> recordList = (List<BaseEntity>) args[0];
                     for (BaseEntity entity : recordList) {
                         if (null == entity.getCreatedBy()) {
-                            entity.setCreateUser();
+                            entity.setCreatedBy();
                         }
                         if (null == entity.getLastModifiedBy()) {
-                            entity.setUpdateUser();
+                            entity.setLastModifiedBy();
                         }
                     }
                 }
@@ -73,10 +73,10 @@ public class OperateMapperAspect {
                 if (args[0] instanceof BaseEntity) {
                     BaseEntity entity = (BaseEntity) args[0];
                     if (null == entity.getCreatedBy()) {
-                        entity.setCreateUser();
+                        entity.setCreatedBy();
                     }
                     if (null == entity.getLastModifiedBy()) {
-                        entity.setUpdateUser();
+                        entity.setLastModifiedBy();
                     }
                 }
 
@@ -86,7 +86,7 @@ public class OperateMapperAspect {
                 if (args[0] instanceof BaseEntity) {
                     BaseEntity entity = (BaseEntity) args[0];
                     if (null == entity.getLastModifiedBy()) {
-                        entity.setUpdateUser();
+                        entity.setLastModifiedBy();
                     }
                 }
             }
