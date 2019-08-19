@@ -2,6 +2,7 @@ package com.yodoo.feikongbao.provisioning.util;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
 import com.yodoo.feikongbao.provisioning.enums.OperateCode;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.core.Authentication;
@@ -63,7 +64,7 @@ public class LinkUtils {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             for (GrantedAuthority authority : authentication.getAuthorities()) {
                 String auth = authority.getAuthority();
-                if (!StringUtils.isEmpty(auth) && permissionList.contains(auth)) {
+                if (!StringUtils.isBlank(auth) && permissionList.contains(auth)) {
                     for (String resource : resources) {
                         Link link = null;
                         if (resource.equalsIgnoreCase(OperateCode.ADD.getCode())) {

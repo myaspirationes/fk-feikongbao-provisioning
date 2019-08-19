@@ -2,7 +2,10 @@ package com.yodoo.feikongbao.provisioning.util;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.*;
+import com.yodoo.feikongbao.provisioning.exception.BundleKey;
+import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,14 +325,16 @@ public class JenkinsUtils {
      */
     public Boolean checkRunningStatusToJenkins(String jobName) {
         // 校验参数
-        RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(jobName));
+        if (StringUtils.isBlank(jobName)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         // 开始时间
         Long startTime = System.currentTimeMillis();
         for (; ; ) {
             // 要睡时间长点，要不然获取到的是上一次 build 的数据
             sleepSomeTime(jenkinsConfig.jenkinsCheckRunWaitTime);
             String jobRunResult = getJobRunResult(jobName);
-            if (org.apache.commons.lang3.StringUtils.isNoneBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())) {
+            if (StringUtils.isNotBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())) {
                 return true;
             } else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
                     || BuildResult.ABORTED.name().equalsIgnoreCase(jobRunResult)

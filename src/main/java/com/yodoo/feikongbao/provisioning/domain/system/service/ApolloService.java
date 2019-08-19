@@ -17,8 +17,8 @@ import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
-import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,9 @@ public class ApolloService {
      **/
     public OpenClusterDTO createCluster(String companyCode) {
         logger.info("ApolloService.createCluster companyCode:{}", companyCode);
-        RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode));
+        if (StringUtils.isBlank(companyCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         OpenClusterDTO clusterDTO = openApiClient.getCluster(provisioningDataSourceConfig.provisioningApolloAppid,
                 provisioningDataSourceConfig.provisioningApolloEvn, companyCode);
         if (clusterDTO != null) {
@@ -209,7 +211,9 @@ public class ApolloService {
      * @Date 10:57 2019/7/30
      **/
     private Company checkCompany(String companyCode) {
-        RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode));
+        if (StringUtils.isBlank(companyCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         // 查询公司信息
         Company findCompanyParams = new Company();
         findCompanyParams.setCompanyCode(companyCode);
@@ -242,8 +246,9 @@ public class ApolloService {
      * @Date 16:45 2019/7/29
      **/
     private void createItems(String companyCode, String namespace, List<OpenItemDTO> itemDtoList) {
-        RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(companyCode, namespace));
-
+        if (StringUtils.isBlank(companyCode) || StringUtils.isBlank(namespace)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         String appId = provisioningDataSourceConfig.provisioningApolloAppid;
         String env = provisioningDataSourceConfig.provisioningApolloEvn;
         // 查询集群是否存在

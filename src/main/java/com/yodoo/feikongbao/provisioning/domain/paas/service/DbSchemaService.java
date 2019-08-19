@@ -184,7 +184,9 @@ public class DbSchemaService {
      */
     private String buildScriptMigrationData(String jobName, String appInstanceName, String releaseVersion) {
         // 校验参数
-        RequestPrecondition.checkArguments(!com.yodoo.feikongbao.provisioning.util.StringUtils.isContainEmpty(appInstanceName, releaseVersion));
+        if (StringUtils.isBlank(appInstanceName) || StringUtils.isBlank(releaseVersion)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         // 封装参数
         Map<String, String> parameters = encapsulatingRequestParameters(appInstanceName, releaseVersion);
         return jenkinsUtils.buildJobWithParameters(jobName, parameters);

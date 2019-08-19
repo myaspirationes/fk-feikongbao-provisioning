@@ -1,7 +1,6 @@
 package com.yodoo.feikongbao.provisioning.aspect;
 
 import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
-import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

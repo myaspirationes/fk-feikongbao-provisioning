@@ -13,8 +13,8 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.Base64Util;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
-import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import com.yodoo.megalodon.datasource.config.JenkinsConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +104,8 @@ public class PublishProjectService {
      */
     private void checkArgs(PublishProjectDto dto) {
         if (dto == null || dto.getCompanyId() == null || dto.getVmInstanceId() == null
-                || StringUtils.isEmpty(dto.getProjectName()) || StringUtils.isEmpty(dto.getProjectType())
-                || StringUtils.isEmpty(dto.getVersion())) {
+                || StringUtils.isBlank(dto.getProjectName()) || StringUtils.isBlank(dto.getProjectType())
+                || StringUtils.isBlank(dto.getVersion())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
     }
