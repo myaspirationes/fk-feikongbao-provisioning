@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 
 /**
  * swift 租户表
+ *
+ * @Date 2019/7/9 17:28
+ * @Author by houzhen
  */
 public class SwiftProject extends BaseEntity {
 

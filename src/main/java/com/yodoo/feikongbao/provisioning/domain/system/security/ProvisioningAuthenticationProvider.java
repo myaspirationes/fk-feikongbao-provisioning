@@ -4,7 +4,6 @@ import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto;
 import com.yodoo.feikongbao.provisioning.domain.system.service.MenuManagerApiService;
 import com.yodoo.feikongbao.provisioning.util.Md5Util;
-//import com.yodoo.feikongbao.provisioning.util.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @Date 2019/7/9 17:28
+ * @Author by houzhen
+ */
 @Component
 public class ProvisioningAuthenticationProvider implements AuthenticationProvider {
 

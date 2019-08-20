@@ -15,7 +15,7 @@ import java.io.IOException;
  * 未登录信息
  *
  * @Date 2019/7/9 17:28
- * @Created by houzhen
+ * @Author by houzhen
  */
 @Component
 public class ProvisioningAuthenticationEntryPoint implements AuthenticationEntryPoint {

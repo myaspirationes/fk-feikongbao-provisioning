@@ -7,6 +7,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 集团表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
+ */
 public interface GroupsMapper extends BaseMapper<Groups> {
 
     /**

@@ -40,7 +40,7 @@ public class UserController {
         LinkUtils.setItemListLink(pageInfoDto.getList(), UserController.class);
         // 操作资源导向
         LinkUtils.setResourceLink(pageInfoDto, UserController.class, Arrays.asList("user_manage"),
-                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode(),"resetUserPassword","updateUserStatus");
+                OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode(),"resetUserPassword", "updateUserStatus", "updateUserPassword");
         return new ProvisioningDto<PageInfoDto<com.yodoo.feikongbao.provisioning.domain.system.dto.UserDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
     }
 
@@ -65,6 +65,18 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('user_manage')")
     public ProvisioningDto<?> editUser(@RequestBody UserDto userDto){
         userManagerApiService.editUser(userDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 修改用户密码
+     * @param userDto
+     * @return
+     */
+    @RequestMapping(value = "/updateUserPassword", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('user_manage')")
+    public ProvisioningDto<?> updateUserPassword(@RequestBody UserDto userDto){
+        userManagerApiService.updateUserPassword(userDto);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 

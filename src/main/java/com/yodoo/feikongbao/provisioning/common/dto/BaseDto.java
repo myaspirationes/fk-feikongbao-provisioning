@@ -4,7 +4,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 /**
  * @Date 2019/7/26 13:17
- * @Created by houzhen
+ * @Author by houzhen
  */
 public class BaseDto extends ResourceSupport {
 

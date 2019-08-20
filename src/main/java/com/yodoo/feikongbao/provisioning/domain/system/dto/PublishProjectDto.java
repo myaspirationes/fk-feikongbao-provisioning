@@ -4,6 +4,9 @@ import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
 
 /**
  * 公司部署项目表
+ *
+ * @Date 2019/7/9 17:28
+ * @Author by houzhen
  */
 public class PublishProjectDto extends BaseDto {
 

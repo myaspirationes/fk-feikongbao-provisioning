@@ -9,6 +9,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.entity.Groups;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.GroupsMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import com.yodoo.feikongbao.provisioning.util.UserUtils;
 import com.yodoo.megalodon.permission.entity.UserPermissionDetails;
 import com.yodoo.megalodon.permission.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.megalodon.permission.service.UserPermissionDetailsService;
@@ -155,12 +156,11 @@ public class GroupsService {
 
     /**
      * 获取当前用户下管理的集团列表
-     *
+     * TODO 用户id 从  session中获取
      * @return
      */
     public List<GroupsDto> getGroupListByUserId() {
-        // TODO 用户id 从  session中获取
-        Integer userId = 1;
+        Integer userId = UserUtils.getUserId();
         // 通过用户id 查询用户权限表
         List<UserPermissionDetails> userPermissionDetailsList = userPermissionDetailsService.selectUserPermissionDetailsByUserId(userId);
         List<GroupsDto> groupsDtoList = new ArrayList<>();
@@ -169,8 +169,7 @@ public class GroupsService {
                     .filter(Objects::nonNull)
                     .map(userPermissionDetails -> {
                         // 通过用户权限id 查询目标集团表
-//                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
-                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = null;
+                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
                         if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetailsList)) {
                             List<GroupsDto> collect1 = userPermissionTargetGroupDetailsList.stream()
                                     .filter(Objects::nonNull)

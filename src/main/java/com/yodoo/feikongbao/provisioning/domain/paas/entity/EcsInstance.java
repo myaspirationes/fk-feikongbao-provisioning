@@ -6,6 +6,8 @@ import java.util.Date;
 
 /**
  * ECS 实例表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class EcsInstance extends BaseEntity {
 

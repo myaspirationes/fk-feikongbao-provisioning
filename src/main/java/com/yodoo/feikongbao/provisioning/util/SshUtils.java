@@ -61,13 +61,13 @@ public class SshUtils {
         return result;
     }
 
-    public static void closeJSChSession(Session session) {
+    public static void closeJsChSession(Session session) {
         if (session != null && session.isConnected()) {
             session.disconnect();
         }
     }
 
-    public static void makeFileByJSCh(Session session, String filePath, String fileContent) throws JSchException, SftpException {
+    public static void makeFileByJsCh(Session session, String filePath, String fileContent) throws JSchException, SftpException {
         ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
         channelSftp.connect();
         // 文件输入流
@@ -79,7 +79,7 @@ public class SshUtils {
             // 截取目录 如：/xxx/xxx/
             String dir = filePath.substring(0, filePath.lastIndexOf("/") + 1);
             // 创建文件夹
-            SshUtils.makeDirsByJSCh(channelSftp, dir);
+            SshUtils.makeDirsByJsCh(channelSftp, dir);
             // 文件内容输入
             in = new ByteArrayInputStream(fileContent.getBytes());
             // 上传文件
@@ -98,7 +98,7 @@ public class SshUtils {
         }
     }
 
-    private static boolean makeDirsByJSCh(ChannelSftp channelSftp, String dir) throws SftpException {
+    private static boolean makeDirsByJsCh(ChannelSftp channelSftp, String dir) throws SftpException {
         String dirs = dir.substring(1, dir.length() - 1);
         String[] dirArr = dirs.split("/");
         String base = "";

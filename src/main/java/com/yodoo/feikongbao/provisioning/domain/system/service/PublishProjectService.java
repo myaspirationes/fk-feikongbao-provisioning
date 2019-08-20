@@ -123,7 +123,7 @@ public class PublishProjectService {
         // 查询需要发布的项目
         List<PublishProject> publishProjectList = this.getPublishProjectByCompanyId(companyId);
         if (!CollectionUtils.isEmpty(publishProjectList)) {
-            Map<String, PublishProject> jobNameMap = new HashMap<>();
+            Map<String, PublishProject> jobNameMap = new HashMap<>(16);
             publishProjectList.forEach(entity -> {
                 this.buildJob(entity.getIp());
                 // TODO jobName此处需要修改

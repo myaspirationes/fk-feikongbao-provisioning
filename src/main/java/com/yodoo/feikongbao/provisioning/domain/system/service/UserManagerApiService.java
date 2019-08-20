@@ -48,7 +48,7 @@ public class UserManagerApiService {
                         permissionUserDtoResponse.setTid(permissionUserDto.getId());
                         return permissionUserDtoResponse;
                     }).filter(Objects::nonNull).collect(Collectors.toList());
-            pageInfoDto.setList(collect);;
+            pageInfoDto.setList(collect);
         }
         return pageInfoDto;
     }
@@ -74,6 +74,16 @@ public class UserManagerApiService {
     @PreAuthorize("hasAnyAuthority('user_manage')")
     public Integer editUser(UserDto userDto){
         return userManagerApi.editUser(userDto);
+    }
+
+    /**
+     * 修改密码
+     * @param userDto
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('user_manage')")
+    public Integer updateUserPassword(UserDto userDto){
+        return userManagerApi.updateUserPassword(userDto);
     }
 
     /**

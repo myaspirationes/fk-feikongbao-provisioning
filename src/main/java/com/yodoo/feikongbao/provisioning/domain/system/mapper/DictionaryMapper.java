@@ -4,6 +4,11 @@ import com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Dictionary;
 import org.apache.ibatis.annotations.Param;
 
+/**
+ * 字典表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
+ */
 public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
     /**

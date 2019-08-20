@@ -5,7 +5,9 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 import java.util.Date;
 
 /**
- * 公司表
+ * 公司
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class Company extends BaseEntity {
 

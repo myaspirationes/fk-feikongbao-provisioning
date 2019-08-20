@@ -76,13 +76,13 @@ public class ProvisioningConfig {
         return objectMapper;
     }
 
-    @Bean(PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
-    public DataSourceTransactionManager provisioningTransactionManager(DataSource provisioningDataSource) {
-        return new DataSourceTransactionManager(provisioningDataSource);
-    }
-
+    /**
+     * @Qualifier(PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
+     * @param provisioningDataSource
+     * @return
+     * @throws Exception
+     */
     @Bean(PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
-    //@Qualifier(PROVISIONING_SQL_SESSION_FACTORY_BEAN_NAME)
     public SqlSessionFactory provisioningSqlSessionFactory(DataSource provisioningDataSource) throws Exception {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setTransactionFactory(new SpringManagedTransactionFactory());
@@ -92,6 +92,11 @@ public class ProvisioningConfig {
         sqlSessionFactoryBean.setMapperLocations(
                 new PathMatchingResourcePatternResolver().getResources("classpath*:com/yodoo/feikongbao/provisioning/mapper/**/*.xml"));
         return sqlSessionFactoryBean.getObject();
+    }
+
+    @Bean(PROVISIONING_TRANSACTION_MANAGER_BEAN_NAME)
+    public DataSourceTransactionManager provisioningTransactionManager(DataSource provisioningDataSource) {
+        return new DataSourceTransactionManager(provisioningDataSource);
     }
 
     /**

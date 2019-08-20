@@ -6,6 +6,8 @@ import javax.persistence.Table;
 
 /**
  * DB数据库组
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 @Table(name = "db_group")
 public class DbGroup extends BaseEntity {

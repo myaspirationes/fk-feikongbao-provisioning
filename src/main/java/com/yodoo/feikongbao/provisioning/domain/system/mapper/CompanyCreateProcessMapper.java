@@ -5,6 +5,8 @@ import com.yodoo.feikongbao.provisioning.domain.system.entity.CompanyCreateProce
 
 /**
  * 公司创建过程
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public interface CompanyCreateProcessMapper extends BaseMapper<CompanyCreateProcess> {
 

@@ -4,6 +4,9 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 /**
  * redis 实例组表
+ *
+ * @Date 2019/7/9 17:28
+ * @Author by houzhen
  */
 public class RedisGroup extends BaseEntity {
 

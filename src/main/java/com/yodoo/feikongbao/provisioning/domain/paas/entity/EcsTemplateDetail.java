@@ -4,6 +4,8 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 /**
  * ECS 模板明细表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class EcsTemplateDetail extends BaseEntity {
 

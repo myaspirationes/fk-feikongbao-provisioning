@@ -9,6 +9,8 @@ import javax.persistence.Table;
 
 /**
  * DB 实例表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 @Table(name = "db_instance")
 public class DbInstance extends BaseEntity {

@@ -6,6 +6,8 @@ import java.util.Date;
 
 /**
  * 集团表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class Groups extends BaseEntity {
 

@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * @Date 2019/7/9 17:54
- * @Created by houzhen
+ * @Author by houzhen
  */
 public class ProvisioningUserDetails implements UserDetails, Serializable {
 

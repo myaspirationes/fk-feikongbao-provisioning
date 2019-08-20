@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * @Date 2019/6/28 17:02
- * @Created by houzhen
+ * @Author by houzhen
  */
 @Component
 public class JenkinsUtils {

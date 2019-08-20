@@ -6,6 +6,10 @@ import sun.misc.BASE64Encoder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+/**
+ * @Date 2019/7/29 15:57
+ * @Author by houzhen
+ */
 public class Base64Util {
     /**
      * base64编码

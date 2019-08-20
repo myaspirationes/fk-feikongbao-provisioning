@@ -4,6 +4,8 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 /**
  * 消息队列 vhost 表
+ * @Date 2019/6/10 20:03
+ * @Author jinjun_luo
  */
 public class MqVhost extends BaseEntity {
 

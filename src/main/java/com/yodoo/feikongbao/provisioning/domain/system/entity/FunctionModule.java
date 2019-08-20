@@ -4,6 +4,8 @@ import com.yodoo.feikongbao.provisioning.common.entity.BaseEntity;
 
 /**
  * 功能模块表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class FunctionModule extends BaseEntity {
 

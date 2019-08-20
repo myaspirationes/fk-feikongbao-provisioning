@@ -3,7 +3,8 @@ package com.yodoo.feikongbao.provisioning.util;
 import java.security.MessageDigest;
 
 /**
- * Created by dt
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 public class Md5Util {
 

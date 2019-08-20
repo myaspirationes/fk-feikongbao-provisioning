@@ -10,7 +10,7 @@ import java.time.Instant;
 
 /**
  * @Date 2019/6/10 20:03
- * @Created by houzhen
+ * @Author by houzhen
  */
 public class BaseEntity {
     /**

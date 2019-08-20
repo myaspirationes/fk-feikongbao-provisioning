@@ -6,6 +6,8 @@ import javax.persistence.Table;
 
 /**
  * DB 数据库表
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
  */
 @Table(name = "db_schema")
 public class DbSchema extends BaseEntity {

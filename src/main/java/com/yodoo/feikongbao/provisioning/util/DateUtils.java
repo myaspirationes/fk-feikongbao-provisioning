@@ -9,7 +9,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-
+/**
+ * @Date 2019/6/10 20:03
+ * @Author by houzhen
+ */
 public class DateUtils {
 
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
