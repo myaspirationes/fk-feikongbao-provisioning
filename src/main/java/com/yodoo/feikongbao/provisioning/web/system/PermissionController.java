@@ -133,7 +133,7 @@ public class PermissionController {
     }
 
     /**
-     * 变更用户管理目标集团 TODO 待优化
+     * 变更用户管理目标集团
      * @param userPermissionTargetDto
      */
     @RequestMapping(value = "/updateUserPermissionTargetGroups", method = RequestMethod.POST)
@@ -169,7 +169,7 @@ public class PermissionController {
     }
 
     /**
-     * 更新用户管理目标公司数据 TODO 待优化
+     * 更新用户管理目标公司数据
      * @param userPermissionTargetDto
      */
     @RequestMapping(value = "/updateUserPermissionTargetCompany", method = RequestMethod.POST)
@@ -205,7 +205,7 @@ public class PermissionController {
     }
 
     /**
-     * 更新用户管理目标用户数据 TODO 待优化
+     * 更新用户管理目标用户数据
      * @param userPermissionTargetDto
      */
     @RequestMapping(value = "/updateUserPermissionTargetUser", method = RequestMethod.POST)

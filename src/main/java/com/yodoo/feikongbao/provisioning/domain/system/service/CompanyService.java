@@ -18,6 +18,7 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @Date 2019/7/29 13:08
@@ -249,6 +252,44 @@ public class CompanyService {
     }
 
     /**
+     * 通过主键查询
+     *
+     * @param id
+     * @return
+     */
+    public Company selectByPrimaryKey(Integer id) {
+        return companyMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 通过id 查询，统计不存在的数量
+     * @param companyIds
+     * @return
+     */
+    public Long selectCompanyNoExistCountByIds(Set<Integer> companyIds) {
+        Long count = null;
+        if (!CollectionUtils.isEmpty(companyIds)){
+            count = companyIds.stream()
+                    .filter(Objects::nonNull)
+                    .map(id -> {
+                        return selectByPrimaryKey(id);
+                    })
+                    .filter(company -> company == null)
+                    .count();
+        }
+        return count;
+    }
+
+    /**
+     * 查询除 ids 以外的公司
+     * @param companyIds
+     * @return
+     */
+    public List<Company> selectCompanyNotInIds(Set<Integer> companyIds){
+        return companyMapper.selectCompanyNotInIds(companyIds);
+    }
+
+    /**
      * neo4jInstanceId ：neo4j 实例id
      *
      * @param companyDto
@@ -325,16 +366,6 @@ public class CompanyService {
                 companyDto.setDbGroupDto(dbGroupDto);
             }
         }
-    }
-
-    /**
-     * 通过主键查询
-     *
-     * @param id
-     * @return
-     */
-    public Company selectByPrimaryKey(Integer id) {
-        return companyMapper.selectByPrimaryKey(id);
     }
 
     /**

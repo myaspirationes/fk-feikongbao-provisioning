@@ -14,7 +14,6 @@ import com.yodoo.megalodon.permission.entity.UserPermissionDetails;
 import com.yodoo.megalodon.permission.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.megalodon.permission.service.UserPermissionDetailsService;
 import com.yodoo.megalodon.permission.service.UserPermissionTargetGroupDetailsService;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -175,7 +173,7 @@ public class GroupsService {
                                     .filter(Objects::nonNull)
                                     .map(userPermissionTargetGroupDetails -> {
                                         // 通过集团id查询集团表
-                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails.getGroupId());
+                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails.getTargetGroupId());
                                         GroupsDto groupsDto = null;
                                         if (groups != null) {
                                             groupsDto = new GroupsDto();
@@ -248,6 +246,26 @@ public class GroupsService {
      */
     public Groups selectByPrimaryKey(Integer id) {
         return groupsMapper.selectByPrimaryKey(id);
+    }
+
+
+    /**
+     * 通过id 查询，统计不存在的数量
+     * @param groupsIds
+     * @return
+     */
+    public Long selectGroupsNoExistCountByIds(Set<Integer> groupsIds) {
+        Long count = null;
+        if (!CollectionUtils.isEmpty(groupsIds)){
+            count = groupsIds.stream()
+                    .filter(Objects::nonNull)
+                    .map(id -> {
+                        return selectByPrimaryKey(id);
+                    })
+                    .filter(groups -> groups == null)
+                    .count();
+        }
+        return count;
     }
 
     /**
