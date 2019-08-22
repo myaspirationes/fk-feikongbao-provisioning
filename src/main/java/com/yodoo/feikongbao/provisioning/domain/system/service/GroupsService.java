@@ -11,7 +11,6 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.UserUtils;
 import com.yodoo.megalodon.permission.entity.UserPermissionDetails;
-import com.yodoo.megalodon.permission.entity.UserPermissionTargetGroupDetails;
 import com.yodoo.megalodon.permission.service.UserPermissionDetailsService;
 import com.yodoo.megalodon.permission.service.UserPermissionTargetGroupDetailsService;
 import org.apache.commons.lang3.StringUtils;
@@ -161,39 +160,25 @@ public class GroupsService {
         Integer userId = UserUtils.getUserId();
         // 通过用户id 查询用户权限表
         List<UserPermissionDetails> userPermissionDetailsList = userPermissionDetailsService.selectUserPermissionDetailsByUserId(userId);
-        List<GroupsDto> groupsDtoList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userPermissionDetailsList)) {
-            userPermissionDetailsList.stream()
-                    .filter(Objects::nonNull)
-                    .map(userPermissionDetails -> {
-                        // 通过用户权限id 查询目标集团表
-                        List<UserPermissionTargetGroupDetails> userPermissionTargetGroupDetailsList = userPermissionTargetGroupDetailsService.selectUserPermissionTargetGroupDetailsByUserPermissionId(userPermissionDetails.getId());
-                        if (!CollectionUtils.isEmpty(userPermissionTargetGroupDetailsList)) {
-                            List<GroupsDto> collect1 = userPermissionTargetGroupDetailsList.stream()
-                                    .filter(Objects::nonNull)
-                                    .map(userPermissionTargetGroupDetails -> {
-                                        // 通过集团id查询集团表
-                                        Groups groups = selectByPrimaryKey(userPermissionTargetGroupDetails.getTargetGroupId());
-                                        GroupsDto groupsDto = null;
-                                        if (groups != null) {
-                                            groupsDto = new GroupsDto();
-                                            BeanUtils.copyProperties(groups, groupsDto);
-                                            groupsDto.setTid(groups.getId());
-                                        }
-                                        return groupsDto;
-                                    })
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.toList());
-                            if (!CollectionUtils.isEmpty(collect1)) {
-                                groupsDtoList.addAll(collect1);
+            // 通过用户权限id 查询目标集团表
+            Set<Integer> groupIdList = userPermissionTargetGroupDetailsService.getGroupIdsByUserIdAndPermissionId(userPermissionDetailsList);
+            if (!CollectionUtils.isEmpty(groupIdList)){
+                return groupIdList.stream()
+                        .filter(Objects::nonNull)
+                        .map(groupId -> {
+                            Groups groups = selectByPrimaryKey(groupId);
+                            if (groups != null) {
+                                GroupsDto groupsDto = new GroupsDto();
+                                BeanUtils.copyProperties(groups, groupsDto);
+                                groupsDto.setTid(groups.getId());
+                                return groupsDto;
                             }
-                        }
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                            return null;
+                        }).filter(Objects::nonNull).collect(Collectors.toList());
+            }
         }
-        return groupsDtoList;
+        return null;
     }
 
     /**
@@ -307,7 +292,7 @@ public class GroupsService {
         if (groups == null) {
             throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
         }
-        Groups groupsItself = groupsMapper.selectGroupsInAdditionToItself(groupsDto.getTid(), groupsDto.getGroupName(), groupsDto.getGroupCode());
+        Groups groupsItself = groupsMapper.selectGroupsInAdditionToItself(groupsDto.getTid(), groupsDto.getGroupCode());
         if (groupsItself != null) {
             throw new ProvisioningException(BundleKey.GROUPS_ALREADY_EXIST, BundleKey.GROUPS_ALREADY_EXIST_MSG);
         }
@@ -353,7 +338,6 @@ public class GroupsService {
         // 查询是否有相同的数据，有不添加
         Example example = new Example(Groups.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("groupName", groupsDto.getGroupName());
         criteria.andEqualTo("groupCode", groupsDto.getGroupCode());
         Groups groups = groupsMapper.selectOneByExample(example);
         if (groups != null) {

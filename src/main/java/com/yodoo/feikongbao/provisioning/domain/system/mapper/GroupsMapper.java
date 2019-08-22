@@ -18,11 +18,10 @@ public interface GroupsMapper extends BaseMapper<Groups> {
      * 查询除了自已以外是否有相同数据
      *
      * @param id
-     * @param groupName
      * @param groupCode
      * @return
      */
-    Groups selectGroupsInAdditionToItself(@Param("id") Integer id, @Param("groupName") String groupName, @Param("groupCode") String groupCode);
+    Groups selectGroupsInAdditionToItself(@Param("id") Integer id, @Param("groupCode") String groupCode);
 
     /**
      * 查询id以外的数据

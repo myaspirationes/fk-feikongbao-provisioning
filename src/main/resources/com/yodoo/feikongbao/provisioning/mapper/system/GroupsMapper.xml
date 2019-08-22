@@ -20,7 +20,7 @@
         select
         <include refid="Base_Column_List"/>
         from groups
-        where id != #{id,jdbcType=INTEGER} and group_name = #{groupName,jdbcType=VARCHAR} and group_code =
+        where id != #{id,jdbcType=INTEGER} and group_code =
         #{groupCode,jdbcType=VARCHAR}
     </select>
 
