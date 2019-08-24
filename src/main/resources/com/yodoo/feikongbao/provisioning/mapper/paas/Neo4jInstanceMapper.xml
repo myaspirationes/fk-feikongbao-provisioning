@@ -5,13 +5,17 @@
                extends="com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper.baseCommonResultMap"
                type="com.yodoo.feikongbao.provisioning.domain.paas.entity.Neo4jInstance">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="neo4j_name" jdbcType="VARCHAR" property="neo4jName"/>
-        <result column="ip" jdbcType="VARCHAR" property="ip"/>
-        <result column="port" jdbcType="INTEGER" property="port"/>
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="initial_username" jdbcType="VARCHAR" property="initialUsername" />
+        <result column="initial_password" jdbcType="VARCHAR" property="initialPassword" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="neo4j_name" jdbcType="VARCHAR" property="neo4jName" />
+        <result column="status" jdbcType="INTEGER" property="status" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, neo4j_name, ip, port,
-        <include refid="com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper.baseCommonColumn"></include>
+        id, url, initial_username, initial_password, username, password, neo4j_name, status,
+        <include refid="com.yodoo.feikongbao.provisioning.common.mapper.BaseMapper.baseCommonColumn"/>
     </sql>
 
 </mapper>

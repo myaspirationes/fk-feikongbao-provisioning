@@ -65,4 +65,28 @@ public interface ApolloConstants {
      * redis 密码 key（base64加密）
      **/
     String REDIS_PASSWORD = "redis_password";
+
+    /**
+     * neo4j namespace
+     **/
+    String NEO4J_NAMESPACE = "neo4j-configs";
+
+    /**
+     * 连接地址
+     */
+    String NEO4J_URL = "neo4j_url";
+
+    /**
+     * 用户名
+     */
+    String NEO4J_USERNAME = "neo4j_username";
+
+    /**
+     * 密码
+     */
+    String NEO4J_PASSWORD = "neo4j_password";
+
+
+
+
 }

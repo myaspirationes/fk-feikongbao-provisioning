@@ -199,6 +199,12 @@ public interface BundleKey {
     String NEO4J_INSTANCE_ALREADY_EXIST_MSG = "neo4jInstance 已存在";
 
     /**
+     * neo4jInstance 已被使用
+     **/
+    String NEO4J_INSTANCE_ALREADY_USED = PAAS_PREFIX + "NEO4J.INSTANCE.ALREADY.USED";
+    String NEO4J_INSTANCE_ALREADY_USED_MSG = "neo4jInstance 已被使用";
+
+    /**
      * redisInstance 已被使用
      **/
     String REDIS_INSTANCE_USED = PAAS_PREFIX + "REDIS.INSTANCE.USED";

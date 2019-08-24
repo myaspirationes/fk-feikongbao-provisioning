@@ -8,15 +8,16 @@ import com.ctrip.framework.apollo.openapi.dto.OpenNamespaceDTO;
 import com.yodoo.feikongbao.provisioning.contract.ApolloConstants;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbSchema;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.Neo4jInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbSchemaMapper;
+import com.yodoo.feikongbao.provisioning.domain.paas.mapper.Neo4jInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.RedisInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
-import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -56,6 +57,9 @@ public class ApolloService {
 
     @Autowired
     private RedisInstanceMapper redisInstanceMapper;
+
+    @Autowired
+    private Neo4jInstanceMapper neo4jInstanceMapper;
 
 
     /**
@@ -205,6 +209,30 @@ public class ApolloService {
     }
 
     /**
+     * 创建 neo4j 到apollo
+     * @param companyCode
+     */
+    public void createNeo4j(String companyCode) {
+        // 检查公司是否存在
+        Company company = this.checkCompany(companyCode);
+        if (company.getNeo4jInstanceId() == null || company.getNeo4jInstanceId() < 0){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
+        }
+        // neo4j是否存在
+        Neo4jInstance neo4jInstance = neo4jInstanceMapper.selectByPrimaryKey(company.getNeo4jInstanceId());
+        if (neo4jInstance == null){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
+        }
+        // 封装参数
+        List<OpenItemDTO> itemDtoList = new ArrayList<>();
+        itemDtoList.add(buildItem(ApolloConstants.NEO4J_URL, neo4jInstance.getUrl()));
+        itemDtoList.add(buildItem(ApolloConstants.NEO4J_USERNAME, neo4jInstance.getUsername()));
+        itemDtoList.add(buildItem(ApolloConstants.NEO4J_PASSWORD, neo4jInstance.getPassword()));
+        // 创建
+        this.createItems(companyCode, ApolloConstants.NEO4J_NAMESPACE, itemDtoList);
+    }
+
+    /**
      * 校验公司是否存在
      *
      * @Author houzhen
@@ -286,5 +314,4 @@ public class ApolloService {
         namespaceReleaseDTO.setReleasedBy(operate);
         openApiClient.publishNamespace(appId, evn, clusterName, namespaceName, namespaceReleaseDTO);
     }
-
 }
