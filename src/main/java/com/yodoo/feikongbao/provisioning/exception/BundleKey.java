@@ -312,5 +312,9 @@ public interface BundleKey {
     String PHONE_FORMAT_ERROR = PAAS_PREFIX + "PHONE.FORMAT.ERROR";
     String PHONE_FORMAT_ERROR_MSG = "电话格式错误";
 
+    /**  数据库创建失败 **/
+    String DB_CREATE_ERROR = PAAS_PREFIX + "DB.CREATE.ERROR";
+    String DB_CREATE_ERROR_MSG = "数据库创建失败";
+
 
 }

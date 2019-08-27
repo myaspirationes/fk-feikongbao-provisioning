@@ -11,6 +11,7 @@ import com.yodoo.feikongbao.provisioning.domain.paas.entity.SwiftProject;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.SwiftProjectMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
+import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
@@ -48,6 +49,9 @@ public class SwiftProjectService {
 
     @Autowired
     private StorageManagerApi storageManagerApi;
+
+    @Autowired
+    private ApolloService apolloService;
 
     /**
      * 条件分页查询
@@ -140,6 +144,8 @@ public class SwiftProjectService {
         companyCreateProcessService.insertCompanyCreateProcess(swiftProjectDto.getCompanyId(),
                 CompanyCreationStepsEnum.SWIFT_STEP.getOrder(), CompanyCreationStepsEnum.SWIFT_STEP.getCode());
 
+        // apollo 配置
+        apolloService.createSwiftProjectItem(swiftProjectDto.getProjectName());
         return swiftProjectDto;
     }
 

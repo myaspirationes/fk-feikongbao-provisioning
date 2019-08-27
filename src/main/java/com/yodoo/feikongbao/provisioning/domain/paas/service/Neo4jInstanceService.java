@@ -20,9 +20,11 @@ import com.yodoo.feikongbao.provisioning.util.Base64Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,11 +108,40 @@ public class Neo4jInstanceService {
     }
 
     /**
+     * 添加
+     * @param neo4jInstanceDto
+     */
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public Integer addNeo4jInstance(Neo4jInstanceDto neo4jInstanceDto) {
+        // 参数校验
+        addNeo4jInstanceParameterCheck(neo4jInstanceDto);
+        Neo4jInstance neo4jInstance = new Neo4jInstance();
+        BeanUtils.copyProperties(neo4jInstanceDto, neo4jInstance);
+        neo4jInstance.setStatus(InstanceStatusEnum.UNUSED.getCode());
+        return neo4jInstanceMapper.insertSelective(neo4jInstance);
+    }
+
+    /**
+     * 修改
+     * @param neo4jInstanceDto
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public Integer editNeo4jInstance(Neo4jInstanceDto neo4jInstanceDto) {
+        Neo4jInstance neo4jInstance = editNeo4jInstanceParameterCheck(neo4jInstanceDto);
+        neo4jInstance.setUrl(neo4jInstanceDto.getUrl());
+        neo4jInstance.setInitialUsername(neo4jInstanceDto.getInitialUsername());
+        neo4jInstance.setInitialPassword(neo4jInstanceDto.getInitialPassword());
+        return neo4jInstanceMapper.updateByPrimaryKeySelective(neo4jInstance);
+    }
+
+    /**
      * 创建公司 创建流程定义 TODO
      *
      * @param neo4jInstanceDto
      * @return
      */
+    @PreAuthorize("hasAnyAuthority('company_manage')")
     public Neo4jInstanceDto useNeo4jInstance(Neo4jInstanceDto neo4jInstanceDto) {
 
         // 参数校验
@@ -136,12 +167,76 @@ public class Neo4jInstanceService {
     }
 
     /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public Integer deleteNeo4jInstance(Integer id) {
+        if (id == null || id < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Neo4jInstance neo4jInstance = selectByPrimaryKey(id);
+        if (neo4jInstance == null){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
+        }else if (neo4jInstance.getStatus().equals(InstanceStatusEnum.USED.getCode())){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_ALREADY_USED, BundleKey.NEO4J_INSTANCE_ALREADY_USED_MSG);
+        }
+        return neo4jInstanceMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 修改参数校验
+     * @param neo4jInstanceDto
+     */
+    private Neo4jInstance editNeo4jInstanceParameterCheck(Neo4jInstanceDto neo4jInstanceDto) {
+        if (neo4jInstanceDto == null || neo4jInstanceDto.getTid() == null || neo4jInstanceDto.getTid() < 0
+                || StringUtils.isBlank(neo4jInstanceDto.getUrl()) || StringUtils.isBlank(neo4jInstanceDto.getInitialUsername())
+                || StringUtils.isBlank(neo4jInstanceDto.getInitialPassword())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Neo4jInstance neo4jInstance = selectByPrimaryKey(neo4jInstanceDto.getTid());
+        if (neo4jInstance == null){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
+        }
+        // 是否存在些集群
+        Example example = new Example(Neo4jInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andNotEqualTo("id", neo4jInstanceDto.getTid());
+        criteria.andEqualTo("url", neo4jInstanceDto.getUrl());
+        List<Neo4jInstance> neo4jInstances = neo4jInstanceMapper.selectByExample(example);
+        if (!CollectionUtils.isEmpty(neo4jInstances)){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_ALREADY_EXIST, BundleKey.NEO4J_INSTANCE_ALREADY_EXIST_MSG);
+        }
+        return neo4jInstance;
+    }
+
+    /**
+     * 添加参数校验
+     * @param neo4jInstanceDto
+     */
+    private void addNeo4jInstanceParameterCheck(Neo4jInstanceDto neo4jInstanceDto) {
+        if (neo4jInstanceDto == null || StringUtils.isBlank(neo4jInstanceDto.getUrl()) || StringUtils.isBlank(neo4jInstanceDto.getInitialUsername())
+                || StringUtils.isBlank(neo4jInstanceDto.getInitialPassword())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        // 是否存在些集群
+        Example example = new Example(Neo4jInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("url", neo4jInstanceDto.getUrl());
+        List<Neo4jInstance> neo4jInstances = neo4jInstanceMapper.selectByExample(example);
+        if (!CollectionUtils.isEmpty(neo4jInstances)){
+            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_ALREADY_EXIST, BundleKey.NEO4J_INSTANCE_ALREADY_EXIST_MSG);
+        }
+    }
+
+    /**
      * 创建公司 创建流程定义参数校验
      *
      * @param neo4jInstanceDto
      */
     private Neo4jInstance useNeo4jInstanceParameterCheck(Neo4jInstanceDto neo4jInstanceDto) {
-        if (neo4jInstanceDto == null || neo4jInstanceDto.getTid() != null || neo4jInstanceDto.getTid() > 0
+        if (neo4jInstanceDto == null || neo4jInstanceDto.getTid() == null || neo4jInstanceDto.getTid() < 0
                 || neo4jInstanceDto.getCompanyId() == null || neo4jInstanceDto.getCompanyId() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }

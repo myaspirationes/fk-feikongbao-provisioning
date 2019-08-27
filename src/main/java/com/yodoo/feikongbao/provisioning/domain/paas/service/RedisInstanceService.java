@@ -103,7 +103,7 @@ public class RedisInstanceService {
      */
     public RedisInstanceDto useRedisInstance(RedisInstanceDto redisInstanceDto) {
         // 校验
-        useRedisInstanceParameterCheck(redisInstanceDto);
+        RedisInstance redisInstance = useRedisInstanceParameterCheck(redisInstanceDto);
 
         // 公司表
         CompanyDto companyDto = new CompanyDto();
@@ -119,7 +119,6 @@ public class RedisInstanceService {
                 CompanyCreationStepsEnum.REDIS_STEP.getOrder(), CompanyCreationStepsEnum.REDIS_STEP.getCode());
 
         // 更新 RedisInstance使用状态
-        RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
         redisInstance.setStatus(InstanceStatusEnum.USED.getCode());
         redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
 
@@ -143,7 +142,7 @@ public class RedisInstanceService {
      *
      * @param redisInstanceDto
      */
-    private void useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
+    private RedisInstance useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
         if (redisInstanceDto == null || redisInstanceDto.getCompanyId() == null || redisInstanceDto.getCompanyId() < 0
                 || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
@@ -167,6 +166,7 @@ public class RedisInstanceService {
         }
         redisInstanceDto.setCompanyCode(company.getCompanyCode());
         redisInstanceDto.setRedisGroupId(redisInstance.getRedisGroupId());
+        return redisInstance;
     }
 
     /**

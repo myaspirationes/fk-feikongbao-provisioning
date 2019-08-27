@@ -9,6 +9,7 @@ import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.MqVhostMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
+import com.yodoo.feikongbao.provisioning.domain.system.service.ApolloService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProcessService;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
@@ -47,6 +48,9 @@ public class MqVhostService {
 
     @Autowired
     private CompanyCreateProcessService companyCreateProcessService;
+
+    @Autowired
+    private ApolloService apolloService;
 
     /**
      * 条件查询
@@ -141,6 +145,9 @@ public class MqVhostService {
         // 添加公司创建过程记录表
         companyCreateProcessService.insertCompanyCreateProcess(mqVhostDto.getCompanyId(),
                 CompanyCreationStepsEnum.RABBITMQ_STEP.getOrder(), CompanyCreationStepsEnum.RABBITMQ_STEP.getCode());
+
+        // apollo 配置
+        apolloService.createVirtualHostItem(mqVhostDto.getVhostName());
 
         return mqVhostDto;
 

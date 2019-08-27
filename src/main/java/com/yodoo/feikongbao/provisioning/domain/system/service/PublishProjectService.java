@@ -60,7 +60,7 @@ public class PublishProjectService {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         List<PublishProject> insertList = new ArrayList<>();
-        projectList.forEach(publishProjectDto -> {
+        projectList.stream().filter(Objects::nonNull).forEach(publishProjectDto -> {
             // 校验参数
             this.checkArgs(publishProjectDto);
             // 查询ecs实例
@@ -124,7 +124,7 @@ public class PublishProjectService {
         List<PublishProject> publishProjectList = this.getPublishProjectByCompanyId(companyId);
         if (!CollectionUtils.isEmpty(publishProjectList)) {
             Map<String, PublishProject> jobNameMap = new HashMap<>(16);
-            publishProjectList.forEach(entity -> {
+            publishProjectList.stream().filter(Objects::nonNull).forEach(entity -> {
                 this.buildJob(entity.getIp());
                 // TODO jobName此处需要修改
                 jobNameMap.put(jenkinsConfig.jenkinsBuildJobName, entity);

@@ -45,6 +45,44 @@ public class Neo4jInstanceController {
     }
 
     /**
+     * 添加
+     * @param neo4jInstanceDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> addNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto){
+        neo4jInstanceService.addNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 修改
+     * @param neo4jInstanceDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> editNeo4jInstance(@RequestBody Neo4jInstanceDto neo4jInstanceDto){
+        neo4jInstanceService.editNeo4jInstance(neo4jInstanceDto);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('company_manage')")
+    public ProvisioningDto<?> deleteNeo4jInstance(@PathVariable Integer id){
+        neo4jInstanceService.deleteNeo4jInstance(id);
+        return new ProvisioningDto<Neo4jInstanceDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+
+
+    /**
      * 查询详情
      *
      * @param id

@@ -14,11 +14,10 @@ import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyCreateProc
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
+import com.yodoo.feikongbao.provisioning.enums.JobNameEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.JenkinsUtils;
-import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
-import com.yodoo.megalodon.datasource.config.JenkinsConfig;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -59,9 +58,6 @@ public class DbSchemaService {
     private CompanyCreateProcessService companyCreateProcessService;
 
     @Autowired
-    private JenkinsConfig jenkinsConfig;
-
-    @Autowired
     private JenkinsUtils jenkinsUtils;
 
     @Autowired
@@ -75,7 +71,7 @@ public class DbSchemaService {
      */
     public DbSchemaDto useDbSchema(DbSchemaDto dbSchemaDto) {
         // 参数校验
-        useDbSchemaParameterCheck(dbSchemaDto);
+        DbSchema dbSchema = useDbSchemaParameterCheck(dbSchemaDto);
 
         // 更新公司表信息
         CompanyDto companyDto = new CompanyDto();
@@ -84,33 +80,18 @@ public class DbSchemaService {
         companyService.updateCompany(companyDto);
 
         // 添加apollo参数
-        apolloService.createdbItems(dbSchemaDto.getCompanyCode());
+        apolloService.createDbItems(dbSchemaDto.getCompanyCode());
 
         // 添加公司创建过程记录表信息
         companyCreateProcessService.insertCompanyCreateProcess(dbSchemaDto.getCompanyId(),
                 CompanyCreationStepsEnum.DATABASE_STEP.getOrder(), CompanyCreationStepsEnum.DATABASE_STEP.getCode());
 
         // 更新 dbSchema 使用状态
-        DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
         dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
         dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
 
         // 初始化数据库表  如果返回上一步，待解决确定 String appInstanceName, String releaseVersion
-        String jobName;
-        switch (provisioningDataSourceConfig.provisioningApolloEvn.toUpperCase()) {
-            case "FAT":
-                jobName = "fat-md-db-upgrade";
-                break;
-            case "UAT":
-                jobName = "uat-md-db-upgrade";
-                break;
-            case "PRO":
-                jobName = "pro-md-db-upgrade";
-                break;
-            default:
-                jobName = "dev-md-db-upgrade";
-                break;
-        }
+        String jobName = JobNameEnum.getBykey(provisioningDataSourceConfig.provisioningApolloEvn.toUpperCase()).value;
         buildScriptMigrationData(jobName, dbSchemaDto.getCompanyCode(), dbSchemaDto.getTargetVersion());
         // 查询 build 状态成功做下步动作
         if (!jenkinsUtils.checkRunningStatusToJenkins(jobName)) {
@@ -213,7 +194,7 @@ public class DbSchemaService {
      * @param dbSchemaDto
      * @return
      */
-    private void useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+    private DbSchema useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
         if (dbSchemaDto == null || dbSchemaDto.getCompanyId() == null || dbSchemaDto.getCompanyId() < 0
                 || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
@@ -242,6 +223,7 @@ public class DbSchemaService {
         }
         dbSchemaDto.setCompanyCode(company.getCompanyCode());
         dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
+        return dbSchema;
     }
 
     /**

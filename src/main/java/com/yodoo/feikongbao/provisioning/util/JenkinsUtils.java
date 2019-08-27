@@ -336,11 +336,11 @@ public class JenkinsUtils {
             String jobRunResult = getJobRunResult(jobName);
             if (StringUtils.isNotBlank(jobRunResult) && jobRunResult.equalsIgnoreCase(BuildResult.SUCCESS.name())) {
                 return true;
-            } else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
+            }/* else if (BuildResult.FAILURE.name().equalsIgnoreCase(jobRunResult)
                     || BuildResult.ABORTED.name().equalsIgnoreCase(jobRunResult)
                     || BuildResult.CANCELLED.name().equalsIgnoreCase(jobRunResult)) {
                 return false;
-            }
+            }*/
             // 超过一点时间，认为 build 失败
             if (System.currentTimeMillis() - startTime > jenkinsConfig.jenkinsCheckRunWaitTimeTotal) {
                 logger.error(String.format("build jenkins failed within %s jobName: %s", jenkinsConfig.jenkinsCheckRunWaitTimeTotal / 60000, jobName));

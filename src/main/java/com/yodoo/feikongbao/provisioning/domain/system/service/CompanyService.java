@@ -121,12 +121,12 @@ public class CompanyService {
             companyMapper.insertSelective(selectOneCompany);
         }
 
-        // 调用 apollo 创建环境
-        apolloService.createCluster(company.getCompanyCode());
-
         // 添加公司创建过程 记录表
         companyCreateProcessService.insertCompanyCreateProcess(company.getId(),
                 CompanyCreationStepsEnum.COMPANY_STEP.getOrder(), CompanyCreationStepsEnum.COMPANY_STEP.getCode());
+
+        // 调用 apollo 创建环境
+        apolloService.createCluster(company.getCompanyCode());
 
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
