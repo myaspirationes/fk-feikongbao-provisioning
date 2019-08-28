@@ -33,15 +33,51 @@ public class RedisInstanceController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
-    @PreAuthorize("hasAnyAuthority('company_manage')")
+    @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
     public ProvisioningDto<?> queryRedisInstanceList(RedisInstanceDto redisInstanceDto) {
         PageInfoDto<RedisInstanceDto> pageInfoDto = redisInstanceService.queryRedisInstanceList(redisInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), RedisInstanceController.class);
         // 操作资源导向
-        LinkUtils.setResourceLink(pageInfoDto, RedisInstanceController.class, Arrays.asList("company_manage"),
+        LinkUtils.setResourceLink(pageInfoDto, RedisInstanceController.class, Arrays.asList("company_manage","db_manage"),
                 OperateCode.ADD.getCode(), OperateCode.EDIT.getCode(), OperateCode.DELETE.getCode(), OperateCode.ITEM.getCode());
         return new ProvisioningDto<PageInfoDto<RedisInstanceDto>>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, pageInfoDto);
+    }
+
+    /**
+     * 添加
+     * @param redisInstanceDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('db_manage')")
+    public ProvisioningDto<?> addRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
+        redisInstanceService.addRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 更新
+     * @param redisInstanceDto
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    @PreAuthorize("hasAnyAuthority('db_manage')")
+    public ProvisioningDto<?> editRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
+        redisInstanceService.editRedisInstance(redisInstanceDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('db_manage')")
+    public ProvisioningDto<?> deleteRedisInstance(@RequestBody Integer id){
+        redisInstanceService.deleteRedisInstance(id);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
     /**

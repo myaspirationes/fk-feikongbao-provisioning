@@ -1,5 +1,8 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbSchemaDto;
@@ -64,6 +67,52 @@ public class DbSchemaService {
     private ProvisioningDataSourceConfig provisioningDataSourceConfig;
 
     /**
+     * 条件分页查询
+     * @param dbSchemaDto
+     * @return
+     */
+    public PageInfoDto<DbSchemaDto> queryDbSchemaList(DbSchemaDto dbSchemaDto) {
+        // 设置查询条件
+        Example example = new Example(DbInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        Page<?> pages = PageHelper.startPage(dbSchemaDto.getPageNum(), dbSchemaDto.getPageSize());
+        List<DbSchema> dbSchemaList = dbSchemaMapper.selectByExample(example);
+        List<DbSchemaDto> dbSchemaDtoList = copyProperties(dbSchemaList);
+        return new PageInfoDto<DbSchemaDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), dbSchemaDtoList);
+    }
+
+    /**
+     * 添加
+     * @param dbSchemaDto
+     */
+    public Integer addDbSchema(DbSchemaDto dbSchemaDto) {
+        addDbSchemaParameterCheck(dbSchemaDto);
+        DbSchema dbSchema = new DbSchema();
+        BeanUtils.copyProperties(dbSchemaDto, dbSchema);
+        dbSchema.setStatus(InstanceStatusEnum.UNUSED.getCode());
+        return dbSchemaMapper.insertSelective(dbSchema);
+    }
+
+    /**
+     * 更新
+     * @param dbSchemaDto
+     */
+    public Integer editDbSchema(DbSchemaDto dbSchemaDto) {
+        DbSchema dbSchema = editDbSchemaParameterCheck(dbSchemaDto);
+        BeanUtils.copyProperties(dbSchemaDto, dbSchema);
+        return dbSchemaMapper.insertSelective(dbSchema);
+    }
+
+    /**
+     * 删除 TODO 一台dbInstance实例和dbSchema是否是一对一关系
+     * @param id
+     */
+    public Integer deleteDbSchema(Integer id) {
+        DbSchema dbSchema = deleteDbSchemaParameterCheck(id);
+        return dbSchemaMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
      * 创建数据库 TODO 目前测试先注掉初始化数据库表，最后测试记得放开，返回上一步，
      *
      * @param dbSchemaDto
@@ -102,15 +151,24 @@ public class DbSchemaService {
 
     /**
      * 通过 dbGroupId 查询
+     * @param dbGroupId
+     * @return
+     */
+    public List<DbSchema> getDbSchemaListByDbGroupId(Integer dbGroupId){
+        Example example = new Example(DbSchema.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("dbGroupId", dbGroupId);
+        return dbSchemaMapper.selectByExample(example);
+    }
+
+    /**
+     * 通过 dbGroupId 查询
      *
      * @param dbGroupId
      * @return
      */
     public List<DbSchemaDto> selectDbSchemaByDbGroupId(Integer dbGroupId) {
-        Example example = new Example(DbSchema.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("dbGroupId", dbGroupId);
-        List<DbSchema> dbSchemas = dbSchemaMapper.selectByExample(example);
+        List<DbSchema> dbSchemas = getDbSchemaListByDbGroupId(dbGroupId);
         List<DbSchemaDto> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dbSchemas)) {
             collect = dbSchemas.stream()
@@ -155,6 +213,107 @@ public class DbSchemaService {
                     }).filter(Objects::nonNull).collect(Collectors.toList());
         }
         return collect;
+    }
+
+    /**
+     * 通过 db instance id 查询
+     * @param dbInstanceId
+     * @return
+     */
+    public List<DbSchema> getDbSchemaByDbInstanceId(Integer dbInstanceId) {
+        Example example = new Example(DbSchema.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("dbInstanceId", dbInstanceId);
+        return dbSchemaMapper.selectByExample(example);
+    }
+
+    /**
+     * 删除参数校验
+     * @param id
+     * @return
+     */
+    private DbSchema deleteDbSchemaParameterCheck(Integer id) {
+        if (id == null || id < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        DbSchema dbSchemaById = selectByPrimaryKey(id);
+        if (dbSchemaById == null){
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
+        }
+        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaById.getDbGroupId());
+        if (dbGroup != null){
+            List<Company> companyList = companyService.getCompanyByDbGroupId(dbGroup.getId());
+            if (!CollectionUtils.isEmpty(companyList)){
+                throw new ProvisioningException(BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
+            }
+        }
+        return dbSchemaById;
+    }
+
+    /**
+     * 更新
+     * @param dbSchemaDto
+     */
+    private DbSchema editDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+        if (dbSchemaDto == null || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || dbSchemaDto.getDbInstanceId() == null
+                || dbSchemaDto.getDbInstanceId() < 0 || dbSchemaDto.getDbGroupId() == null || dbSchemaDto.getDbGroupId() < 0
+                || StringUtils.isBlank(dbSchemaDto.getSchemaName()) || StringUtils.isBlank(dbSchemaDto.getUsername())
+                || StringUtils.isBlank(dbSchemaDto.getPassword()) || !Arrays.asList(0,1).contains(dbSchemaDto.getType())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        DbSchema dbSchemaById = selectByPrimaryKey(dbSchemaDto.getTid());
+        if (dbSchemaById == null){
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
+        }
+        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
+        if (dbInstance == null){
+            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+        }
+        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaDto.getDbGroupId());
+        if (dbGroup == null){
+            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+        }
+        Example example = new Example(DbSchema.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andNotEqualTo("id", dbSchemaDto.getTid());
+        criteria.andEqualTo("dbInstanceId", dbSchemaDto.getDbInstanceId());
+        criteria.andEqualTo("dbGroupId", dbSchemaDto.getDbGroupId());
+        criteria.andEqualTo("type", dbSchemaDto.getType());
+        DbSchema dbSchema = dbSchemaMapper.selectOneByExample(example);
+        if (dbSchema != null){
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_ALREADY_EXIST, BundleKey.DB_SCHEMA_ALREADY_EXIST_MSG);
+        }
+        return dbSchemaById;
+    }
+
+
+    /**
+     * 添加参数校验
+     * @param dbSchemaDto
+     */
+    private void addDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+        if (dbSchemaDto == null || dbSchemaDto.getDbInstanceId() == null || dbSchemaDto.getDbInstanceId() < 0 || dbSchemaDto.getDbGroupId() == null
+                || dbSchemaDto.getDbGroupId() < 0 || StringUtils.isBlank(dbSchemaDto.getSchemaName()) || StringUtils.isBlank(dbSchemaDto.getUsername())
+                || StringUtils.isBlank(dbSchemaDto.getPassword()) || !Arrays.asList(0,1).contains(dbSchemaDto.getType())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
+        if (dbInstance == null){
+            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+        }
+        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaDto.getDbGroupId());
+        if (dbGroup == null){
+            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+        }
+        Example example = new Example(DbSchema.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("dbInstanceId", dbSchemaDto.getDbInstanceId());
+        criteria.andEqualTo("dbGroupId", dbSchemaDto.getDbGroupId());
+        criteria.andEqualTo("type", dbSchemaDto.getType());
+        DbSchema dbSchema = dbSchemaMapper.selectOneByExample(example);
+        if (dbSchema != null){
+            throw new ProvisioningException(BundleKey.DB_SCHEMA_ALREADY_EXIST, BundleKey.DB_SCHEMA_ALREADY_EXIST_MSG);
+        }
     }
 
     /**
@@ -233,5 +392,38 @@ public class DbSchemaService {
      */
     private DbSchema selectByPrimaryKey(Integer id) {
         return dbSchemaMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 复制
+     * @param dbSchemaList
+     * @return
+     */
+    private List<DbSchemaDto> copyProperties(List<DbSchema> dbSchemaList){
+        if (!CollectionUtils.isEmpty(dbSchemaList)){
+            return dbSchemaList.stream()
+                    .filter(Objects::nonNull)
+                    .map(dbInstance -> {
+                        return copyProperties(dbInstance);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param dbSchema
+     * @return
+     */
+    private DbSchemaDto copyProperties(DbSchema dbSchema){
+        if (dbSchema != null){
+            DbSchemaDto dbSchemaDto = new DbSchemaDto();
+            BeanUtils.copyProperties(dbSchema, dbSchemaDto);
+            dbSchemaDto.setTid(dbSchema.getId());
+            return dbSchemaDto;
+        }
+        return null;
     }
 }

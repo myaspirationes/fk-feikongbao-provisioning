@@ -18,7 +18,6 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -287,6 +286,28 @@ public class CompanyService {
      */
     public List<Company> selectCompanyNotInIds(Set<Integer> companyIds){
         return companyMapper.selectCompanyNotInIds(companyIds);
+    }
+
+    /**
+     * 通过 dbGroupId 查询
+     * @param dbGroupId
+     * @return
+     */
+    public List<Company> getCompanyByDbGroupId(Integer dbGroupId) {
+        Company company = new Company();
+        company.setDbGroupId(dbGroupId);
+        return companyMapper.select(company);
+    }
+
+    /**
+     * 通过redis group id 查询
+     * @param redisGroupId
+     * @return
+     */
+    public List<Company> getCompanyByRedisGroupId(Integer redisGroupId) {
+        Company company = new Company();
+        company.setRedisGroupId(redisGroupId);
+        return companyMapper.select(company);
     }
 
     /**

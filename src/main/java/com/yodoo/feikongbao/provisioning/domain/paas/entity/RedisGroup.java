@@ -20,6 +20,14 @@ public class RedisGroup extends BaseEntity {
      **/
     private String groupName;
 
+    public RedisGroup() {
+    }
+
+    public RedisGroup(String groupCode, String groupName) {
+        this.groupCode = groupCode;
+        this.groupName = groupName;
+    }
+
     public String getGroupCode() {
         return groupCode;
     }

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,21 @@ public class SwiftProjectService {
         // apollo 配置
         apolloService.createSwiftProjectItem(swiftProjectDto.getProjectName());
         return swiftProjectDto;
+    }
+
+    /**
+     * 删除
+     * @param companyCode
+     * @return
+     */
+    public Integer deleteSwiftProjectByCompanyCode(String companyCode){
+        if (StringUtils.isBlank(companyCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Example example = new Example(SwiftProject.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("projectName", companyCode);
+        return swiftProjectMapper.deleteByExample(example);
     }
 
     /**

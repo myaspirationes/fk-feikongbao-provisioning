@@ -10,10 +10,7 @@ import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -36,7 +33,7 @@ public class RedisGroupController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)
-    @PreAuthorize("hasAnyAuthority('company_manage')")
+    @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
     public ProvisioningDto<?> queryRedisGroupList(RedisGroupDto redisGroupDto) {
         PageInfoDto<RedisGroupDto> pageInfoDto = redisGroupService.queryRedisGroupList(redisGroupDto);
         // 列表item导向
@@ -48,6 +45,39 @@ public class RedisGroupController {
     }
 
     /**
+     * 添加
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
+   public ProvisioningDto<?> addRedisGroup(@RequestBody RedisGroupDto redisGroupDto){
+        redisGroupService.addRedisGroup(redisGroupDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 更新
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
+   public ProvisioningDto<?> editRedisGroup(@RequestBody RedisGroupDto redisGroupDto){
+        redisGroupService.editRedisGroup(redisGroupDto);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+    /**
+     * 删除
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
+   public ProvisioningDto<?> deleteRedisGroup(@PathVariable Integer id){
+        redisGroupService.deleteRedisGroup(id);
+        return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
+    }
+
+   /**
      * 查询详情
      *
      * @param id

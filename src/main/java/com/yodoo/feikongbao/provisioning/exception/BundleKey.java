@@ -151,6 +151,12 @@ public interface BundleKey {
     String DB_GROUP_NOT_EXIST_MSG = "dbGroup不存在";
 
     /**
+     * dbGroup 还在使用
+     **/
+    String DB_GROUP_IS_USE = PAAS_PREFIX + "DB.GROUP.IS.USE";
+    String DB_GROUP_IS_USE_MSG = "dbGroup 还在使用";
+
+    /**
      * dbInstance 已存在
      */
     String DB_INSTANCE_ALREADY_EXIST = PAAS_PREFIX + "DB.INSTANCE.ALREADY.EXIST";
@@ -161,6 +167,12 @@ public interface BundleKey {
      **/
     String DB_INSTANCE_NOT_EXIST = PAAS_PREFIX + "DB.INSTANCE.NOT.EXIST";
     String DB_INSTANCE_NOT_EXIST_MSG = "dbInstance 不存在";
+
+    /**
+     * dbInstance 还在使用
+     **/
+    String DB_INSTANCE_IS_USE = PAAS_PREFIX + "DB.INSTANCE.IS.USE";
+    String DB_INSTANCE_IS_USE_MSG = "dbInstance 还在使用";
 
     /**
      * MqVhost 已存在
@@ -185,6 +197,12 @@ public interface BundleKey {
      */
     String REDIS_GROUP_ALREADY_EXIST = PAAS_PREFIX + "REDIS.GROUP.ALREADY.EXIST";
     String REDIS_GROUP_ALREADY_EXIST_MSG = "redisGroup 已存在";
+
+    /**
+     * redisGroup 在使用
+     */
+    String REDIS_GROUP_IS_USE = PAAS_PREFIX + "REDIS.GROUP.IS.USE";
+    String REDIS_GROUP_IS_USE_MSG = "redisGroup 在使用";
 
     /**
      * neo4jInstance 不存在
@@ -215,6 +233,12 @@ public interface BundleKey {
      **/
     String REDIS_INSTANCE_NOT_EXIST = PAAS_PREFIX + "REDIS.INSTANCE.NOT.EXIST";
     String REDIS_INSTANCE_NOT_EXIST_MSG = "redisInstance 不存在";
+
+    /**
+     * redisInstance 已存在
+     **/
+    String REDIS_INSTANCE_ALREADY_EXIST = PAAS_PREFIX + "REDIS.INSTANCE.ALREADY.EXIST";
+    String REDIS_INSTANCE_ALREADY_EXIST_MSG = "redisInstance 已存在";
 
     /**
      * swiftProject 不存在

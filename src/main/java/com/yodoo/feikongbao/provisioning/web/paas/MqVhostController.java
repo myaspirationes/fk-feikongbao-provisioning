@@ -35,7 +35,7 @@ public class MqVhostController {
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> queryMqVhostList(MqVhostDto mqVhostDto) {
-        PageInfoDto<MqVhostDto> pageInfoDto = mqVhostService.queryMqVhostList(mqVhostDto);
+        PageInfoDto<MqVhostDto> pageInfoDto = mqVhostService.queryMqVHostList(mqVhostDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), MqVhostController.class);
         // 操作资源导向
@@ -53,7 +53,7 @@ public class MqVhostController {
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getMqVhostDetails(@PathVariable Integer id) {
-        MqVhostDto mqVhostDto = mqVhostService.getMqVhostDetails(id);
+        MqVhostDto mqVhostDto = mqVhostService.getMqVHostDetails(id);
         return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDto);
     }
 
@@ -66,7 +66,7 @@ public class MqVhostController {
     @RequestMapping(value = "/useMqVhost", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useMqVhost(@RequestBody MqVhostDto mqVhostDto) {
-        MqVhostDto mqVhostDtoResponse = mqVhostService.useMqVhost(mqVhostDto);
+        MqVhostDto mqVhostDtoResponse = mqVhostService.useMqVHost(mqVhostDto);
         return new ProvisioningDto<MqVhostDto>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG, mqVhostDtoResponse);
     }
 }

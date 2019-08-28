@@ -22,6 +22,14 @@ public class DbGroup extends BaseEntity {
      **/
     private String groupName;
 
+    public DbGroup() {
+    }
+
+    public DbGroup(String groupCode, String groupName) {
+        this.groupCode = groupCode;
+        this.groupName = groupName;
+    }
+
     public String getGroupCode() {
         return groupCode;
     }

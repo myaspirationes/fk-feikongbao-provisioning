@@ -17,6 +17,7 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -138,6 +140,149 @@ public class RedisInstanceService {
     }
 
     /**
+     * 根据 类型 查询 redis 实例 列表
+     * @param type
+     * @return
+     */
+    public List<RedisInstanceDto> getRedisInstanceByType(Integer type) {
+        Example example = new Example(RedisInstance.class);
+        example.setOrderByClause("ORDER BY create_time ASC");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("type", type == null ? 0 : type);
+        return getRedisInstanceDtoList(redisInstanceMapper.selectByExample(example));
+    }
+
+    /**
+     * 通过 redisGroupId 查询
+     * @param redisGroupId
+     * @return
+     */
+    public List<RedisInstance> getRedisInstanceByRedisGroupId(Integer redisGroupId) {
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("redisGroupId", redisGroupId);
+        return redisInstanceMapper.selectByExample(example);
+    }
+
+    /**
+     * 添加
+     * @param redisInstanceDto
+     * @return
+     */
+    public Integer addRedisInstance(RedisInstanceDto redisInstanceDto) {
+        addRedisInstanceParameterCheck(redisInstanceDto);
+        RedisInstance redisInstance = new RedisInstance();
+        BeanUtils.copyProperties(redisInstanceDto, redisInstance);
+        redisInstance.setStatus(InstanceStatusEnum.UNUSED.getCode());
+        return redisInstanceMapper.insertSelective(redisInstance);
+    }
+
+    /**
+     *  更新
+     * @param redisInstanceDto
+     * @return
+     */
+    public Integer editRedisInstance(RedisInstanceDto redisInstanceDto) {
+        RedisInstance redisInstance = editRedisInstanceParameterCheck(redisInstanceDto);
+        BeanUtils.copyProperties(redisInstanceDto, redisInstance);
+        return redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
+    }
+
+    /**
+     *  更新
+     * @param id
+     * @return
+     */
+    public Integer deleteRedisInstance(Integer id) {
+        deleteRedisInstanceParameterCheck(id);
+        return redisInstanceMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 删除
+     * @param id
+     */
+    private void deleteRedisInstanceParameterCheck(Integer id) {
+        if (id == null || id < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        RedisInstance redisInstance = selectByPrimaryKey(id);
+        if (redisInstance == null){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
+        }
+        RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstance.getRedisGroupId());
+        if (redisGroup != null){
+          List<Company> companyList = companyService.getCompanyByRedisGroupId(redisGroup.getId());
+          if (!CollectionUtils.isEmpty(companyList)){
+              throw new ProvisioningException(BundleKey.REDIS_INSTANCE_USED, BundleKey.REDIS_INSTANCE_USED_MSG);
+          }
+        }
+    }
+
+    /**
+     * 更新参数校验
+     * @param redisInstanceDto
+     * @return
+     */
+    private RedisInstance editRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
+        if (redisInstanceDto == null || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0 || redisInstanceDto.getRedisGroupId() == null
+                || redisInstanceDto.getRedisGroupId() < 0 || StringUtils.isBlank(redisInstanceDto.getIp()) || redisInstanceDto.getPort() == null
+                || redisInstanceDto.getPort() < 0 || StringUtils.isBlank(redisInstanceDto.getUsername()) || StringUtils.isBlank(redisInstanceDto.getPassword())
+                || !Arrays.asList(0,1).contains(redisInstanceDto.getType())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
+        if (redisInstance == null){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
+        }
+        RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstanceDto.getRedisGroupId());
+        if (redisGroup == null){
+            throw new ProvisioningException(BundleKey.REDIS_GROUP_NOT_EXIST, BundleKey.REDIS_GROUP_NOT_EXIST_MSG);
+        }
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andNotEqualTo("id", redisInstanceDto.getTid());
+        criteria.andEqualTo("redisGroupId", redisInstanceDto.getRedisGroupId());
+        criteria.andEqualTo("ip", redisInstanceDto.getIp());
+        criteria.andEqualTo("port", redisInstanceDto.getPort());
+        criteria.andEqualTo("type", redisInstanceDto.getType());
+        RedisInstance redisInstanceNot = redisInstanceMapper.selectOneByExample(example);
+        if (redisInstanceNot != null){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_ALREADY_EXIST, BundleKey.REDIS_INSTANCE_ALREADY_EXIST_MSG);
+        }
+        return redisInstance;
+    }
+
+
+    /**
+     * 添加参数校验
+     * @param redisInstanceDto
+     */
+    private void addRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
+        if (redisInstanceDto == null || redisInstanceDto.getRedisGroupId() == null || redisInstanceDto.getRedisGroupId() < 0
+                || StringUtils.isBlank(redisInstanceDto.getIp()) || redisInstanceDto.getPort() == null || redisInstanceDto.getPort() < 0
+                || StringUtils.isBlank(redisInstanceDto.getUsername()) || StringUtils.isBlank(redisInstanceDto.getPassword())
+                || !Arrays.asList(0,1).contains(redisInstanceDto.getType())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstanceDto.getRedisGroupId());
+        if (redisGroup == null){
+            throw new ProvisioningException(BundleKey.REDIS_GROUP_NOT_EXIST, BundleKey.REDIS_GROUP_NOT_EXIST_MSG);
+        }
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("redisGroupId", redisInstanceDto.getRedisGroupId());
+        criteria.andEqualTo("ip", redisInstanceDto.getIp());
+        criteria.andEqualTo("port", redisInstanceDto.getPort());
+        criteria.andEqualTo("type", redisInstanceDto.getType());
+        RedisInstance redisInstance = redisInstanceMapper.selectOneByExample(example);
+        if (redisInstance != null){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_ALREADY_EXIST, BundleKey.REDIS_INSTANCE_ALREADY_EXIST_MSG);
+        }
+    }
+
+
+    /**
      * 使用缓存校验
      *
      * @param redisInstanceDto
@@ -197,18 +342,5 @@ public class RedisInstanceService {
                     }).filter(Objects::nonNull).collect(Collectors.toList());
         }
         return collect;
-    }
-
-    /**
-     * 根据 类型 查询 redis 实例 列表
-     * @param type
-     * @return
-     */
-    public List<RedisInstanceDto> getRedisInstanceByType(Integer type) {
-        Example example = new Example(RedisInstance.class);
-        example.setOrderByClause("ORDER BY create_time ASC");
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("type", type == null ? 0 : type);
-        return getRedisInstanceDtoList(redisInstanceMapper.selectByExample(example));
     }
 }

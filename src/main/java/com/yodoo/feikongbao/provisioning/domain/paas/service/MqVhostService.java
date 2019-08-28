@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class MqVhostService {
      * @param mqVhostDto
      * @return
      */
-    public PageInfoDto<MqVhostDto> queryMqVhostList(MqVhostDto mqVhostDto) {
+    public PageInfoDto<MqVhostDto> queryMqVHostList(MqVhostDto mqVhostDto) {
         // 设置查询条件
         MqVhost mqVhost = new MqVhost();
         if (mqVhostDto != null) {
@@ -88,7 +89,7 @@ public class MqVhostService {
      * @param id
      * @return
      */
-    public MqVhostDto getMqVhostDetails(Integer id) {
+    public MqVhostDto getMqVHostDetails(Integer id) {
         MqVhost mqVhost = selectByPrimaryKey(id);
         MqVhostDto mqVhostDto = new MqVhostDto();
         if (mqVhost != null) {
@@ -114,9 +115,9 @@ public class MqVhostService {
      * @param mqVhostDto
      * @return
      */
-    public MqVhostDto useMqVhost(MqVhostDto mqVhostDto) {
+    public MqVhostDto useMqVHost(MqVhostDto mqVhostDto) {
         // 参数校验
-        useMqVhostParameterCheck(mqVhostDto);
+        useMqVHostParameterCheck(mqVhostDto);
 
         // 创建vhost
         MqResponseEnum mqResponseEnum = rabbitMqVirtualHostService.createVirtualHost(mqVhostDto.getVhostName());
@@ -154,11 +155,26 @@ public class MqVhostService {
     }
 
     /**
+     * 删除
+     * @param companyCode
+     * @return
+     */
+    public Integer deleteMqVHostByCompanyCode(String companyCode){
+        if (StringUtils.isBlank(companyCode)){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Example example = new Example(MqVhost.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("vhostName", companyCode);
+       return mqVhostMapper.deleteByExample(example);
+    }
+
+    /**
      * 创建 vhost 参数校验
      *
      * @param mqVhostDto
      */
-    private void useMqVhostParameterCheck(MqVhostDto mqVhostDto) {
+    private void useMqVHostParameterCheck(MqVhostDto mqVhostDto) {
         if (mqVhostDto == null || mqVhostDto.getCompanyId() == null || mqVhostDto.getCompanyId() < 0 || StringUtils.isBlank(mqVhostDto.getIp())
                 || mqVhostDto.getPort() == null || mqVhostDto.getPort() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);

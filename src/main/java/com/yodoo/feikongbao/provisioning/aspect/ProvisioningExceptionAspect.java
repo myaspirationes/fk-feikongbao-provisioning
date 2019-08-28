@@ -42,22 +42,11 @@ public class ProvisioningExceptionAspect {
         } catch (ProvisioningException e) {
             e.printStackTrace();
             logger.error("service aop,exit PaasExceptionAspect#handleException,method:{},ProvisioningException:{}", methodName, e);
-            response = new ProvisioningDto(SystemStatus.FAIL.getStatus(), e.getMessageBundleKey(), e.getMessage());
+            String message = getExceptionParameter(e.getMessageParams());
+            response = new ProvisioningDto(SystemStatus.FAIL.getStatus(), e.getMessageBundleKey(), message);
         } catch (PermissionException e){
             logger.error("service aop,exit PaasExceptionAspect#handleException,method:{},PermissionException:{}", methodName, e);
-            String[] permissionMessageParams = e.getPermissionMessageParams();
-            StringBuilder sb = new StringBuilder();
-            String message = "";
-            if (permissionMessageParams != null && permissionMessageParams.length > 0) {
-                for (int i = 0; i < permissionMessageParams.length; i++) {
-                    if (i < permissionMessageParams.length - 1) {
-                        sb.append(permissionMessageParams[i] + ",");
-                    } else {
-                        sb.append(permissionMessageParams[i]);
-                    }
-                }
-                message = sb.toString();
-            }
+            String message = getExceptionParameter(e.getPermissionMessageParams());
             response = new ProvisioningDto(SystemStatus.FAIL.getStatus(), e.getPermissionMessageBundleKey(), message);
         }catch (Throwable e) {
             e.printStackTrace();
@@ -67,5 +56,21 @@ public class ProvisioningExceptionAspect {
 
         }
         return response;
+    }
+
+    private String getExceptionParameter(String[] str){
+        StringBuilder sb = new StringBuilder();
+        String message = "";
+        if (str != null && str.length > 0) {
+            for (int i = 0; i < str.length; i++) {
+                if (i < str.length - 1) {
+                    sb.append(str[i] + ",");
+                } else {
+                    sb.append(str[i]);
+                }
+            }
+            message = sb.toString();
+        }
+        return message;
     }
 }
