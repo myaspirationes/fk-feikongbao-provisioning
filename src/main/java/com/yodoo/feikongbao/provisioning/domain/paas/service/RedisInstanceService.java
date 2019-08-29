@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -62,12 +61,11 @@ public class RedisInstanceService {
      * @return
      */
     public PageInfoDto<RedisInstanceDto> queryRedisInstanceList(RedisInstanceDto redisInstanceDto) {
-        RedisInstance redisInstance = new RedisInstance();
-        if (redisInstanceDto != null) {
-            BeanUtils.copyProperties(redisInstanceDto, redisInstance);
-        }
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
         Page<?> pages = PageHelper.startPage(redisInstanceDto.getPageNum(), redisInstanceDto.getPageSize());
-        List<RedisInstanceDto> collect = selectRedisInstance(redisInstance);
+        List<RedisInstance> redisInstanceList = redisInstanceMapper.selectByExample(example);
+        List<RedisInstanceDto> collect = copyProperties(redisInstanceList);
         return new PageInfoDto<RedisInstanceDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -78,13 +76,7 @@ public class RedisInstanceService {
      * @return
      */
     public RedisInstanceDto getRedisInstanceDetails(Integer id) {
-        RedisInstance redisInstance = selectByPrimaryKey(id);
-        RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
-        if (redisInstance != null) {
-            BeanUtils.copyProperties(redisInstance, redisInstanceDto);
-            redisInstanceDto.setTid(redisInstance.getId());
-        }
-        return redisInstanceDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -134,9 +126,10 @@ public class RedisInstanceService {
      * @return
      */
     public List<RedisInstanceDto> selectRedisInstanceListByRedisGroupId(Integer redisGroupId) {
-        RedisInstance redisInstance = new RedisInstance();
-        redisInstance.setRedisGroupId(redisGroupId);
-        return selectRedisInstance(redisInstance);
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("redisGroupId", redisGroupId);
+        return copyProperties(redisInstanceMapper.selectByExample(example));
     }
 
     /**
@@ -149,19 +142,7 @@ public class RedisInstanceService {
         example.setOrderByClause("ORDER BY create_time ASC");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("type", type == null ? 0 : type);
-        return getRedisInstanceDtoList(redisInstanceMapper.selectByExample(example));
-    }
-
-    /**
-     * 通过 redisGroupId 查询
-     * @param redisGroupId
-     * @return
-     */
-    public List<RedisInstance> getRedisInstanceByRedisGroupId(Integer redisGroupId) {
-        Example example = new Example(RedisInstance.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("redisGroupId", redisGroupId);
-        return redisInstanceMapper.selectByExample(example);
+        return copyProperties(redisInstanceMapper.selectByExample(example));
     }
 
     /**
@@ -189,7 +170,7 @@ public class RedisInstanceService {
     }
 
     /**
-     *  更新
+     *  删除
      * @param id
      * @return
      */
@@ -315,32 +296,35 @@ public class RedisInstanceService {
     }
 
     /**
-     * 条件查询
-     *
-     * @param redisInstance
+     * 复制
+     * @param redisInstanceList
      * @return
      */
-    private List<RedisInstanceDto> selectRedisInstance(RedisInstance redisInstance) {
-        return getRedisInstanceDtoList(redisInstanceMapper.select(redisInstance));
+    private List<RedisInstanceDto> copyProperties(List<RedisInstance> redisInstanceList){
+        if (!CollectionUtils.isEmpty(redisInstanceList)){
+            return redisInstanceList.stream()
+                    .filter(Objects::nonNull)
+                    .map(redisInstance -> {
+                        return copyProperties(redisInstance);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     /**
-     * 转 Dto
-     * @param select
+     * 复制
+     * @param redisInstance
      * @return
      */
-    private List<RedisInstanceDto> getRedisInstanceDtoList(List<RedisInstance> select) {
-        List<RedisInstanceDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)) {
-            collect = select.stream()
-                    .filter(Objects::nonNull)
-                    .map(redisInstanceResponse -> {
-                        RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
-                        BeanUtils.copyProperties(redisInstanceResponse, redisInstanceDto);
-                        redisInstanceDto.setTid(redisInstanceResponse.getId());
-                        return redisInstanceDto;
-                    }).filter(Objects::nonNull).collect(Collectors.toList());
+    private RedisInstanceDto copyProperties(RedisInstance redisInstance){
+        if (redisInstance != null){
+            RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
+            BeanUtils.copyProperties(redisInstance, redisInstanceDto);
+            redisInstanceDto.setTid(redisInstance.getId());
+            return redisInstanceDto;
         }
-        return collect;
+        return null;
     }
 }

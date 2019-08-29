@@ -37,8 +37,22 @@ public class DbInstanceService {
     @Autowired
     private DbSchemaService dbSchemaService;
 
+    /**
+     * 通过id查询
+     * @param id
+     * @return
+     */
     public DbInstance selectByPrimaryKey(Integer id) {
         return dbInstanceMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 通过id查询
+     * @param id
+     * @return
+     */
+    public DbInstanceDto selectDbInstanceByPrimaryKey(Integer id){
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**

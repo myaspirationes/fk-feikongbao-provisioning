@@ -265,6 +265,12 @@ public interface BundleKey {
     String FUNCTION_MODULE_NOT_EXIST_MSG = "功能模块不存在";
 
     /**
+     * 功能模块还在使用
+     **/
+    String FUNCTION_MODULE_IS_USE = PAAS_PREFIX + "FUNCTION.MODULE.IS.USE";
+    String FUNCTION_MODULE_IS_USE_MSG = "功能模块还在使用";
+
+    /**
      * 初始化数据库异常"
      **/
     String BUILD_SCRIPT_MIGRATION_DATA = PAAS_PREFIX + "BUILD.SCRIPT.MIGRATION.DATA";

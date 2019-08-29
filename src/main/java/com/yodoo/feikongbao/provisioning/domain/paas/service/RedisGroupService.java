@@ -50,12 +50,16 @@ public class RedisGroupService {
      * @return
      */
     public PageInfoDto<RedisGroupDto> queryRedisGroupList(RedisGroupDto redisGroupDto) {
-        RedisGroup redisGroupReq = new RedisGroup();
-        if (redisGroupDto != null) {
-            BeanUtils.copyProperties(redisGroupDto, redisGroupReq);
+        Example example = new Example(RedisGroup.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(redisGroupDto.getGroupCode())){
+            criteria.andEqualTo("groupCode", redisGroupDto.getGroupCode());
+        }
+        if (StringUtils.isNotBlank(redisGroupDto.getGroupName())){
+            criteria.andEqualTo("groupName", redisGroupDto.getGroupName());
         }
         Page<?> pages = PageHelper.startPage(redisGroupDto.getPageNum(), redisGroupDto.getPageSize());
-        List<RedisGroup> list = redisGroupMapper.select(redisGroupReq);
+        List<RedisGroup> list = redisGroupMapper.selectByExample(example);
         List<RedisGroupDto> collect = copyProperties(list);
         return new PageInfoDto<RedisGroupDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
@@ -140,7 +144,7 @@ public class RedisGroupService {
         if (redisGroup == null){
             throw new ProvisioningException(BundleKey.REDIS_GROUP_NOT_EXIST, BundleKey.REDIS_GROUP_NOT_EXIST_MSG);
         }
-        List<RedisInstance> redisInstancesList = redisInstanceService.getRedisInstanceByRedisGroupId(id);
+        List<RedisInstanceDto> redisInstancesList = redisInstanceService.selectRedisInstanceListByRedisGroupId(id);
         if (!CollectionUtils.isEmpty(redisInstancesList)){
             throw new ProvisioningException(BundleKey.REDIS_GROUP_IS_USE, BundleKey.REDIS_GROUP_IS_USE_MSG);
         }

@@ -4,7 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.MqVhostDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.MqVhostMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
@@ -60,26 +62,14 @@ public class MqVhostService {
      * @return
      */
     public PageInfoDto<MqVhostDto> queryMqVHostList(MqVhostDto mqVhostDto) {
-        // 设置查询条件
-        MqVhost mqVhost = new MqVhost();
-        if (mqVhostDto != null) {
-            BeanUtils.copyProperties(mqVhostDto, mqVhost);
+        Example example = new Example(MqVhost.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(mqVhostDto.getVhostName())){
+            criteria.andEqualTo("vhostName", mqVhostDto.getVhostName());
         }
         Page<?> pages = PageHelper.startPage(mqVhostDto.getPageNum(), mqVhostDto.getPageSize());
-        List<MqVhost> mqVhosts = mqVhostMapper.select(mqVhost);
-        List<MqVhostDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(mqVhosts)) {
-            collect = mqVhosts.stream()
-                    .filter(Objects::nonNull)
-                    .map(mv -> {
-                        MqVhostDto dto = new MqVhostDto();
-                        BeanUtils.copyProperties(mv, dto);
-                        dto.setTid(mv.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
+        List<MqVhost> mqVhosts = mqVhostMapper.selectByExample(example);
+        List<MqVhostDto> collect = copyProperties(mqVhosts);
         return new PageInfoDto<MqVhostDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -90,13 +80,7 @@ public class MqVhostService {
      * @return
      */
     public MqVhostDto getMqVHostDetails(Integer id) {
-        MqVhost mqVhost = selectByPrimaryKey(id);
-        MqVhostDto mqVhostDto = new MqVhostDto();
-        if (mqVhost != null) {
-            BeanUtils.copyProperties(mqVhost, mqVhostDto);
-            mqVhostDto.setTid(mqVhost.getId());
-        }
-        return mqVhostDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -185,5 +169,38 @@ public class MqVhostService {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         mqVhostDto.setVhostName(company.getCompanyCode());
+    }
+
+    /**
+     * 复制
+     * @param mqVhostList
+     * @return
+     */
+    private List<MqVhostDto> copyProperties(List<MqVhost> mqVhostList){
+        if (!CollectionUtils.isEmpty(mqVhostList)){
+            return mqVhostList.stream()
+                    .filter(Objects::nonNull)
+                    .map(mqVhost -> {
+                        return copyProperties(mqVhost);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param mqVhost
+     * @return
+     */
+    private MqVhostDto copyProperties(MqVhost mqVhost){
+        if (mqVhost != null){
+            MqVhostDto mqVhostDto = new MqVhostDto();
+            BeanUtils.copyProperties(mqVhost, mqVhostDto);
+            mqVhostDto.setTid(mqVhost.getId());
+            return mqVhostDto;
+        }
+        return null;
     }
 }

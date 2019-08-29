@@ -26,13 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Description ：TODO
+ * @Description ：neo4j
  * @Author ：jinjun_luo
  * @Date ： 2019/7/29 0029
  */
@@ -59,25 +58,11 @@ public class Neo4jInstanceService {
      * @return
      */
     public PageInfoDto<Neo4jInstanceDto> queryNeo4jInstanceList(Neo4jInstanceDto neo4jInstanceDto) {
-        Neo4jInstance neo4jInstance = new Neo4jInstance();
-        if (neo4jInstanceDto != null) {
-            BeanUtils.copyProperties(neo4jInstanceDto, neo4jInstance);
-        }
+        Example example = new Example(Neo4jInstance.class);
+        Example.Criteria criteria = example.createCriteria();
         Page<?> pages = PageHelper.startPage(neo4jInstanceDto.getPageNum(), neo4jInstanceDto.getPageSize());
-        List<Neo4jInstance> list = neo4jInstanceMapper.select(neo4jInstance);
-        List<Neo4jInstanceDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            collect = list.stream()
-                    .filter(Objects::nonNull)
-                    .map(neo4jInstance1 -> {
-                        Neo4jInstanceDto dto = new Neo4jInstanceDto();
-                        BeanUtils.copyProperties(neo4jInstance1, dto);
-                        dto.setTid(neo4jInstance1.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
+        List<Neo4jInstance> list = neo4jInstanceMapper.selectByExample(example);
+        List<Neo4jInstanceDto> collect = copyProperties(list);
         return new PageInfoDto<Neo4jInstanceDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -88,13 +73,7 @@ public class Neo4jInstanceService {
      * @return
      */
     public Neo4jInstanceDto getNeo4jInstanceDetails(Integer id) {
-        Neo4jInstance neo4jInstance = selectByPrimaryKey(id);
-        Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
-        if (neo4jInstance != null) {
-            BeanUtils.copyProperties(neo4jInstance, neo4jInstanceDto);
-            neo4jInstanceDto.setTid(neo4jInstance.getId());
-        }
-        return neo4jInstanceDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -259,5 +238,38 @@ public class Neo4jInstanceService {
         neo4jInstance.setStatus(InstanceStatusEnum.USED.getCode());
         neo4jInstanceDto.setNeo4jName(company.getCompanyCode());
         return neo4jInstance;
+    }
+
+    /**
+     * 复制
+     * @param neo4jInstanceList
+     * @return
+     */
+    private List<Neo4jInstanceDto> copyProperties(List<Neo4jInstance> neo4jInstanceList){
+        if (!CollectionUtils.isEmpty(neo4jInstanceList)){
+            return neo4jInstanceList.stream()
+                    .filter(Objects::nonNull)
+                    .map(neo4jInstance -> {
+                        return copyProperties(neo4jInstance);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param neo4jInstance
+     * @return
+     */
+    private Neo4jInstanceDto copyProperties(Neo4jInstance neo4jInstance){
+        if (neo4jInstance != null){
+            Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
+            BeanUtils.copyProperties(neo4jInstance, neo4jInstanceDto);
+            neo4jInstanceDto.setTid(neo4jInstance.getId());
+            return neo4jInstanceDto;
+        }
+        return null;
     }
 }

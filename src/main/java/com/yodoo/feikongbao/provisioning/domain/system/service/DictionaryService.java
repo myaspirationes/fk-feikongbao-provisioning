@@ -18,13 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Description ：TODO
+ * @Description ：字典表
  * @Author ：jinjun_luo
  * @Date ： 2019/7/26 0026
  */
@@ -43,23 +42,11 @@ public class DictionaryService {
      */
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public PageInfoDto<DictionaryDto> queryDictionaryList(DictionaryDto dictionaryDto) {
-        Dictionary dictionaryReq = new Dictionary();
-        BeanUtils.copyProperties(dictionaryDto, dictionaryReq);
+        Example example = new Example(Dictionary.class);
+        Example.Criteria criteria = example.createCriteria();
         Page<?> pages = PageHelper.startPage(dictionaryDto.getPageNum(), dictionaryDto.getPageSize());
-        List<Dictionary> select = dictionaryMapper.select(dictionaryReq);
-        List<DictionaryDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)) {
-            collect = select.stream()
-                    .filter(Objects::nonNull)
-                    .map(dictionary -> {
-                        DictionaryDto dto = new DictionaryDto();
-                        BeanUtils.copyProperties(dictionary, dto);
-                        dto.setTid(dictionary.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
+        List<Dictionary> select = dictionaryMapper.selectByExample(example);
+        List<DictionaryDto> collect = copyProperties(select);
         return new PageInfoDto<DictionaryDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -110,13 +97,7 @@ public class DictionaryService {
      */
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
     public DictionaryDto getDictionaryDetails(Integer id) {
-        Dictionary dictionary = selectByPrimaryKey(id);
-        DictionaryDto dictionaryDto = new DictionaryDto();
-        if (dictionary != null) {
-            BeanUtils.copyProperties(dictionary, dictionaryDto);
-            dictionaryDto.setTid(dictionary.getId());
-        }
-        return dictionaryDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -207,5 +188,38 @@ public class DictionaryService {
         if (dictionaryResponse != null) {
             throw new ProvisioningException(BundleKey.DICTIONARY_ALREADY_EXIST, BundleKey.DICTIONARY_ALREADY_EXIST_MSG);
         }
+    }
+
+    /**
+     * 复制
+     * @param dictionaryList
+     * @return
+     */
+    private List<DictionaryDto> copyProperties(List<Dictionary> dictionaryList){
+        if (!CollectionUtils.isEmpty(dictionaryList)){
+            return dictionaryList.stream()
+                    .filter(Objects::nonNull)
+                    .map(dictionary -> {
+                        return copyProperties(dictionary);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param dictionary
+     * @return
+     */
+    private DictionaryDto copyProperties(Dictionary dictionary){
+        if (dictionary != null){
+            DictionaryDto dictionaryDto = new DictionaryDto();
+            BeanUtils.copyProperties(dictionary, dictionaryDto);
+            dictionaryDto.setTid(dictionary.getId());
+            return dictionaryDto;
+        }
+        return null;
     }
 }

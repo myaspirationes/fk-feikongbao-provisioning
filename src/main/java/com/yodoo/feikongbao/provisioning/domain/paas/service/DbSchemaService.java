@@ -168,20 +168,15 @@ public class DbSchemaService {
      * @return
      */
     public List<DbSchemaDto> selectDbSchemaByDbGroupId(Integer dbGroupId) {
-        List<DbSchema> dbSchemas = getDbSchemaListByDbGroupId(dbGroupId);
+        List<DbSchema> dbSchemaList = getDbSchemaListByDbGroupId(dbGroupId);
         List<DbSchemaDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(dbSchemas)) {
-            collect = dbSchemas.stream()
+        if (!CollectionUtils.isEmpty(dbSchemaList)) {
+            collect = dbSchemaList.stream()
                     .filter(Objects::nonNull)
                     .map(dbSchema -> {
-                        DbSchemaDto dbSchemaDto = new DbSchemaDto();
-                        BeanUtils.copyProperties(dbSchema, dbSchemaDto);
-                        dbSchemaDto.setTid(dbSchema.getId());
-                        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
-                        if (dbInstance != null) {
-                            DbInstanceDto dbInstanceDto = new DbInstanceDto();
-                            BeanUtils.copyProperties(dbInstanceDto, dbInstance);
-                            dbInstanceDto.setTid(dbInstance.getId());
+                        DbSchemaDto dbSchemaDto = copyProperties(dbSchema);
+                        DbInstanceDto dbInstanceDto = dbInstanceService.selectDbInstanceByPrimaryKey(dbSchemaDto.getDbInstanceId());
+                        if (dbInstanceDto != null) {
                             dbSchemaDto.setDbInstanceDto(dbInstanceDto);
                         }
                         return dbSchemaDto;
@@ -201,18 +196,7 @@ public class DbSchemaService {
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("type", type == null ? 0 : type);
         List<DbSchema> dbSchemas = dbSchemaMapper.selectByExample(example);
-        List<DbSchemaDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(dbSchemas)){
-            collect = dbSchemas.stream()
-                    .filter(Objects::nonNull)
-                    .map(dbSchema -> {
-                        DbSchemaDto dbSchemaDto = new DbSchemaDto();
-                        BeanUtils.copyProperties(dbSchema, dbSchemaDto);
-                        dbSchemaDto.setTid(dbSchema.getId());
-                        return dbSchemaDto;
-                    }).filter(Objects::nonNull).collect(Collectors.toList());
-        }
-        return collect;
+        return copyProperties(dbSchemas);
     }
 
     /**
@@ -265,14 +249,9 @@ public class DbSchemaService {
         if (dbSchemaById == null){
             throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
         }
-        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
-        if (dbInstance == null){
-            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
-        }
-        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaDto.getDbGroupId());
-        if (dbGroup == null){
-            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
-        }
+        // 查询DB数据库组 和 DB实例表 是否为空
+        checkDbGroupAndDbInstanceIsEmpty(dbSchemaDto.getDbGroupId(), dbSchemaDto.getDbInstanceId());
+
         Example example = new Example(DbSchema.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andNotEqualTo("id", dbSchemaDto.getTid());
@@ -297,14 +276,9 @@ public class DbSchemaService {
                 || StringUtils.isBlank(dbSchemaDto.getPassword()) || !Arrays.asList(0,1).contains(dbSchemaDto.getType())){
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
-        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchemaDto.getDbInstanceId());
-        if (dbInstance == null){
-            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
-        }
-        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaDto.getDbGroupId());
-        if (dbGroup == null){
-            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
-        }
+        // 查询DB数据库组 和 DB实例表 是否为空
+        checkDbGroupAndDbInstanceIsEmpty(dbSchemaDto.getDbGroupId(), dbSchemaDto.getDbInstanceId());
+
         Example example = new Example(DbSchema.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("dbInstanceId", dbSchemaDto.getDbInstanceId());
@@ -348,7 +322,7 @@ public class DbSchemaService {
     }
 
     /**
-     * 先用数据库参数校验
+     * 选用数据库参数校验
      *
      * @param dbSchemaDto
      * @return
@@ -365,16 +339,9 @@ public class DbSchemaService {
         }else if (dbSchema.getStatus().equals(InstanceStatusEnum.USED.getCode())){
             throw new ProvisioningException(BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
         }
-        // 查询DB数据库组是否存在
-        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchema.getDbGroupId());
-        if (dbGroup == null) {
-            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
-        }
-        //  查询DB实例表是否存在，不存在不操作
-        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchema.getDbInstanceId());
-        if (dbInstance == null) {
-            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
-        }
+        // 查询DB数据库组 和 DB实例表 是否为空
+        checkDbGroupAndDbInstanceIsEmpty(dbSchema.getDbGroupId(), dbSchema.getDbInstanceId());
+
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(dbSchemaDto.getCompanyId());
         if (company == null) {
@@ -383,6 +350,24 @@ public class DbSchemaService {
         dbSchemaDto.setCompanyCode(company.getCompanyCode());
         dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
         return dbSchema;
+    }
+
+    /**
+     * 查询DB数据库组 和 DB实例表 是否为空
+     * @param dbGroupId
+     * @param dbInstanceId
+     */
+    private void checkDbGroupAndDbInstanceIsEmpty(Integer dbGroupId, Integer dbInstanceId){
+        // 查询DB数据库组是否存在
+        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbGroupId);
+        if (dbGroup == null) {
+            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+        }
+        //  查询DB实例表是否存在，不存在不操作
+        DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbInstanceId);
+        if (dbInstance == null) {
+            throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+        }
     }
 
     /**
@@ -403,8 +388,8 @@ public class DbSchemaService {
         if (!CollectionUtils.isEmpty(dbSchemaList)){
             return dbSchemaList.stream()
                     .filter(Objects::nonNull)
-                    .map(dbInstance -> {
-                        return copyProperties(dbInstance);
+                    .map(dbSchema -> {
+                        return copyProperties(dbSchema);
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());

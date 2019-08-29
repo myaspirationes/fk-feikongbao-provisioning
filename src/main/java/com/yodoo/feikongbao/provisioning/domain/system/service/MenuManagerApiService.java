@@ -37,14 +37,7 @@ public class MenuManagerApiService {
             BeanUtils.copyProperties(menuDtoPageInfoDto, pageInfoDto);
         }
         if (menuDtoPageInfoDto != null && !CollectionUtils.isEmpty(menuDtoPageInfoDto.getList())){
-            List<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> collect = menuDtoPageInfoDto.getList().stream()
-                    .filter(Objects::nonNull)
-                    .map(menuDtoPermission -> {
-                        com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto menuDtoResponse = new com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto();
-                        BeanUtils.copyProperties(menuDtoPermission, menuDtoResponse);
-                        menuDtoResponse.setTid(menuDtoPermission.getId());
-                        return menuDtoResponse;
-                    }).filter(Objects::nonNull).collect(Collectors.toList());
+            List<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> collect = copyProperties(menuDtoPageInfoDto.getList());
             pageInfoDto.setList(collect);
         }
         return pageInfoDto;
@@ -94,5 +87,38 @@ public class MenuManagerApiService {
      */
     public List<MenuDto> getMenuTree(Integer userId){
         return menuManagerApi.getMenuTree(userId);
+    }
+
+    /**
+     * 复制
+     * @param menuList
+     * @return
+     */
+    private List<com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto> copyProperties(List<MenuDto> menuList){
+        if (!CollectionUtils.isEmpty(menuList)){
+            return menuList.stream()
+                    .filter(Objects::nonNull)
+                    .map(menu -> {
+                        return copyProperties(menu);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param menuDto
+     * @return
+     */
+    private com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto copyProperties(MenuDto menuDto){
+        if (menuDto != null){
+            com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto menuDtoProvisioning = new com.yodoo.feikongbao.provisioning.domain.system.dto.MenuDto();
+            BeanUtils.copyProperties(menuDto, menuDtoProvisioning);
+            menuDtoProvisioning.setTid(menuDto.getId());
+            return menuDtoProvisioning;
+        }
+        return null;
     }
 }

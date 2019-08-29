@@ -11,6 +11,9 @@ import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
 
 /**
  * @Description ：公司功能模块关系
@@ -46,6 +49,21 @@ public class CompanyFunctionModuleService {
             return companyFunctionModuleMapper.insertSelective(new CompanyFunctionModule(companyFunctionModuleDto.getFunctionModuleId(),
                     companyFunctionModuleDto.getCompanyId(), companyFunctionModuleDto.getStatus()));
         }
+    }
+
+    /**
+     * 通过 functionModuleId 查询
+     * @param functionModuleId
+     * @return
+     */
+    public List<CompanyFunctionModule> getCompanyFunctionModuleByFunctionModuleId(Integer functionModuleId){
+        if (functionModuleId == null || functionModuleId < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        Example example = new Example(CompanyFunctionModule.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("functionModuleId", functionModuleId);
+       return companyFunctionModuleMapper.selectByExample(example);
     }
 
     /**

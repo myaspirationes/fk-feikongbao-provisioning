@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -57,24 +56,18 @@ public class GroupsService {
      */
     @PreAuthorize("hasAnyAuthority('group_manage')")
     public PageInfoDto<GroupsDto> queryGroupList(GroupsDto groupDto) {
-        Groups groupReq = new Groups();
-        BeanUtils.copyProperties(groupDto, groupReq);
-        Page<?> pages = PageHelper.startPage(groupDto.getPageNum(), groupDto.getPageSize());
-        List<Groups> select = groupsMapper.select(groupReq);
-        List<GroupsDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(select)) {
-            collect = select.stream()
-                    .filter(Objects::nonNull)
-                    .map(group -> {
-                        GroupsDto dto = new GroupsDto();
-                        BeanUtils.copyProperties(group, dto);
-                        dto.setTid(group.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+        Example example = new Example(Groups.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(groupDto.getGroupName())){
+            criteria.andEqualTo("groupName", groupDto.getGroupName());
         }
-        return new PageInfoDto<GroupsDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
+        if (StringUtils.isNotBlank(groupDto.getGroupCode())){
+            criteria.andEqualTo("groupCode", groupDto.getGroupCode());
+        }
+        Page<?> pages = PageHelper.startPage(groupDto.getPageNum(), groupDto.getPageSize());
+        List<Groups> groupsList = groupsMapper.selectByExample(example);
+        List<GroupsDto> dtoList = copyProperties(groupsList);
+        return new PageInfoDto<GroupsDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), dtoList);
     }
 
     /**
@@ -119,13 +112,7 @@ public class GroupsService {
      * @return
      */
     public GroupsDto getGroupDetails(Integer id) {
-        Groups group = selectByPrimaryKey(id);
-        GroupsDto groupsDto = new GroupsDto();
-        if (group != null) {
-            BeanUtils.copyProperties(group, groupsDto);
-            groupsDto.setTid(group.getId());
-        }
-        return groupsDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -142,13 +129,7 @@ public class GroupsService {
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("groupCode", groupCode);
         Groups groupsResponse = groupsMapper.selectOneByExample(example);
-        GroupsDto groupsDto = null;
-        if (groupsResponse != null) {
-            groupsDto = new GroupsDto();
-            BeanUtils.copyProperties(groupsResponse, groupsDto);
-            groupsDto.setTid(groupsResponse.getId());
-        }
-        return groupsDto;
+        return copyProperties(groupsResponse);
     }
 
     /**
@@ -167,14 +148,7 @@ public class GroupsService {
                 return groupIdList.stream()
                         .filter(Objects::nonNull)
                         .map(groupId -> {
-                            Groups groups = selectByPrimaryKey(groupId);
-                            if (groups != null) {
-                                GroupsDto groupsDto = new GroupsDto();
-                                BeanUtils.copyProperties(groups, groupsDto);
-                                groupsDto.setTid(groups.getId());
-                                return groupsDto;
-                            }
-                            return null;
+                            return copyProperties(selectByPrimaryKey(groupId));
                         }).filter(Objects::nonNull).collect(Collectors.toList());
             }
         }
@@ -187,40 +161,20 @@ public class GroupsService {
      * @return
      */
     public List<GroupsDto> selectGroupsNotInIds(Set<Integer> groupsIdsListSet) {
-        List<GroupsDto> groupsDtoList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(groupsIdsListSet)){
             List<Groups> groupsList = groupsMapper.selectGroupInNotIn(groupsIdsListSet);
-            if (!CollectionUtils.isEmpty(groupsList)){
-                groupsDtoList = groupsList.stream()
-                        .filter(Objects::nonNull)
-                        .map(groups -> {
-                            GroupsDto groupsDto = new GroupsDto();
-                            BeanUtils.copyProperties(groups, groupsDto);
-                            return groupsDto;
-                        })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-            }
+            return copyProperties(groupsList);
         }
-        return groupsDtoList;
+        return null;
     }
 
     /**
      * 通过主键查询
-     * @param groupsId
+     * @param id
      * @return
      */
-    public GroupsDto selectGroupById(Integer groupsId) {
-        Example example = new Example(Groups.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("id", groupsId);
-        Groups groups = groupsMapper.selectOneByExample(example);
-        if (groups != null){
-            GroupsDto groupsDto = new GroupsDto();
-            BeanUtils.copyProperties(groups, groupsDto);
-            return groupsDto;
-        }
-        return null;
+    public GroupsDto selectGroupById(Integer id) {
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -343,5 +297,38 @@ public class GroupsService {
         if (groups != null) {
             throw new ProvisioningException(BundleKey.GROUPS_ALREADY_EXIST, BundleKey.GROUPS_ALREADY_EXIST_MSG);
         }
+    }
+
+    /**
+     * 复制
+     * @param groupsList
+     * @return
+     */
+    private List<GroupsDto> copyProperties(List<Groups> groupsList){
+        if (!CollectionUtils.isEmpty(groupsList)){
+            return groupsList.stream()
+                    .filter(Objects::nonNull)
+                    .map(groups -> {
+                        return copyProperties(groups);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param groups
+     * @return
+     */
+    private GroupsDto copyProperties(Groups groups){
+        if (groups != null){
+            GroupsDto groupsDto = new GroupsDto();
+            BeanUtils.copyProperties(groups, groupsDto);
+            groupsDto.setTid(groups.getId());
+            return groupsDto;
+        }
+        return null;
     }
 }

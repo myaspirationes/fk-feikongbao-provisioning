@@ -112,8 +112,12 @@ public class DbGroupService {
      */
     public Integer editDbGroup(DbGroupDto dbGroupDto) {
        DbGroup dbGroup = editDbGroupParameterCheck(dbGroupDto);
-       dbGroup.setGroupCode(dbGroupDto.getGroupCode());
-       dbGroup.setGroupName(dbGroupDto.getGroupName());
+       if (StringUtils.isNotBlank(dbGroupDto.getGroupCode())){
+           dbGroup.setGroupCode(dbGroupDto.getGroupCode());
+       }
+       if (StringUtils.isNotBlank(dbGroupDto.getGroupName())){
+           dbGroup.setGroupName(dbGroupDto.getGroupName());
+       }
         return dbGroupMapper.updateByPrimaryKeySelective(dbGroup);
     }
 

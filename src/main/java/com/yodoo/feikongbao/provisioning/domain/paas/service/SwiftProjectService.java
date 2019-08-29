@@ -6,7 +6,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.domain.paas.dto.DbInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.SwiftProjectDto;
+import com.yodoo.feikongbao.provisioning.domain.paas.entity.DbInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.SwiftProject;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.SwiftProjectMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
@@ -61,25 +63,11 @@ public class SwiftProjectService {
      * @return
      */
     public PageInfoDto<SwiftProjectDto> querySwiftProjectList(SwiftProjectDto swiftProjectDto) {
-        SwiftProject swiftProjectReq = new SwiftProject();
-        if (swiftProjectDto != null) {
-            BeanUtils.copyProperties(swiftProjectDto, swiftProjectReq);
-        }
+        Example example = new Example(SwiftProject.class);
+        Example.Criteria criteria = example.createCriteria();
         Page<?> pages = PageHelper.startPage(swiftProjectDto.getPageNum(), swiftProjectDto.getPageSize());
-        List<SwiftProject> list = swiftProjectMapper.select(swiftProjectReq);
-        List<SwiftProjectDto> collect = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            collect = list.stream()
-                    .filter(Objects::nonNull)
-                    .map(swiftProject -> {
-                        SwiftProjectDto dto = new SwiftProjectDto();
-                        BeanUtils.copyProperties(swiftProject, dto);
-                        dto.setTid(swiftProject.getId());
-                        return dto;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
+        List<SwiftProject> list = swiftProjectMapper.selectByExample(example);
+        List<SwiftProjectDto> collect = copyProperties(list);
         return new PageInfoDto<SwiftProjectDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), collect);
     }
 
@@ -90,13 +78,7 @@ public class SwiftProjectService {
      * @return
      */
     public SwiftProjectDto getSwiftProjectDetails(Integer id) {
-        SwiftProject swiftProject = selectByPrimaryKey(id);
-        SwiftProjectDto swiftProjectDto = new SwiftProjectDto();
-        if (swiftProject != null) {
-            BeanUtils.copyProperties(swiftProject, swiftProjectDto);
-            swiftProjectDto.setTid(swiftProject.getId());
-        }
-        return swiftProjectDto;
+        return copyProperties(selectByPrimaryKey(id));
     }
 
     /**
@@ -182,5 +164,38 @@ public class SwiftProjectService {
         }
         swiftProjectDto.setProjectName(company.getCompanyCode());
         swiftProjectDto.setTid(company.getId());
+    }
+
+    /**
+     * 复制
+     * @param dbInstanceList
+     * @return
+     */
+    private List<SwiftProjectDto> copyProperties(List<SwiftProject> dbInstanceList){
+        if (!CollectionUtils.isEmpty(dbInstanceList)){
+            return dbInstanceList.stream()
+                    .filter(Objects::nonNull)
+                    .map(swiftProject -> {
+                        return copyProperties(swiftProject);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param swiftProject
+     * @return
+     */
+    private SwiftProjectDto copyProperties(SwiftProject swiftProject){
+        if (swiftProject != null){
+            SwiftProjectDto swiftProjectDto = new SwiftProjectDto();
+            BeanUtils.copyProperties(swiftProject, swiftProjectDto);
+            swiftProjectDto.setTid(swiftProject.getId());
+            return swiftProjectDto;
+        }
+        return null;
     }
 }

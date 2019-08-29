@@ -5,9 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.*;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.MqVhost;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.Neo4jInstance;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.SwiftProject;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.*;
 import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
@@ -24,11 +21,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Date 2019/7/29 13:08
@@ -73,22 +71,21 @@ public class CompanyService {
      **/
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public PageInfoDto<CompanyDto> queryCompanyList(CompanyDto companyDto) {
-        List<CompanyDto> dtoList = new ArrayList<>();
-        // 设置查询条件
-        Company findParams = new Company();
-        if (companyDto != null) {
-            BeanUtils.copyProperties(companyDto, findParams);
+        Example example = new Example(Company.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (companyDto.getGroupId() != null && companyDto.getGroupId() > 0){
+            criteria.andEqualTo("groupId", companyDto.getGroupId());
+        }
+        if (StringUtils.isNotBlank(companyDto.getCompanyName())){
+            criteria.andEqualTo("companyName", companyDto.getCompanyName());
+
+        }
+        if (StringUtils.isNotBlank(companyDto.getCompanyCode())){
+            criteria.andEqualTo("companyCode", companyDto.getCompanyCode());
         }
         Page<?> pages = PageHelper.startPage(companyDto.getPageNum(), companyDto.getPageSize());
-        List<Company> companyList = companyMapper.select(findParams);
-        if (!CollectionUtils.isEmpty(companyList)) {
-            companyList.forEach(entity -> {
-                CompanyDto dto = new CompanyDto();
-                BeanUtils.copyProperties(entity, dto);
-                dto.setTid(entity.getId());
-                dtoList.add(dto);
-            });
-        }
+        List<Company> companyList = companyMapper.selectByExample(example);
+        List<CompanyDto> dtoList = copyProperties(companyList);
         return new PageInfoDto<CompanyDto>(pages.getPageNum(), pages.getPageSize(), pages.getTotal(), pages.getPages(), dtoList);
     }
 
@@ -205,13 +202,7 @@ public class CompanyService {
         Company company = new Company();
         company.setCompanyCode(companyCode);
         Company companyResponse = companyMapper.selectOne(company);
-        CompanyDto companyDto = null;
-        if (companyResponse != null) {
-            companyDto = new CompanyDto();
-            BeanUtils.copyProperties(companyResponse, companyCode);
-            companyDto.setTid(companyResponse.getId());
-        }
-        return companyDto;
+        return copyProperties(companyResponse);
     }
 
     /**
@@ -228,10 +219,8 @@ public class CompanyService {
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public CompanyDto getCompanyDetails(Integer id) {
         Company company = selectByPrimaryKey(id);
-        CompanyDto companyDto = new CompanyDto();
         if (company != null) {
-            BeanUtils.copyProperties(company, companyDto);
-            companyDto.setTid(company.getId());
+            CompanyDto companyDto = copyProperties(company);
             // DB 数据库组
             getDbGroupDto(companyDto);
 
@@ -246,8 +235,9 @@ public class CompanyService {
 
             // neo4jInstanceId ：neo4j 实例id
             getNeo4jInstanceDto(companyDto);
+            return companyDto;
         }
-        return companyDto;
+        return null;
     }
 
     /**
@@ -317,11 +307,8 @@ public class CompanyService {
      */
     private void getNeo4jInstanceDto(CompanyDto companyDto) {
         if (companyDto.getNeo4jInstanceId() != null && companyDto.getNeo4jInstanceId() > 0) {
-            Neo4jInstance neo4jInstance = neo4jInstanceService.selectByPrimaryKey(companyDto.getNeo4jInstanceId());
-            if (neo4jInstance != null) {
-                Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
-                BeanUtils.copyProperties(neo4jInstance, neo4jInstanceDto);
-                neo4jInstanceDto.setTid(neo4jInstance.getId());
+            Neo4jInstanceDto neo4jInstanceDto = neo4jInstanceService.getNeo4jInstanceDetails(companyDto.getNeo4jInstanceId());
+            if (neo4jInstanceDto != null) {
                 companyDto.setNeo4jInstanceDto(neo4jInstanceDto);
             }
         }
@@ -334,11 +321,8 @@ public class CompanyService {
      */
     private void getMqVhostDto(CompanyDto companyDto) {
         if (companyDto.getMqVhostId() != null && companyDto.getMqVhostId() > 0) {
-            MqVhost mqVhost = mqVhostService.selectByPrimaryKey(companyDto.getMqVhostId());
-            if (mqVhost != null) {
-                MqVhostDto mqVhostDto = new MqVhostDto();
-                BeanUtils.copyProperties(mqVhost, mqVhostDto);
-                mqVhostDto.setTid(mqVhost.getId());
+            MqVhostDto mqVhostDto = mqVhostService.getMqVHostDetails(companyDto.getMqVhostId());
+            if (mqVhostDto != null) {
                 companyDto.setMqVhostDto(mqVhostDto);
             }
         }
@@ -351,11 +335,8 @@ public class CompanyService {
      */
     private void getSwiftProjectDto(CompanyDto companyDto) {
         if (companyDto.getSwiftProjectId() != null && companyDto.getSwiftProjectId() > 0) {
-            SwiftProject swiftProject = swiftProjectService.selectByPrimaryKey(companyDto.getSwiftProjectId());
-            if (swiftProject != null) {
-                SwiftProjectDto swiftProjectDto = new SwiftProjectDto();
-                BeanUtils.copyProperties(swiftProject, swiftProjectDto);
-                swiftProjectDto.setTid(swiftProject.getId());
+            SwiftProjectDto swiftProjectDto = swiftProjectService.getSwiftProjectDetails(companyDto.getSwiftProjectId());
+            if (swiftProjectDto != null) {
                 companyDto.setSwiftProjectDto(swiftProjectDto);
             }
         }
@@ -512,5 +493,38 @@ public class CompanyService {
                 throw new ProvisioningException(BundleKey.GROUPS_NOT_EXIST, BundleKey.GROUPS_NOT_EXIST_MSG);
             }
         }
+    }
+
+    /**
+     * 复制
+     * @param companyList
+     * @return
+     */
+    private List<CompanyDto> copyProperties(List<Company> companyList){
+        if (!CollectionUtils.isEmpty(companyList)){
+            return companyList.stream()
+                    .filter(Objects::nonNull)
+                    .map(company -> {
+                        return copyProperties(company);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    /**
+     * 复制
+     * @param company
+     * @return
+     */
+    private CompanyDto copyProperties(Company company){
+        if (company != null){
+            CompanyDto companyDto = new CompanyDto();
+            BeanUtils.copyProperties(company, companyDto);
+            companyDto.setTid(company.getId());
+            return companyDto;
+        }
+        return null;
     }
 }

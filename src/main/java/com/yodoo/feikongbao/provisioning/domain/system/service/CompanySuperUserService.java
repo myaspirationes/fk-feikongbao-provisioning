@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import java.sql.*;
 
 /**
+ * 超级用户
  * @Author houzhen
  * @Date 16:53 2019/7/30
  **/
@@ -141,6 +142,4 @@ public class CompanySuperUserService {
             }
         }
     }
-
-
 }
