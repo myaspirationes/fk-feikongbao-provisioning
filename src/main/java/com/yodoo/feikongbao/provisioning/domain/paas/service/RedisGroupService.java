@@ -7,7 +7,6 @@ import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisGroupDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.RedisInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisGroup;
-import com.yodoo.feikongbao.provisioning.domain.paas.entity.RedisInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.RedisGroupMapper;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.service.CompanyService;
