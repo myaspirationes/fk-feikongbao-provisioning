@@ -97,7 +97,7 @@ public class RedisInstanceService {
      */
     public RedisInstanceDto useRedisInstance(RedisInstanceDto redisInstanceDto) {
         // 校验
-        RedisInstance redisInstance = useRedisInstanceParameterCheck(redisInstanceDto);
+        List<RedisInstance> redisInstanceList = useRedisInstanceParameterCheck(redisInstanceDto);
 
         // 公司表
         CompanyDto companyDto = new CompanyDto();
@@ -113,8 +113,10 @@ public class RedisInstanceService {
                 CompanyCreationStepsEnum.REDIS_STEP.getOrder(), CompanyCreationStepsEnum.REDIS_STEP.getCode());
 
         // 更新 RedisInstance使用状态
-        redisInstance.setStatus(InstanceStatusEnum.USED.getCode());
-        redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
+        redisInstanceList.stream().filter(Objects::nonNull).forEach(redisInstance -> {
+            redisInstance.setStatus(InstanceStatusEnum.USED.getCode());
+            redisInstanceMapper.updateByPrimaryKeySelective(redisInstance);
+        });
 
         return redisInstanceDto;
     }
@@ -268,22 +270,24 @@ public class RedisInstanceService {
      *
      * @param redisInstanceDto
      */
-    private RedisInstance useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
+    private List<RedisInstance> useRedisInstanceParameterCheck(RedisInstanceDto redisInstanceDto) {
         if (redisInstanceDto == null || redisInstanceDto.getCompanyId() == null || redisInstanceDto.getCompanyId() < 0
-                || redisInstanceDto.getTid() == null || redisInstanceDto.getTid() < 0) {
+                || redisInstanceDto.getRedisGroupId() == null || redisInstanceDto.getRedisGroupId() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
-        // 查询 redis实例 是否存在，不存在不操作。或是否被使用
-        RedisInstance redisInstance = selectByPrimaryKey(redisInstanceDto.getTid());
-        if (redisInstance == null) {
-            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
-        }else if (redisInstance.getStatus().equals(InstanceStatusEnum.USED.getCode())){
-            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_USED, BundleKey.REDIS_INSTANCE_USED_MSG);
-        }
         // 查询redis 组是否存在，不存在不操作
-        RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstance.getRedisGroupId());
-        if (redisGroup == null) {
+        RedisGroup redisGroup = redisGroupService.selectByPrimaryKey(redisInstanceDto.getRedisGroupId());
+        if (redisGroup == null){
             throw new ProvisioningException(BundleKey.REDIS_GROUP_NOT_EXIST, BundleKey.REDIS_GROUP_NOT_EXIST_MSG);
+        }
+        // 查询 redis实例 是否存在，不存在不操作。或是否被使用
+        List<RedisInstance> redisInstanceList = getRedisInstanceListByRedisGroupId(redisGroup.getId());
+        if (CollectionUtils.isEmpty(redisInstanceList)){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_NOT_EXIST, BundleKey.REDIS_INSTANCE_NOT_EXIST_MSG);
+        }
+        Long count = redisInstanceList.stream().filter(Objects::nonNull).filter(redisInstance -> redisInstance.getType().equals(InstanceStatusEnum.USED.getCode())).count();
+        if (count != null && count > 0){
+            throw new ProvisioningException(BundleKey.REDIS_INSTANCE_USED, BundleKey.REDIS_INSTANCE_USED_MSG);
         }
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(redisInstanceDto.getCompanyId());
@@ -291,8 +295,19 @@ public class RedisInstanceService {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         redisInstanceDto.setCompanyCode(company.getCompanyCode());
-        redisInstanceDto.setRedisGroupId(redisInstance.getRedisGroupId());
-        return redisInstance;
+        return redisInstanceList;
+    }
+
+    /**
+     * 通过redis 组 id 查询
+     * @param redisGroupId
+     * @return
+     */
+    private List<RedisInstance> getRedisInstanceListByRedisGroupId(Integer redisGroupId) {
+        Example example = new Example(RedisInstance.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("redisGroupId", redisGroupId);
+        return redisInstanceMapper.selectByExample(example);
     }
 
     /**

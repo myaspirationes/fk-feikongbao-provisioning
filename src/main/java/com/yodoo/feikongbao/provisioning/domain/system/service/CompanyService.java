@@ -124,6 +124,9 @@ public class CompanyService {
         // 调用 apollo 创建环境
         apolloService.createCluster(company.getCompanyCode());
 
+        // eureka 配置落 apollo 配置中心
+        apolloService.createEurekaItem(company.getCompanyCode());
+
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());
 

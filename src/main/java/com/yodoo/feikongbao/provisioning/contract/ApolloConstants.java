@@ -16,6 +16,13 @@ public interface ApolloConstants {
      **/
     String DB_CONNECTION_NAMESPACE = "application";
 
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Eureka 开始 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    String EUREKA_SERVER_URL = "eureka_server_url";
+
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Eureka 结束 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
     // ################################## mysql 数据库 开始 ##################################
 
     /**

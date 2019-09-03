@@ -150,8 +150,7 @@ public class SwiftProjectService {
      * @param swiftProjectDto
      */
     private void useSwiftProjectParameterCheck(SwiftProjectDto swiftProjectDto) {
-        if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0
-                || StringUtils.isBlank(swiftProjectDto.getIp())) {
+        if (swiftProjectDto == null || swiftProjectDto.getCompanyId() == null || swiftProjectDto.getCompanyId() < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询公司数据是否存在

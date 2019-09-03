@@ -120,7 +120,7 @@ public class DbSchemaService {
      */
     public DbSchemaDto useDbSchema(DbSchemaDto dbSchemaDto) {
         // 参数校验
-        DbSchema dbSchema = useDbSchemaParameterCheck(dbSchemaDto);
+        List<DbSchema> dbSchemaList = useDbSchemaParameterCheck(dbSchemaDto);
 
         // 更新公司表信息
         CompanyDto companyDto = new CompanyDto();
@@ -136,8 +136,10 @@ public class DbSchemaService {
                 CompanyCreationStepsEnum.DATABASE_STEP.getOrder(), CompanyCreationStepsEnum.DATABASE_STEP.getCode());
 
         // 更新 dbSchema 使用状态
-        dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
-        dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
+        dbSchemaList.stream().filter(Objects::nonNull).forEach(dbSchema -> {
+            dbSchema.setStatus(InstanceStatusEnum.USED.getCode());
+            dbSchemaMapper.updateByPrimaryKeySelective(dbSchema);
+        });
 
         // 初始化数据库表  如果返回上一步，待解决确定 String appInstanceName, String releaseVersion
         String jobName = JobNameEnum.getBykey(provisioningDataSourceConfig.provisioningApolloEvn.toUpperCase()).value;
@@ -327,20 +329,32 @@ public class DbSchemaService {
      * @param dbSchemaDto
      * @return
      */
-    private DbSchema useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
-        if (dbSchemaDto == null || dbSchemaDto.getCompanyId() == null || dbSchemaDto.getCompanyId() < 0
-                || dbSchemaDto.getTid() == null || dbSchemaDto.getTid() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
+    private List<DbSchema> useDbSchemaParameterCheck(DbSchemaDto dbSchemaDto) {
+        if (dbSchemaDto == null || dbSchemaDto.getCompanyId() == null || dbSchemaDto.getCompanyId() < 0 || dbSchemaDto.getDbGroupId() == null
+                || dbSchemaDto.getDbGroupId() < 0 || StringUtils.isBlank(dbSchemaDto.getTargetVersion())) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
+        DbGroup dbGroup = dbGroupService.selectByPrimaryKey(dbSchemaDto.getDbGroupId());
+        if (dbGroup == null){
+            throw new ProvisioningException(BundleKey.DB_GROUP_NOT_EXIST, BundleKey.DB_GROUP_NOT_EXIST_MSG);
+        }
         // 查询Schema 数据是否存在，不存在不操作。或是不被使用
-        DbSchema dbSchema = selectByPrimaryKey(dbSchemaDto.getTid());
-        if (dbSchema == null) {
+        List<DbSchema> dbSchemaList = getDbSchemaListByDbGroupId(dbGroup.getId());
+        if (CollectionUtils.isEmpty(dbSchemaList)){
             throw new ProvisioningException(BundleKey.DB_SCHEMA_NOT_EXIST, BundleKey.DB_SCHEMA_NOT_EXIST_MSG);
-        }else if (dbSchema.getStatus().equals(InstanceStatusEnum.USED.getCode())){
+        }
+        Long count = dbSchemaList.stream().filter(Objects::nonNull).filter(dbSchema -> dbSchema.getStatus().equals(InstanceStatusEnum.USED.getCode())).count();
+        if (count != null && count > 0){
             throw new ProvisioningException(BundleKey.DB_SCHEMA_USED, BundleKey.DB_SCHEMA_USED_MSG);
         }
-        // 查询DB数据库组 和 DB实例表 是否为空
-        checkDbGroupAndDbInstanceIsEmpty(dbSchema.getDbGroupId(), dbSchema.getDbInstanceId());
+        dbSchemaList.stream().filter(Objects::nonNull)
+                .forEach(dbSchema -> {
+                    //  查询DB实例表是否存在，不存在不操作
+                    DbInstance dbInstance = dbInstanceService.selectByPrimaryKey(dbSchema.getDbInstanceId());
+                    if (dbInstance == null) {
+                        throw new ProvisioningException(BundleKey.DB_INSTANCE_NOT_EXIST, BundleKey.DB_INSTANCE_NOT_EXIST_MSG);
+                    }
+                });
 
         // 查询公司是否存在，不存在不操作
         Company company = companyService.selectByPrimaryKey(dbSchemaDto.getCompanyId());
@@ -348,8 +362,7 @@ public class DbSchemaService {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         dbSchemaDto.setCompanyCode(company.getCompanyCode());
-        dbSchemaDto.setDbGroupId(dbSchema.getDbGroupId());
-        return dbSchema;
+        return dbSchemaList;
     }
 
     /**

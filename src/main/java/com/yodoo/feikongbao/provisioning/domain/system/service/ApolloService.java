@@ -19,6 +19,7 @@ import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
 import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import com.yodoo.megalodon.datasource.config.EurekaServiceConfig;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import com.yodoo.megalodon.datasource.config.RabbitMqConfig;
 import com.yodoo.megalodon.datasource.config.SwiftConfig;
@@ -78,8 +79,10 @@ public class ApolloService {
     private SwiftConfig swiftConfig;
 
     @Autowired
-    private JdbcCreateDataBaseService jdbcCreateDataBaseService;
+    private EurekaServiceConfig eurekaServiceConfig;
 
+    @Autowired
+    private JdbcCreateDataBaseService jdbcCreateDataBaseService;
 
     /**
      * 创建apollo集群
@@ -103,6 +106,16 @@ public class ApolloService {
         return openApiClient.createCluster(provisioningDataSourceConfig.provisioningApolloAppid,
                 provisioningDataSourceConfig.provisioningApolloEvn, toCreate);
 
+    }
+
+    /**
+     * eureka 配置落 apollo 配置
+     * @param companyCode
+     */
+    public void createEurekaItem(String companyCode) {
+        List<OpenItemDTO> itemDtoList = new ArrayList<>();
+        itemDtoList.add(buildItem(ApolloConstants.EUREKA_SERVER_URL, eurekaServiceConfig.eurekaServerUrl, "eureka 连接地址 "));
+        this.createItems(companyCode, ApolloConstants.DB_CONNECTION_NAMESPACE, itemDtoList);
     }
 
     /**

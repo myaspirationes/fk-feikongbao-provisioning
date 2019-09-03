@@ -15,7 +15,6 @@ import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +47,7 @@ import java.net.URISyntaxException;
 @EnableApolloPortalConfig
 @EnableJenkinsConfig
 @EnableRedisClient
+@EnableEurekaServiceConfig
 public class ProvisioningConfig {
 
     private static Logger logger = LoggerFactory.getLogger(ProvisioningConfig.class);
