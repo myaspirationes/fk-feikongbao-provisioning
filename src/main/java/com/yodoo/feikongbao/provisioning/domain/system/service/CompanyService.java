@@ -121,11 +121,8 @@ public class CompanyService {
         companyCreateProcessService.insertCompanyCreateProcess(company.getId(),
                 CompanyCreationStepsEnum.COMPANY_STEP.getOrder(), CompanyCreationStepsEnum.COMPANY_STEP.getCode());
 
-        // 调用 apollo 创建环境
+        // 调用 apollo 创建环境,eureka 配置落apollo
         apolloService.createCluster(company.getCompanyCode());
-
-        // eureka 配置落 apollo 配置中心
-        apolloService.createEurekaItem(company.getCompanyCode());
 
         // 添加完成，把数据返回，用于下步操作 TODO
         companyDto.setTid(company.getId());

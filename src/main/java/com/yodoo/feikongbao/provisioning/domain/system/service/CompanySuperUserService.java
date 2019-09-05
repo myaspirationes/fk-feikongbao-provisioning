@@ -5,14 +5,13 @@ import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenNamespaceDTO;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.contract.ApolloConstants;
+import com.yodoo.feikongbao.provisioning.domain.system.dto.CompanyDto;
 import com.yodoo.feikongbao.provisioning.domain.system.entity.Company;
-import com.yodoo.feikongbao.provisioning.domain.system.mapper.CompanyMapper;
 import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.CompanyStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.Base64Util;
-import com.yodoo.feikongbao.provisioning.util.RequestPrecondition;
 import com.yodoo.megalodon.datasource.config.ProvisioningDataSourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,6 @@ public class CompanySuperUserService {
     private static Logger logger = LoggerFactory.getLogger(CompanySuperUserService.class);
 
     @Autowired
-    private CompanyMapper companyMapper;
-
-    @Autowired
     private ApolloOpenApiClient openApiClient;
 
     @Autowired
@@ -46,6 +42,9 @@ public class CompanySuperUserService {
 
     @Autowired
     private CompanyCreateProcessService companyCreateProcessService;
+
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 创建超级用户
@@ -56,9 +55,11 @@ public class CompanySuperUserService {
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public void createSuperUser(Integer companyId) {
         logger.info("CompanySuperUserService.createSuperUser companyId:{}", companyId);
-        RequestPrecondition.checkArguments(companyId == null);
+        if (companyId == null || companyId < 0){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
         // 查询公司信息
-        Company company = companyMapper.selectByPrimaryKey(companyId);
+        Company company = companyService.selectByPrimaryKey(companyId);
         if (company == null) {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
@@ -68,8 +69,10 @@ public class CompanySuperUserService {
         companyCreateProcessService.insertCompanyCreateProcess(companyId,
                 CompanyCreationStepsEnum.SUPERUSER_STEP.getOrder(), CompanyCreationStepsEnum.SUPERUSER_STEP.getCode());
         // 更新公司为可用
-        company.setStatus(CompanyStatusEnum.RUNNING.getCode());
-        companyMapper.updateByPrimaryKey(company);
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setTid(company.getId());
+        companyDto.setStatus(CompanyStatusEnum.RUNNING.getCode());
+        companyService.updateCompany(companyDto);
     }
 
     private void addSuperUser(Company company) {
@@ -87,7 +90,16 @@ public class CompanySuperUserService {
         }
         for (OpenItemDTO itemDTO : namespace.getItems()) {
             if (itemDTO.getKey().equalsIgnoreCase(ApolloConstants.COMPANY_DB_CONNECTION_URL)) {
-                url = itemDTO.getValue();
+                String mysqlUrl = itemDTO.getValue();
+                String[] split = mysqlUrl.split("//");
+                String ipAndPort = split[1];
+                if (ipAndPort.contains(",")){
+                    String[] split1 = ipAndPort.split(",");
+                    url = "jdbc:mysql://"+ split1[0] + "/" + company.getCompanyCode() + "?useUnicode=true&characterEncoding=utf-8";
+                }else {
+                    String[] split1 = ipAndPort.split("/");
+                    url = "jdbc:mysql://"+ split1[0] + "/" + company.getCompanyCode() + "?useUnicode=true&characterEncoding=utf-8";
+                }
                 continue;
             }
             if (itemDTO.getKey().equalsIgnoreCase(ApolloConstants.COMPANY_DB_CONNECTION_USER)) {
@@ -95,7 +107,7 @@ public class CompanySuperUserService {
                 continue;
             }
             if (itemDTO.getKey().equalsIgnoreCase(ApolloConstants.COMPANY_DB_CONNECTION_PASSWORD)) {
-                password = Base64Util.base64Encoder(itemDTO.getValue());
+                password = Base64Util.base64Decoder(itemDTO.getValue());
                 continue;
             }
         }
@@ -115,7 +127,7 @@ public class CompanySuperUserService {
             ResultSet resultSet = stat.executeQuery();
             // 结果集处理
             if (resultSet == null || !resultSet.next()) {
-                sql = "insert into user_object(user_login_id, user_name) values (?,?,?)";
+                sql = "insert into user_object(user_login_id, user_name) values (?,?)";
                 stat = con.prepareStatement(sql);
                 stat.setString(1, "admin");
                 stat.setString(2, company.getCompanyName());

@@ -124,7 +124,7 @@ public class EcsInstance extends BaseEntity {
     /**
      * 是否要自动续费，0：不自动续费 1：自动续费
      **/
-    private Byte autoRenew;
+    private Integer autoRenew;
 
     /**
      * 实例的付费方式，PrePaid：预付费，包年包月，PostPaid（默认）：按量付费
@@ -323,11 +323,11 @@ public class EcsInstance extends BaseEntity {
         this.period = period;
     }
 
-    public Byte getAutoRenew() {
+    public Integer getAutoRenew() {
         return autoRenew;
     }
 
-    public void setAutoRenew(Byte autoRenew) {
+    public void setAutoRenew(Integer autoRenew) {
         this.autoRenew = autoRenew;
     }
 

@@ -23,7 +23,7 @@ CREATE TABLE `ecs_instance` (
   `auto_release_time` varchar(50)  DEFAULT '' COMMENT '自动释放时间（按量）',
   `internet_charge_type` varchar(50)  DEFAULT '' COMMENT '网络计费类型，PayByBandwidth：按固定带宽计费，PayByTraffic（默认）：按使用流量计费',
   `period` int(4)  DEFAULT 0 COMMENT '购买资源的时长',
-  `auto_renew` tinyint(1)  DEFAULT 0 COMMENT '是否要自动续费，0：不自动续费 1：自动续费',
+  `auto_renew` int(1)  DEFAULT 0 COMMENT '是否要自动续费，0：不自动续费 1：自动续费',
   `instance_charge_type` varchar(50)  DEFAULT '' COMMENT '实例的付费方式，PrePaid：预付费，包年包月，PostPaid（默认）：按量付费',
   `status` int(1) NOT NULL DEFAULT '0' COMMENT '状态，0什么都没做，1 准备中：Pending，2 启动中：Starting，3 运行中：Running，4 停止中：Stopping，5 已停止：Stopped，6 释放：deleted',
   `period_unit` varchar(50)  DEFAULT '' COMMENT '购买资源的时长，Week Month',

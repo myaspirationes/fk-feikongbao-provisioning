@@ -2,8 +2,10 @@ package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.jcraft.jsch.Session;
 import com.yodoo.feikongbao.provisioning.common.dto.PageInfoDto;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
+import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.Neo4jInstanceDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.Neo4jInstance;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.Neo4jInstanceMapper;
@@ -17,6 +19,9 @@ import com.yodoo.feikongbao.provisioning.enums.InstanceStatusEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
 import com.yodoo.feikongbao.provisioning.util.Base64Util;
+import com.yodoo.feikongbao.provisioning.util.SshUtils;
+import com.yodoo.megalodon.datasource.config.Neo4jConfig;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,6 +56,9 @@ public class Neo4jInstanceService {
 
     @Autowired
     private ApolloService apolloService;
+
+    @Autowired
+    private Neo4jConfig neo4jConfig;
 
     /**
      * 条件分页查询
@@ -125,6 +134,9 @@ public class Neo4jInstanceService {
 
         // 参数校验
         Neo4jInstance neo4jInstance = useNeo4jInstanceParameterCheck(neo4jInstanceDto);
+        // 创建 neo4j 账号
+        neo4jSshCreateUser(neo4jInstance);
+
         // 更新选择使用的neo4j数据
         neo4jInstanceMapper.updateByPrimaryKeySelective(neo4jInstance);
 
@@ -139,10 +151,66 @@ public class Neo4jInstanceService {
                 CompanyCreationStepsEnum.NEO4J_STEP.getOrder(), CompanyCreationStepsEnum.NEO4J_STEP.getCode());
 
         // 创建工作流配置到apollo TODO
-        apolloService.createNeo4j(neo4jInstanceDto.getNeo4jName());
+        apolloService.createNeo4j(neo4jInstance);
 
         return neo4jInstanceDto;
 
+    }
+
+    /**
+     * neo4j 创建 账号:
+     * 查询账号： echo "CALL dbms.security.listUsers();" |  /opt/neo4j-enterprise-3.4.5/bin/cypher-shell  -u neo4j -p yodoo123   -a bolt://dev.feikongbao.cn:7687 | grep 'jinjun009'
+     * 创建账号： echo "CALL dbms.security.createUser('myuser','mypassword',false);" |  /opt/neo4j-enterprise-3.4.5/bin/cypher-shell  -u neo4j -p yodoo123 -a bolt://dev.feikongbao.cn:7687
+     * 赋予角色： echo "CALL dbms.security.addRoleToUser('architect','myuser');" |  /opt/neo4j-enterprise-3.4.5/bin/cypher-shell  -u neo4j -p yodoo123 -a bolt://dev.feikongbao.cn:7687 | | grep 'myUsername'
+     * @param neo4jInstance
+     */
+    public void neo4jSshCreateUser(Neo4jInstance neo4jInstance) {
+        if (neo4jInstance == null || StringUtils.isBlank(neo4jInstance.getUrl()) || StringUtils.isBlank(neo4jInstance.getInitialUsername())
+                || StringUtils.isBlank(neo4jInstance.getInitialPassword()) || StringUtils.isBlank(neo4jInstance.getNeo4jName())){
+            throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
+        }
+        // 密码用随机12位明文
+        String randomPassword = RandomStringUtils.random(12, ProvisioningConstants.RANDOM_PASSWORD);
+        // 落 apollo 配置用 密码用随机12位base64加加密
+        neo4jInstance.setPassword(Base64Util.base64Encoder(randomPassword));
+        String neo4jUrl = neo4jInstance.getUrl();
+        List<String> urlSplit = Arrays.asList(neo4jUrl.split(","));
+        Session shellSession = null;
+        try {
+            String password = Base64Util.base64Decoder(neo4jConfig.neo4jCreateAccountSshPassword);
+            SshUtils.DestHost host = new SshUtils.DestHost(neo4jConfig.neo4jCreateAccountSshIp, neo4jConfig.neo4jCreateAccountSshPort, neo4jConfig.neo4jCreateAccountSshUsername, password);
+            shellSession = SshUtils.getJschSession(host);
+            for (String ip : urlSplit) {
+                String[] ipAndPort = ip.split(":");
+                // 先查询账号是否存在，不存在创建
+                String selectAccount = getSelectAccount(ipAndPort, neo4jInstance);
+                if (shellSession == null){
+                    shellSession = SshUtils.getJschSession(host);
+                }
+                String account = SshUtils.execCommandByJsch(shellSession, selectAccount, "UTF-8");
+                if (StringUtils.isBlank(account)){
+                    // 创建账号
+                    String createUserSsh = getCreateUserSsh(ipAndPort, neo4jInstance, randomPassword);
+                    if (shellSession == null){
+                        shellSession = SshUtils.getJschSession(host);
+                    }
+                    SshUtils.execCommandByJsch(shellSession, createUserSsh);
+                    // 给账号赋予角色
+                    String addRoleToUserSsh = getAddRoleToUserSsh(ipAndPort, neo4jInstance);
+                    if (shellSession == null){
+                        shellSession = SshUtils.getJschSession(host);
+                    }
+                    SshUtils.execCommandByJsch(shellSession, addRoleToUserSsh);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ProvisioningException(BundleKey.NEO4J_CREATE_ACCOUNT, BundleKey.NEO4J_CREATE_ACCOUNT_MSG);
+        }finally {
+            if (shellSession != null){
+                SshUtils.closeJsChSession(shellSession);
+            }
+        }
     }
 
     /**
@@ -163,6 +231,82 @@ public class Neo4jInstanceService {
         }
         return neo4jInstanceMapper.deleteByPrimaryKey(id);
     }
+
+    /**
+     * 查询账号
+     * @param ipAndPort
+     * @param neo4jInstance
+     * @return
+     */
+    private String getSelectAccount(String[] ipAndPort, Neo4jInstance neo4jInstance) {
+        StringBuilder selectCount = new StringBuilder();
+        selectCount.append("echo "+'"'+"CALL dbms.security.listUsers();"+'"'+" | ");
+        selectCount.append(neo4jConfig.neo4jCreateAccountSshUrl);
+        selectCount.append(" -u ");
+        selectCount.append(neo4jInstance.getInitialUsername());
+        selectCount.append(" -p ");
+        selectCount.append(neo4jInstance.getInitialPassword());
+        selectCount.append(" -a bolt://");
+        selectCount.append(ipAndPort[0]);
+        selectCount.append(":");
+        selectCount.append(ipAndPort[1]);
+        selectCount.append(" | grep '");
+        selectCount.append(neo4jInstance.getNeo4jName());
+        selectCount.append("'");
+        return selectCount.toString();
+    }
+
+    /**
+     * 赋予角色
+     * @param ipAndPort
+     * @param neo4jInstance
+     * @return
+     */
+    private String getAddRoleToUserSsh(String[] ipAndPort, Neo4jInstance neo4jInstance) {
+        StringBuilder addRoleToUserSsh = new StringBuilder();
+        addRoleToUserSsh.append("echo "+'"'+"CALL dbms.security.addRoleToUser('");
+        addRoleToUserSsh.append(neo4jConfig.neo4jCreateRoleName);
+        addRoleToUserSsh.append("','");
+        addRoleToUserSsh.append(neo4jInstance.getNeo4jName());
+        addRoleToUserSsh.append("');"+'"'+" | ");
+        addRoleToUserSsh.append(neo4jConfig.neo4jCreateAccountSshUrl);
+        addRoleToUserSsh.append(" -u ");
+        addRoleToUserSsh.append(neo4jInstance.getInitialUsername());
+        addRoleToUserSsh.append(" -p ");
+        addRoleToUserSsh.append(neo4jInstance.getInitialPassword());
+        addRoleToUserSsh.append(" -a bolt://");
+        addRoleToUserSsh.append(ipAndPort[0]);
+        addRoleToUserSsh.append(":");
+        addRoleToUserSsh.append(ipAndPort[1]);
+        return addRoleToUserSsh.toString();
+    }
+
+    /**
+     * 创建账号
+     * @param ipAndPort
+     * @param neo4jInstance
+     * @param randomPassword
+     * @return
+     */
+    private String getCreateUserSsh(String[] ipAndPort, Neo4jInstance neo4jInstance, String randomPassword) {
+        StringBuilder createUserSsh = new StringBuilder();
+        createUserSsh.append("echo "+'"'+"CALL dbms.security.createUser('");
+        createUserSsh.append(neo4jInstance.getNeo4jName());
+        createUserSsh.append("','");
+        createUserSsh.append(randomPassword);
+        createUserSsh.append("',false);"+'"'+" | ");
+        createUserSsh.append(neo4jConfig.neo4jCreateAccountSshUrl);
+        createUserSsh.append(" -u ");
+        createUserSsh.append(neo4jInstance.getInitialUsername());
+        createUserSsh.append(" -p ");
+        createUserSsh.append(neo4jInstance.getInitialPassword());
+        createUserSsh.append(" -a bolt://");
+        createUserSsh.append(ipAndPort[0]);
+        createUserSsh.append(":");
+        createUserSsh.append(ipAndPort[1]);
+       return createUserSsh.toString();
+    }
+
 
     /**
      * 修改参数校验
@@ -233,9 +377,9 @@ public class Neo4jInstanceService {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
         neo4jInstance.setUsername(company.getCompanyCode());
-        neo4jInstance.setPassword(Base64Util.base64Encoder(company.getCompanyCode()));
         neo4jInstance.setNeo4jName(company.getCompanyCode());
         neo4jInstance.setStatus(InstanceStatusEnum.USED.getCode());
+        neo4jInstance.setInitialPassword(Base64Util.base64Decoder(neo4jInstance.getInitialPassword()));
         neo4jInstanceDto.setNeo4jName(company.getCompanyCode());
         return neo4jInstance;
     }

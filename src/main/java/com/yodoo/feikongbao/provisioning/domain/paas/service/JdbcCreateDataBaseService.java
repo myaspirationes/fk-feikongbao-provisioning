@@ -1,5 +1,6 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.service;
 
+import com.yodoo.feikongbao.provisioning.contract.ProvisioningConstants;
 import com.yodoo.feikongbao.provisioning.domain.paas.dto.CreateDataBaseDto;
 import com.yodoo.feikongbao.provisioning.enums.DefaultDataBaseEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
@@ -48,7 +49,7 @@ public class JdbcCreateDataBaseService {
 
             // 创建用户
             String newUsername = companyCode;
-            String newPassword = RandomStringUtils.random(12);
+            String newPassword = RandomStringUtils.random(12, ProvisioningConstants.RANDOM_PASSWORD);
 
             // 刷新权限
             stat.execute("FLUSH PRIVILEGES");

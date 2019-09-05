@@ -27,7 +27,7 @@
         <result column="auto_release_time" jdbcType="VARCHAR" property="autoReleaseTime"/>
         <result column="internet_charge_type" jdbcType="VARCHAR" property="internetChargeType"/>
         <result column="period" jdbcType="INTEGER" property="period"/>
-        <result column="auto_renew" jdbcType="TINYINT" property="autoRenew"/>
+        <result column="auto_renew" jdbcType="INTEGER" property="autoRenew"/>
         <result column="instance_charge_type" jdbcType="VARCHAR" property="instanceChargeType"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="period_unit" jdbcType="VARCHAR" property="periodUnit"/>

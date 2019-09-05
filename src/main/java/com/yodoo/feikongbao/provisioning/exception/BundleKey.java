@@ -223,6 +223,12 @@ public interface BundleKey {
     String NEO4J_INSTANCE_ALREADY_USED_MSG = "neo4jInstance 已被使用";
 
     /**
+     * neo4j 创建 neo4j 异常
+     **/
+    String NEO4J_CREATE_ACCOUNT = PAAS_PREFIX + "neo4j.create.account";
+    String NEO4J_CREATE_ACCOUNT_MSG = "创建 neo4j 账号异常";
+
+    /**
      * redisInstance 已被使用
      **/
     String REDIS_INSTANCE_USED = PAAS_PREFIX + "REDIS.INSTANCE.USED";
@@ -307,6 +313,43 @@ public interface BundleKey {
     String ECS_NOT_EXIST_MSG = "ecs实例不存在";
 
     /**
+     * jenkins 上的 job 不存在
+     **/
+    String JENKINS_JOB_NAME_NOT_EXIST = PAAS_PREFIX + "jenkins.job.name.not.exist";
+    String JENKINS_JOB_NAME_NOT_EXIST_MSG = "jenkins 上的 job 不存在";
+
+    /**
+     * ECS已存在
+     **/
+    String ECS_ALREADY_EXIST = PAAS_PREFIX + "ECS.ALREADY.EXIST";
+    String ECS_ALREADY_EXIST_MSG = "ecs实例已存在";
+
+
+    /**
+     * ECS 还在使用
+     **/
+    String ECS_IS_USE = PAAS_PREFIX + "ECS.IS.USE";
+    String ECS_IS_USE_MSG = "ecs 还在使用";
+
+    /**
+     * ECS template 还在使用
+     **/
+    String ECS_TEMPLATE_IS_USE = PAAS_PREFIX + "ECS.TEMPLATE.IS.USE";
+    String ECS_TEMPLATE_IS_USE_MSG = "ecs 模板还在使用";
+
+    /**
+     * ECS template 不存在
+     **/
+    String ECS_TEMPLATE_NO_EXIST = PAAS_PREFIX + "ECS.TEMPLATE.NO.EXIST";
+    String ECS_TEMPLATE_NO_EXIST_MSG = "ecs 模板不存在";
+
+    /**
+     * ECS template 已存在
+     **/
+    String ECS_TEMPLATE_ALREADY_EXIST = PAAS_PREFIX + "ECS.TEMPLATE.ALREADY.EXIST";
+    String ECS_TEMPLATE_ALREADY_EXIST_MSG = "ecs 模板已存在";
+
+    /**
      *  User 用户已存在
      **/
     String USER_ALREADY_EXIST = PAAS_PREFIX + "USER.ALREADY.EXIST";
@@ -346,5 +389,48 @@ public interface BundleKey {
     String DB_CREATE_ERROR = PAAS_PREFIX + "DB.CREATE.ERROR";
     String DB_CREATE_ERROR_MSG = "数据库创建失败";
 
+    /** 请求阿里服务异常 **/
+    String ALI_CALL_ERROR = PAAS_PREFIX + "ALI.CAL.ERROR";
+    String ALI_CALL_ERROR_MSG = "阿里服务请求异常";
+
+    /** 虚拟机实例创建异常 **/
+    String VIRTUAL_CREATE_ERROR = PAAS_PREFIX + "VIRTUAL.CREATE.ERROR";
+    String VIRTUAL_CREATE_ERROR_MSG = "虚拟机实例创建失败";
+
+    /** 虚拟机实例释放异常 **/
+    String VIRTUAL_DELETE_ERROR = PAAS_PREFIX + "VIRTUAL.DELETE.ERROR";
+    String VIRTUAL_DELETE_ERROR_MSG = "虚拟机实例释放失败";
+
+    /**  虚拟机不存在 **/
+    String NO_INSTANCE_ERROR = PAAS_PREFIX + "NO.INSTANCE";
+    String NO_INSTANCE_ERROR_MSG = "虚拟机实例不存在";
+
+    /** 系统盘不存在 **/
+    String SYSTEM_DISK_NO_EXIST_ERROR = PAAS_PREFIX + "SYSTEM.DISK.NO.EXIST";
+    String SYSTEM_DISK_NO_EXIST_ERROR_MSG = "系统盘不存在";
+
+    /** 扩容系统盘大小超过阿里最大默认 500 G  **/
+    String SYSTEM_DISK_SIZE_ERROR = PAAS_PREFIX + "SYSTEM.DISK.SIZE.ERROR";
+    String SYSTEM_DISK_SIZE_ERROR_MSG = "扩容系统盘大小超过阿里最大默认 500 G";
+
+    /** 系统盘扩容失败 **/
+    String SYSTEM_REDIZE_DISK_SIZE_ERROR = PAAS_PREFIX + "SYSTEM.REDIZE.DISK.SIZE.ERROR";
+    String SYSTEM_REDIZE_DISK_SIZE_ERROR_MSG = "系统盘扩容失败";
+
+    /** 实例状态无法满足扩容 **/
+    String INSTANCE_STATUS_NO_RUNNING_AND_STOPPED_ERROR = PAAS_PREFIX + "INSTANCE.STATUS.NO.RUNNING.AND.STOPPED";
+    String INSTANCE_STATUS_NO_RUNNING_AND_STOPPED_ERROR_MSG = "实例状态无法满足扩容";
+
+    /** 实例内网ip不存在 **/
+    String INSTANCE_PRIVATEIP_NOT_EXIST = PAAS_PREFIX + "INSTANCE.PRIVATEIP.NOT.EXIST";
+    String INSTANCE_PRIVATEIP_NOT_EXIST_MSG = "实例内网ip不存在";
+
+    /** 虚拟机指标名称不存在  **/
+    String METRIC_NAME_NO_EXIST_ERROR = PAAS_PREFIX + "METRIC_NAME.NO.EXIST";
+    String METRIC_NAME_NO_EXIST_ERROR_MSG = "虚拟机指标名称不存在";
+
+    /**  没有对应的虚拟机类型的实例 **/
+    String NO_ECS_TYPE_INSTANCE_ERROR = PAAS_PREFIX + "NO.ECS.TYPE.INSTANCE";
+    String NO_ECS_TYPE_INSTANCE_ERROR_MSG = "没有对应的虚拟机类型的实例";
 
 }

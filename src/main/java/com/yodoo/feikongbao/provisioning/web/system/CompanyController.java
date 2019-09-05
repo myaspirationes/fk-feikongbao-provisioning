@@ -18,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @Description ：公司管理
@@ -204,13 +203,13 @@ public class CompanyController {
     /**
      * 第七步：部署的项目
      *
-     * @param projectList
+     * @param publishProjectDto
      * @return
      */
     @RequestMapping(value = "/createPublishProjects", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public ProvisioningDto<?> createPublishProjects(List<PublishProjectDto> projectList) {
-        publishProjectService.createPublishProjects(projectList);
+    public ProvisioningDto<?> createPublishProjects(@RequestBody PublishProjectDto publishProjectDto) {
+        publishProjectService.createPublishProjects(publishProjectDto);
         return new ProvisioningDto<>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 

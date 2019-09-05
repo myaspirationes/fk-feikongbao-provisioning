@@ -10,7 +10,6 @@ import com.yodoo.feikongbao.provisioning.domain.paas.dto.CreateDataBaseDto;
 import com.yodoo.feikongbao.provisioning.domain.paas.entity.*;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.DbSchemaMapper;
-import com.yodoo.feikongbao.provisioning.domain.paas.mapper.Neo4jInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.paas.mapper.RedisInstanceMapper;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.JdbcCreateDataBaseService;
 import com.yodoo.feikongbao.provisioning.domain.paas.service.MqVhostService;
@@ -64,9 +63,6 @@ public class ApolloService {
     private RedisInstanceMapper redisInstanceMapper;
 
     @Autowired
-    private Neo4jInstanceMapper neo4jInstanceMapper;
-
-    @Autowired
     private SwiftProjectService swiftProjectService;
 
     @Autowired
@@ -103,9 +99,12 @@ public class ApolloService {
         OpenClusterDTO toCreate = new OpenClusterDTO();
         toCreate.setName(companyCode);
         toCreate.setDataChangeCreatedBy(ApolloConstants.OPERATE);
-        return openApiClient.createCluster(provisioningDataSourceConfig.provisioningApolloAppid,
+        OpenClusterDTO cluster = openApiClient.createCluster(provisioningDataSourceConfig.provisioningApolloAppid,
                 provisioningDataSourceConfig.provisioningApolloEvn, toCreate);
 
+        // eureka 配置落 apollo 配置中心
+        createEurekaItem(companyCode);
+        return cluster;
     }
 
     /**
@@ -226,17 +225,12 @@ public class ApolloService {
 
     /**
      * 创建 neo4j 到apollo
-     * @param companyCode
+     * @param neo4jInstance
      */
-    public void createNeo4j(String companyCode) {
+    public void createNeo4j(Neo4jInstance neo4jInstance) {
         // 检查公司是否存在
-        Company company = this.checkCompany(companyCode);
+        Company company = this.checkCompany(neo4jInstance.getNeo4jName());
         if (company.getNeo4jInstanceId() == null || company.getNeo4jInstanceId() < 0){
-            throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
-        }
-        // neo4j是否存在
-        Neo4jInstance neo4jInstance = neo4jInstanceMapper.selectByPrimaryKey(company.getNeo4jInstanceId());
-        if (neo4jInstance == null){
             throw new ProvisioningException(BundleKey.NEO4J_INSTANCE_NOT_EXIST, BundleKey.NEO4J_INSTANCE_NOT_EXIST_MSG);
         }
         // 封装参数
@@ -246,7 +240,7 @@ public class ApolloService {
         itemDtoList.add(buildItem(ApolloConstants.NEO4J_PASSWORD, neo4jInstance.getPassword(), "neo4j 密码"));
 
         // 创建
-        this.createItems(companyCode, ApolloConstants.DB_CONNECTION_NAMESPACE, itemDtoList);
+        this.createItems(neo4jInstance.getNeo4jName(), ApolloConstants.DB_CONNECTION_NAMESPACE, itemDtoList);
     }
 
     /**

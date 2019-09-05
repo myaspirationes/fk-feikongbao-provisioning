@@ -25,4 +25,9 @@ public interface ProvisioningConstants {
      * 电话号码长度
      */
     Integer PHONE_LENGTH = 11;
+
+    /**
+     * 随机密码
+     */
+    String RANDOM_PASSWORD = "1234567890abcdefghijklmnopqrstuvwsxyzABCDEFGHIJKLMNOPQRSTUVWSXYZ";
 }

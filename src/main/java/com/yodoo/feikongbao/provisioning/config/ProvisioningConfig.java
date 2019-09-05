@@ -48,6 +48,7 @@ import java.net.URISyntaxException;
 @EnableJenkinsConfig
 @EnableRedisClient
 @EnableEurekaServiceConfig
+@EnableNeo4jConfig
 public class ProvisioningConfig {
 
     private static Logger logger = LoggerFactory.getLogger(ProvisioningConfig.class);
