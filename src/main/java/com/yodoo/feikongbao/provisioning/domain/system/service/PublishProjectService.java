@@ -112,13 +112,14 @@ public class PublishProjectService {
         List<PublishProject> publishProjectList = this.getPublishProjectByCompanyId(companyId);
         if (!CollectionUtils.isEmpty(publishProjectList)) {
             Map<String, PublishProject> jobNameMap = new HashMap<>(16);
+
             publishProjectList.stream()
                     .filter(Objects::nonNull)
                     .forEach(publishProject -> {
                         this.buildJob(publishProject);
-                        // TODO jobName此处需要修改
-                        jobNameMap.put(jenkinsConfig.jenkinsBuildJobName, publishProject);
+                        jobNameMap.put(publishProject.getProjectName(), publishProject);
                     });
+
             // 查询项目是否发布完成
             this.checkJobStatus(jobNameMap);
         }
@@ -235,6 +236,8 @@ public class PublishProjectService {
     /**
      * TODO 此发布方法需要修改
      *  http://jenkins.ut.feikongbao.cn/view/ci-megalodon-master/job/provision/buildWithParameters --user dev:yodoo123 -d IP=172.19.73.30&campany_name=default_company
+     *  curl -XPOST http://jenkins.ut.feikongbao.cn/view/dev/job/provision_messaging/buildWithParameters --user dev:yodoo123 -d IP=172.19.73.30&campany_name=default_company
+     * 执行这个会在devapp上跑 email服务，7777端口
      * @param publishProject
      * @return
      */
@@ -243,7 +246,6 @@ public class PublishProjectService {
         parameters.put("Authorization", "Basic " + Base64Util.base64Encoder(jenkinsConfig.jenkinsUsername + ":" + jenkinsConfig.jenkinsPassword));
 
         parameters.put("IP", publishProject.getIp());
-        // TODO 不同的项目，需要不同的job
         return jenkinsUtils.buildJobWithParameters(publishProject.getProjectName(), parameters);
     }
 
