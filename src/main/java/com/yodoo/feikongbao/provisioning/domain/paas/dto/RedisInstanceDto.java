@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description ：redis 实例
@@ -12,31 +13,37 @@ public class RedisInstanceDto extends BaseDto {
     /**
      * redis组id
      **/
+    @ApiModelProperty(value = "redis 组 数据库自增 id", required = true, example = "1", position = 1)
     private Integer redisGroupId;
 
     /**
      * IP
      **/
+    @ApiModelProperty(value = "IP", required = true, example = "127.0.0.1", position = 2)
     private String ip;
 
     /**
      * 端口
      **/
+    @ApiModelProperty(value = "端口", required = true, example = "8080", position = 3)
     private Integer port;
 
     /**
      * 用户名
      **/
+    @ApiModelProperty(value = "用户名", required = true, example = "test", position = 4)
     private String username;
 
     /**
      * 密码
      **/
+    @ApiModelProperty(value = "密码", required = true, example = "test", position = 5)
     private String password;
 
     /**
      * 实例类型，0：主，1：从
      **/
+    @ApiModelProperty(value = "实例类型，0：主，1：从", required = true, example = "0", position = 6)
     private Integer type;
 
     /**
@@ -46,16 +53,19 @@ public class RedisInstanceDto extends BaseDto {
      * 2 运行中：Running
      * 3 已停止：Stopped
      */
+    @ApiModelProperty(value = "状态 0 未被使用, 1 已被使用, 2 运行中：Running, 3 已停止：Stopped", required = false, example = "0", position = 7)
     private Integer status;
 
     /**
      * 公司id
      **/
+    @ApiModelProperty(value = "公司id", required = false, example = "test_group", position = 8)
     private Integer companyId;
 
     /**
      * 公司Code
      **/
+    @ApiModelProperty(value = "公司Code", required = false, example = "test_group", position = 9)
     private String companyCode;
 
     public Integer getRedisGroupId() {

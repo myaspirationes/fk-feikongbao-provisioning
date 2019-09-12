@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -12,18 +13,21 @@ import java.util.List;
 public class RedisGroupDto extends BaseDto {
 
     /**
-     * 组code
+     * redis 组 code
      **/
+    @ApiModelProperty(value = "redis 组 code", required = true, example = "test_group", position = 1)
     private String groupCode;
 
     /**
-     * 组名称
+     * redis 组名称
      **/
+    @ApiModelProperty(value = "redis 组名称", required = true, example = "test_group", position = 2)
     private String groupName;
 
     /**
      * redis 实例
      **/
+    @ApiModelProperty(hidden = true)
     private List<RedisInstanceDto> redisInstanceDtoList;
 
     public String getGroupCode() {

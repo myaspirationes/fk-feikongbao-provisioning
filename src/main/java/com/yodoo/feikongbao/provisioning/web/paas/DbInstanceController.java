@@ -8,6 +8,11 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +26,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping(value = "/dbInstance")
+@Api(tags = "DbInstanceController | db 实例")
 public class DbInstanceController {
 
     @Autowired
@@ -28,13 +34,31 @@ public class DbInstanceController {
 
     /**
      * 条件分页查询
-     *
-     * @param dbInstanceDto
+     * @param pageNum
+     * @param pageSize
+     * @param ip
+     * @param port
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10"),
+            @ApiImplicitParam(name = "ip", value = "db实例ip地址", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "port", value = "db实例端口号", required = false, dataType = "String", paramType = "query")
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('db_manage')")
-    public ProvisioningDto<?> queryDbInstanceList(DbInstanceDto dbInstanceDto) {
+    public ProvisioningDto<?> queryDbInstanceList(int pageNum, int pageSize, String ip, String port) {
+        DbInstanceDto dbInstanceDto =  new DbInstanceDto();
+        dbInstanceDto.setPageNum(pageNum);
+        dbInstanceDto.setPageSize(pageSize);
+        if (StringUtils.isNotBlank(ip)){
+            dbInstanceDto.setIp(ip);
+        }
+        if (StringUtils.isNotBlank(port)){
+            dbInstanceDto.setIp(port);
+        }
         PageInfoDto<DbInstanceDto> pageInfoDto = dbInstanceService.queryDbInstanceList(dbInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), DbInstanceController.class);
@@ -49,6 +73,8 @@ public class DbInstanceController {
      * @param dbInstanceDto
      * @return
      */
+    @ApiOperation(value = "添加db实例", httpMethod = "POST")
+    @ApiImplicitParam(name = "dbInstanceDto", value = "db实例 dbInstanceDto", required = true, dataType = "DbInstanceDto")
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> addDbInstance(@RequestBody DbInstanceDto dbInstanceDto){
@@ -61,6 +87,8 @@ public class DbInstanceController {
      * @param dbInstanceDto
      * @return
      */
+    @ApiOperation(value = "修改db实例", httpMethod = "PUT")
+    @ApiImplicitParam(name = "dbInstanceDto", value = "db实例 dbInstanceDto", required = true, dataType = "DbInstanceDto")
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> editDbInstance(@RequestBody DbInstanceDto dbInstanceDto){
@@ -73,6 +101,8 @@ public class DbInstanceController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "删除db实例", httpMethod = "PUT")
+    @ApiImplicitParam(name = "id", value = "数据库自增 id", paramType="path",required = true, dataType = "integer", example = "0")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> deleteDbInstance(@PathVariable Integer id){

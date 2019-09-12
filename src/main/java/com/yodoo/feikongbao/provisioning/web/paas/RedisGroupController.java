@@ -8,6 +8,11 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +26,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping(value = "/redisGroup")
+@Api(tags = "RedisGroupController | redis 数据库实例组")
 public class RedisGroupController {
 
     @Autowired
@@ -28,13 +34,31 @@ public class RedisGroupController {
 
     /**
      * 条件分页查询
-     *
-     * @param redisGroupDto
+     * @param pageNum
+     * @param pageSize
+     * @param groupCode
+     * @param groupName
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10"),
+            @ApiImplicitParam(name = "groupCode", value = "redis 组编号 ", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "groupName", value = "redis 组名称", required = false, dataType = "String", paramType = "query")
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
-    public ProvisioningDto<?> queryRedisGroupList(RedisGroupDto redisGroupDto) {
+    public ProvisioningDto<?> queryRedisGroupList(int pageNum, int pageSize, String groupCode, String groupName) {
+        RedisGroupDto redisGroupDto = new RedisGroupDto();
+        redisGroupDto.setPageNum(pageNum);
+        redisGroupDto.setPageSize(pageSize);
+        if (StringUtils.isNotBlank(groupCode)){
+            redisGroupDto.setGroupCode(groupCode);
+        }
+        if (StringUtils.isNotBlank(groupName)){
+            redisGroupDto.setGroupName(groupName);
+        }
         PageInfoDto<RedisGroupDto> pageInfoDto = redisGroupService.queryRedisGroupList(redisGroupDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), RedisGroupController.class);
@@ -48,6 +72,8 @@ public class RedisGroupController {
      * 添加
      * @return
      */
+    @ApiOperation(value = "添加 redis 组", httpMethod = "POST")
+    @ApiImplicitParam(name = "redisGroupDto", value = "redis 组 redisGroupDto", required = true, dataType = "RedisGroupDto")
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
    public ProvisioningDto<?> addRedisGroup(@RequestBody RedisGroupDto redisGroupDto){
@@ -59,6 +85,8 @@ public class RedisGroupController {
      * 更新
      * @return
      */
+    @ApiOperation(value = "更新 redis 组", httpMethod = "PUT")
+    @ApiImplicitParam(name = "redisGroupDto", value = "redis 组 redisGroupDto", required = true, dataType = "RedisGroupDto")
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
    public ProvisioningDto<?> editRedisGroup(@RequestBody RedisGroupDto redisGroupDto){
@@ -70,6 +98,8 @@ public class RedisGroupController {
      * 删除
      * @return
      */
+    @ApiOperation(value = "删除 redis 组", httpMethod = "DELETE")
+    @ApiImplicitParam(name = "id", value = "redis 组 数据库自增 id", required = true, dataType = "Integer", example = "0")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
    public ProvisioningDto<?> deleteRedisGroup(@PathVariable Integer id){
@@ -83,6 +113,8 @@ public class RedisGroupController {
      * @param id
      * @return
      */
+   @ApiOperation(value = "查询 redis 组 详情", httpMethod = "POST")
+   @ApiImplicitParam(name = "id", value = "redis 组 数据库自增 id", required = true, dataType = "Integer", example = "1")
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getRedisGroupDetails(@PathVariable Integer id) {

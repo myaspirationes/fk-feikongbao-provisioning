@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.system.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description ：功能模块
@@ -12,21 +13,25 @@ public class FunctionModuleDto extends BaseDto {
     /**
      * 父类id
      **/
+    @ApiModelProperty(value = "父类id", required = false, example = "1", position = 1)
     private Integer parentId;
 
     /**
      * 功能模块名称
      **/
+    @ApiModelProperty(value = "功能模块名称", required = true, example = "test_name", position = 2)
     private String name;
 
     /**
      * 描述
      **/
+    @ApiModelProperty(value = "描述", required = true, example = "test_description", position = 3)
     private String description;
 
     /**
      * 序号
      **/
+    @ApiModelProperty(value = "序号", required = true, example = "test_order_no", position = 4)
     private String orderNo;
 
     public Integer getParentId() {

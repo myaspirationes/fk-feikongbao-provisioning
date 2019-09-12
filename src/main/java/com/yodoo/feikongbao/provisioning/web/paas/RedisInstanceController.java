@@ -8,6 +8,10 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping(value = "/redisInstance")
+@Api(tags = "RedisInstanceController | redis 实例")
 public class RedisInstanceController {
 
     @Autowired
@@ -28,13 +33,31 @@ public class RedisInstanceController {
 
     /**
      * 条件分页查询
-     *
-     * @param redisInstanceDto
+     * @param pageNum
+     * @param pageSize
+     * @param redisGroupId
+     * @param type
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10"),
+            @ApiImplicitParam(name = "redisGroupId", value = "redis 组数据库自增 id ", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "redis 实例类型", required = false, dataType = "Integer", paramType = "query")
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage','db_manage')")
-    public ProvisioningDto<?> queryRedisInstanceList(RedisInstanceDto redisInstanceDto) {
+    public ProvisioningDto<?> queryRedisInstanceList(int pageNum, int pageSize, Integer redisGroupId, Integer type) {
+        RedisInstanceDto redisInstanceDto = new RedisInstanceDto();
+        redisInstanceDto.setPageNum(pageNum);
+        redisInstanceDto.setPageSize(pageSize);
+        if (redisGroupId != null){
+            redisInstanceDto.setRedisGroupId(redisGroupId);
+        }
+        if (type != null){
+            redisInstanceDto.setTid(type);
+        }
         PageInfoDto<RedisInstanceDto> pageInfoDto = redisInstanceService.queryRedisInstanceList(redisInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), RedisInstanceController.class);
@@ -49,6 +72,8 @@ public class RedisInstanceController {
      * @param redisInstanceDto
      * @return
      */
+    @ApiOperation(value = "添加 redis 实例", httpMethod = "POST")
+    @ApiImplicitParam(name = "redisInstanceDto", value = "redis 实例 redisInstanceDto", required = true, dataType = "RedisInstanceDto")
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> addRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
@@ -61,6 +86,8 @@ public class RedisInstanceController {
      * @param redisInstanceDto
      * @return
      */
+    @ApiOperation(value = "更新 redis 实例", httpMethod = "PUT")
+    @ApiImplicitParam(name = "redisInstanceDto", value = "redis 实例 redisInstanceDto", required = true, dataType = "RedisInstanceDto")
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> editRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto){
@@ -73,6 +100,8 @@ public class RedisInstanceController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "删除 redis 实例", httpMethod = "DELETE")
+    @ApiImplicitParam(name = "id", value = "redis 实例 数据库自增 id", required = true, dataType = "Integer", example = "0")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> deleteRedisInstance(@RequestBody Integer id){
@@ -86,6 +115,8 @@ public class RedisInstanceController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "查询 redis 实例详情", httpMethod = "POST")
+    @ApiImplicitParam(name = "id", value = "redis 实例 数据库自增 id", required = true, dataType = "Integer", example = "1")
     @RequestMapping(value = "item/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getRedisInstanceDetails(@PathVariable Integer id) {
@@ -99,6 +130,7 @@ public class RedisInstanceController {
      * @param redisInstanceDto
      * @return
      */
+    @ApiOperation(value = "使用缓存", hidden = true)
     @RequestMapping(value = "/useRedisInstance", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useRedisInstance(@RequestBody RedisInstanceDto redisInstanceDto) {

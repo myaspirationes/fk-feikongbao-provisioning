@@ -126,12 +126,15 @@ public class Neo4jInstanceService {
     /**
      * 创建公司 创建流程定义 TODO
      *
-     * @param neo4jInstanceDto
+     * @param companyId
+     * @param neo4jInstanceId
      * @return
      */
     @PreAuthorize("hasAnyAuthority('company_manage')")
-    public Neo4jInstanceDto useNeo4jInstance(Neo4jInstanceDto neo4jInstanceDto) {
-
+    public Neo4jInstanceDto useNeo4jInstance(Integer companyId, Integer neo4jInstanceId) {
+        Neo4jInstanceDto neo4jInstanceDto = new Neo4jInstanceDto();
+        neo4jInstanceDto.setCompanyId(companyId);
+        neo4jInstanceDto.setTid(neo4jInstanceId);
         // 参数校验
         Neo4jInstance neo4jInstance = useNeo4jInstanceParameterCheck(neo4jInstanceDto);
         // 创建 neo4j 账号

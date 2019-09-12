@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -14,21 +15,25 @@ public class EcsTemplateDto extends BaseDto {
     /**
      * ECS 类型
      **/
+    @ApiModelProperty(value = "ECS 类型", required = true, example = "test", position = 1)
     private String ecsType;
 
     /**
      * 模板名称
      **/
+    @ApiModelProperty(value = "模板名称", required = true, example = "测试模板", position = 2)
     private String name;
 
     /**
      * 备注
      **/
+    @ApiModelProperty(value = "备注", required = true, example = "测试模板", position = 3)
     private String remark;
 
     /**
      * ecs 模板详情列表
      */
+    @ApiModelProperty(hidden = true)
     private List<EcsTemplateDetailDto> ecsTemplateDetailDtoList;
 
     public String getEcsType() {

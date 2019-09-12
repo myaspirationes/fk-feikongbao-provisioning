@@ -16,6 +16,8 @@ import com.yodoo.feikongbao.provisioning.enums.CompanyCreationStepsEnum;
 import com.yodoo.feikongbao.provisioning.enums.MqResponseEnum;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.exception.ProvisioningException;
+import com.yodoo.megalodon.datasource.config.RabbitMqConfig;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,9 @@ public class MqVhostService {
 
     @Autowired
     private ApolloService apolloService;
+
+    @Autowired
+    private RabbitMqConfig rabbitMqConfig;
 
     /**
      * 条件查询
@@ -93,46 +98,45 @@ public class MqVhostService {
     /**
      * 创建公司时，创建消息队列
      *
-     * @param mqVhostDto
+     * @param companyId
      * @return
      */
-    public MqVhostDto useMqVHost(MqVhostDto mqVhostDto) {
+    public void useMqVHost(Integer companyId) {
         // 参数校验
-        useMqVHostParameterCheck(mqVhostDto);
+        Company company = useMqVHostParameterCheck(companyId);
 
         // 创建vhost
-        MqResponseEnum mqResponseEnum = rabbitMqVirtualHostService.createVirtualHost(mqVhostDto.getVhostName());
+        MqResponseEnum mqResponseEnum = rabbitMqVirtualHostService.createVirtualHost(company.getCompanyCode());
         if (mqResponseEnum.code == MqResponseEnum.EXIST.code) {
             throw new ProvisioningException(BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR, BundleKey.RABBITMQ_VHOST_NAME_EXIST_ERROR_MSG);
         }
 
         // 添加mqvhost表数据
-        MqVhost mqVhost = mqVhostMapper.selectOne(new MqVhost(mqVhostDto.getVhostName()));
+        MqVhost mqVhost = mqVhostMapper.selectOne(new MqVhost(company.getCompanyCode()));
         if (mqVhost != null){
-            mqVhost.setIp(mqVhostDto.getIp());
-            mqVhost.setPort(mqVhostDto.getPort());
+            mqVhost.setIp(rabbitMqConfig.rabbitmqUrlHost);
+            mqVhost.setPort(rabbitMqConfig.rabbitmqUrlServicePort);
             mqVhostMapper.updateByPrimaryKeySelective(mqVhost);
         }else {
             mqVhost = new MqVhost();
-            BeanUtils.copyProperties(mqVhostDto, mqVhost);
+            mqVhost.setVhostName(company.getCompanyCode());
+            mqVhost.setIp(rabbitMqConfig.rabbitmqUrlHost);
+            mqVhost.setPort(rabbitMqConfig.rabbitmqUrlServicePort);
             mqVhostMapper.insertSelective(mqVhost);
         }
 
         // 更新公司表数据
         CompanyDto companyDto = new CompanyDto();
-        companyDto.setTid(mqVhostDto.getCompanyId());
+        companyDto.setTid(companyId);
         companyDto.setMqVhostId(mqVhost.getId());
         companyService.updateCompany(companyDto);
 
         // 添加公司创建过程记录表
-        companyCreateProcessService.insertCompanyCreateProcess(mqVhostDto.getCompanyId(),
+        companyCreateProcessService.insertCompanyCreateProcess(companyId,
                 CompanyCreationStepsEnum.RABBITMQ_STEP.getOrder(), CompanyCreationStepsEnum.RABBITMQ_STEP.getCode());
 
         // apollo 配置
-        apolloService.createVirtualHostItem(mqVhostDto.getVhostName());
-
-        return mqVhostDto;
-
+        apolloService.createVirtualHostItem(company.getCompanyCode());
     }
 
     /**
@@ -153,19 +157,18 @@ public class MqVhostService {
     /**
      * 创建 vhost 参数校验
      *
-     * @param mqVhostDto
+     * @param companyId
      */
-    private void useMqVHostParameterCheck(MqVhostDto mqVhostDto) {
-        if (mqVhostDto == null || mqVhostDto.getCompanyId() == null || mqVhostDto.getCompanyId() < 0 || StringUtils.isBlank(mqVhostDto.getIp())
-                || mqVhostDto.getPort() == null || mqVhostDto.getPort() < 0) {
+    private Company useMqVHostParameterCheck(Integer companyId) {
+        if (companyId == null || companyId < 0) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
         // 查询公司是否存在，不存在不操作
-        Company company = companyService.selectByPrimaryKey(mqVhostDto.getCompanyId());
+        Company company = companyService.selectByPrimaryKey(companyId);
         if (company == null) {
             throw new ProvisioningException(BundleKey.COMPANY_NOT_EXIST, BundleKey.COMPANY_NOT_EXIST_MSG);
         }
-        mqVhostDto.setVhostName(company.getCompanyCode());
+        return company;
     }
 
     /**

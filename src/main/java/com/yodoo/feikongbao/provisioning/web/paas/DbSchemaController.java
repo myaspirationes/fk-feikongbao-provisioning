@@ -10,6 +10,11 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/dbSchema")
+@Api(tags = "DbSchemaController | mysql数据库")
 public class DbSchemaController {
 
     @Autowired
@@ -35,12 +41,46 @@ public class DbSchemaController {
     /**
      * 条件分页查询
      *
-     * @param dbSchemaDto
+     * @param pageNum
+     * @param pageSize
+     * @param dbInstanceId
+     * @param dbGroupId
+     * @param schemaName
+     * @param status
+     * @param type
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10"),
+            @ApiImplicitParam(name = "dbInstanceId", value = "db实例自增id", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "dbGroupId", value = "db数据库组自增id", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "schemaName", value = "db数据库名称", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "db数据库状态", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "db数据库类型", required = false, dataType = "Integer", paramType = "query"),
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('db_manage')")
-    public ProvisioningDto<?> queryDbSchemaList(DbSchemaDto dbSchemaDto) {
+    public ProvisioningDto<?> queryDbSchemaList(int pageNum, int pageSize, Integer dbInstanceId, Integer dbGroupId, String schemaName, Integer status, Integer type) {
+        DbSchemaDto dbSchemaDto = new DbSchemaDto();
+        dbSchemaDto.setPageNum(pageNum);
+        dbSchemaDto.setPageSize(pageSize);
+        if (dbInstanceId != null){
+            dbSchemaDto.setDbInstanceId(dbInstanceId);
+        }
+        if (dbGroupId != null){
+            dbSchemaDto.setDbInstanceId(dbGroupId);
+        }
+        if (status != null){
+            dbSchemaDto.setStatus(status);
+        }
+        if (type != null){
+            dbSchemaDto.setType(type);
+        }
+        if (StringUtils.isNotBlank(schemaName)){
+            dbSchemaDto.setSchemaName(schemaName);
+        }
         PageInfoDto<DbSchemaDto> pageInfoDto = dbSchemaService.queryDbSchemaList(dbSchemaDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), DbSchemaController.class);
@@ -55,6 +95,8 @@ public class DbSchemaController {
      * @param dbSchemaDto
      * @return
      */
+    @ApiOperation(value = "添加数据库", httpMethod = "POST")
+    @ApiImplicitParam(name = "dbSchemaDto", value = "db数据库 dbSchemaDto", required = true, dataType = "DbSchemaDto")
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> addDbSchema(@RequestBody DbSchemaDto dbSchemaDto){
@@ -67,6 +109,8 @@ public class DbSchemaController {
      * @param dbSchemaDto
      * @return
      */
+    @ApiOperation(value = "修改数据库", httpMethod = "PUT")
+    @ApiImplicitParam(name = "dbSchemaDto", value = "db数据库 dbSchemaDto", required = true, dataType = "DbSchemaDto")
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> editDbSchema(@RequestBody DbSchemaDto dbSchemaDto){
@@ -79,6 +123,8 @@ public class DbSchemaController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "删除数据库", httpMethod = "DELETE")
+    @ApiImplicitParam(name = "id", value = "数据库自增 id", paramType="path",required = true, dataType = "integer", example = "0")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('db_manage')")
     public ProvisioningDto<?> deleteDbSchema(@RequestBody Integer id){
@@ -92,6 +138,7 @@ public class DbSchemaController {
      * @param dbSchemaDto
      * @return
      */
+    @ApiOperation(value = "创建公司，选用数据库", hidden = true)
     @RequestMapping(value = "/useDbSchema", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> useDbSchema(@RequestBody DbSchemaDto dbSchemaDto) {
@@ -104,6 +151,8 @@ public class DbSchemaController {
      * @param type
      * @return
      */
+    @ApiOperation(value = "根据 类型 查询 redis 实例 列表", httpMethod = "GET")
+    @ApiImplicitParam(name = "type", value = "redis 实例类型 0/1", paramType="path",required = true, dataType = "integer", example = "0")
     @RequestMapping(value = "redisInstance/{type}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getRedisInstanceByType(@PathVariable Integer type){
@@ -116,6 +165,8 @@ public class DbSchemaController {
      * @param type
      * @return
      */
+    @ApiOperation(value = "根据 类型 查询 db_schema 实例 列表", httpMethod = "GET")
+    @ApiImplicitParam(name = "type", value = "dbSchema 实例类型 0/1", paramType="path",required = true, dataType = "integer", example = "0")
     @RequestMapping(value = "dbSchema/{type}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> getDbSchemaByType(@PathVariable Integer type){

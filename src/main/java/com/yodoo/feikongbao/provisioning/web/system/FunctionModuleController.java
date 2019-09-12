@@ -8,6 +8,10 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping(value = "/functionModule")
+@Api(tags = "FunctionModuleController | 功能模块")
 public class FunctionModuleController {
 
     @Autowired
@@ -28,13 +33,21 @@ public class FunctionModuleController {
 
     /**
      * 条件分页查询
-     *
-     * @param functionModuleDto
+     * @param pageNum
+     * @param pageSize
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10")
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('dictionary_manage')")
-    public ProvisioningDto<?> queryFunctionModuleList(FunctionModuleDto functionModuleDto) {
+    public ProvisioningDto<?> queryFunctionModuleList(int pageNum, int pageSize) {
+        FunctionModuleDto functionModuleDto = new FunctionModuleDto();
+        functionModuleDto.setPageNum(pageNum);
+        functionModuleDto.setPageSize(pageSize);
         PageInfoDto<FunctionModuleDto> pageInfoDto = functionModuleService.queryDictionaryList(functionModuleDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), FunctionModuleController.class);
@@ -50,6 +63,8 @@ public class FunctionModuleController {
      * @param functionModuleDto
      * @return
      */
+    @ApiOperation(value = "添加", httpMethod = "POST")
+    @ApiImplicitParam(name = "functionModuleDto", value = "功能模块 functionModuleDto", required = true, dataType = "FunctionModuleDto")
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> addFunctionModule(@RequestBody FunctionModuleDto functionModuleDto) {
@@ -63,6 +78,8 @@ public class FunctionModuleController {
      * @param functionModuleDto
      * @return
      */
+    @ApiOperation(value = "修改", httpMethod = "PUT")
+    @ApiImplicitParam(name = "functionModuleDto", value = "功能模块 functionModuleDto", required = true, dataType = "FunctionModuleDto")
     @RequestMapping(method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> editFunctionModule(@RequestBody FunctionModuleDto functionModuleDto) {
@@ -76,6 +93,8 @@ public class FunctionModuleController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "删除", httpMethod = "PUT")
+    @ApiImplicitParam(name = "id", value = "功能模块数据库表自增 id", required = true, dataType = "Integer", example = "0")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('company_manage')")
     public ProvisioningDto<?> deleteFunctionModule(@PathVariable Integer id) {

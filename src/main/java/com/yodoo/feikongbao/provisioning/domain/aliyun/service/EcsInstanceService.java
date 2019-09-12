@@ -63,11 +63,13 @@ public class EcsInstanceService {
      * @Author houzhen
      * @Date 15:29 2019/6/4
      **/
-    public void createRunInstance(EcsInstanceDto ecsInstanceDto) throws ProvisioningException {
+    public void createRunInstance(String ecsType) throws ProvisioningException {
         // 验证参数
-        if (ecsInstanceDto == null || StringUtils.isBlank(ecsInstanceDto.getEcsType())) {
+        if (StringUtils.isBlank(ecsType)) {
             throw new ProvisioningException(BundleKey.PARAMS_ERROR, BundleKey.PARAMS_ERROR_MSG);
         }
+        EcsInstanceDto ecsInstanceDto = new EcsInstanceDto();
+        ecsInstanceDto.setEcsType(ecsType);
         // ecs模板参数信息
         Map<String, Object> templateMap = getTemplateMap(ecsInstanceDto);
         // ecs创建request实体

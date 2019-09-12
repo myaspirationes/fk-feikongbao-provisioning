@@ -8,6 +8,11 @@ import com.yodoo.feikongbao.provisioning.enums.OperateCode;
 import com.yodoo.feikongbao.provisioning.enums.SystemStatus;
 import com.yodoo.feikongbao.provisioning.exception.BundleKey;
 import com.yodoo.feikongbao.provisioning.util.LinkUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +26,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping(value = "/ecsInstance")
+@Api(tags = "EcsInstanceController | ecs 创建和失放")
 public class EcsInstanceController {
 
     @Autowired
@@ -28,13 +34,36 @@ public class EcsInstanceController {
 
     /**
      * 条件分页查询
-     *
-     * @param ecsInstanceDto
+     * @param pageNum
+     * @param pageSize
+     * @param instanceId
+     * @param ecsType
+     * @param instanceName
      * @return
      */
+    @ApiOperation(value = "条件分页查询", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "第几页", required = false, dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "pageSize", value = "多少行", required = false, dataType = "int", paramType = "query", example = "10"),
+            @ApiImplicitParam(name = "instanceId", value = "ecs实例id", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "ecsType", value = "实例类型", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "instanceName", value = "实例名称", required = false, dataType = "String", paramType = "query"),
+    })
     @RequestMapping(method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('group_manage','company_manage')")
-    public ProvisioningDto<?> queryEcsInstanceList(EcsInstanceDto ecsInstanceDto) {
+    public ProvisioningDto<?> queryEcsInstanceList(int pageNum, int pageSize, String instanceId, String ecsType, String instanceName) {
+        EcsInstanceDto ecsInstanceDto = new EcsInstanceDto();
+        ecsInstanceDto.setPageNum(pageNum);
+        ecsInstanceDto.setPageSize(pageSize);
+        if (StringUtils.isNotBlank(instanceId)){
+            ecsInstanceDto.setInstanceId(instanceId);
+        }
+        if (StringUtils.isNotBlank(ecsType)){
+            ecsInstanceDto.setEcsType(ecsType);
+        }
+        if (StringUtils.isNotBlank(instanceName)){
+            ecsInstanceDto.setInstanceName(instanceName);
+        }
         PageInfoDto<EcsInstanceDto> pageInfoDto = ecsInstanceService.queryEcsInstanceList(ecsInstanceDto);
         // 列表item导向
         LinkUtils.setItemListLink(pageInfoDto.getList(), EcsInstanceController.class);
@@ -46,13 +75,15 @@ public class EcsInstanceController {
 
     /**
      * 创建: java ecs
-     * @param ecsInstanceDto : companyCode, ecsType
+     * @param ecsType : companyCode, ecsType
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "创建 ecs", httpMethod = "POST")
+    @ApiImplicitParam(name = "ecsType", value = "ecs 类型", required = true, dataType = "String", example = "test")
+    @RequestMapping(value = "/{ecsType}", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('group_manage','company_manage')")
-    public ProvisioningDto<?> createRunInstance(@RequestBody EcsInstanceDto ecsInstanceDto){
-        ecsInstanceService.createRunInstance(ecsInstanceDto);
+    public ProvisioningDto<?> createRunInstance(@RequestBody String ecsType){
+        ecsInstanceService.createRunInstance(ecsType);
         return new ProvisioningDto<String>(SystemStatus.SUCCESS.getStatus(), BundleKey.SUCCESS, BundleKey.SUCCESS_MSG);
     }
 
@@ -61,6 +92,8 @@ public class EcsInstanceController {
      * @param ecsInstanceId
      * @return
      */
+    @ApiOperation(value = "释放 ecs", httpMethod = "DELETE")
+    @ApiImplicitParam(name = "ecsInstanceId", value = "虚拟机 ecs id", paramType="path",required = true, dataType = "String", example = "test")
     @RequestMapping(value = "/{ecsInstanceId}", method = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('group_manage','company_manage')")
     public ProvisioningDto<?> deleteRunInstance(@PathVariable String ecsInstanceId){

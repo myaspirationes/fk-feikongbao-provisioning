@@ -16,9 +16,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
  * @Author by houzhen
  */
 @Component
-public class ProvisioningAuthenticationProvider implements AuthenticationProvider {
+public class ProvisioningAuthenticationProvider extends RequestContextListener implements AuthenticationProvider {
 
     @Autowired
     ProvisioningUserDetailsServiceImpl userDetailsService;

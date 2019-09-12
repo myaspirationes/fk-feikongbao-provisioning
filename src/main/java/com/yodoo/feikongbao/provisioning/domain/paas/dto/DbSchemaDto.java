@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description ：数据库表
@@ -12,56 +13,67 @@ public class DbSchemaDto extends BaseDto {
     /**
      * DB实例id
      **/
+    @ApiModelProperty(value = "DB实例id", required = true, example = "1", position = 1)
     private Integer dbInstanceId;
 
     /**
      * DB数据库组id
      **/
+    @ApiModelProperty(value = "DB数据库组id", required = true, example = "1", position = 2)
     private Integer dbGroupId;
 
     /**
      * 数据库名
      **/
+    @ApiModelProperty(value = "数据库名", required = true, example = "test", position = 3)
     private String schemaName;
 
     /**
      * 用户名
      **/
+    @ApiModelProperty(value = "用户名", required = true, example = "test", position = 4)
     private String username;
 
     /**
      * 密码
      **/
+    @ApiModelProperty(value = "密码", required = true, example = "test", position = 5)
     private String password;
 
     /**
      * 状态：0 未被使用，1 已被使用
      **/
+    @ApiModelProperty(value = "状态：0 未被使用，1 已被使用", required = false, example = "0", position = 6)
     private Integer status;
 
     /**
      * 类型，0：主，1：从
      **/
+    @ApiModelProperty(value = "类型，0：主，1：从", required = true, example = "0", position = 7)
     private Integer type;
 
     /**
      * 公司id
      **/
+    @ApiModelProperty(value = "公司id", required = false, example = "0", position = 8)
     private Integer companyId;
 
     /**
      * 公司Code
      **/
+    @ApiModelProperty(value = "公司Code", required = false, example = "0", position = 9)
     private String companyCode;
 
     /**
      * 初始化数据库版本
      **/
+    @ApiModelProperty(value = "初始化数据库版本", required = false, example = "0", position = 10)
     private String targetVersion;
 
     /**
      * DB实例表
      **/
+    @ApiModelProperty(hidden = true)
     private DbInstanceDto dbInstanceDto;
 
     public Integer getDbInstanceId() {

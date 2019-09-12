@@ -1,6 +1,7 @@
 package com.yodoo.feikongbao.provisioning.domain.paas.dto;
 
 import com.yodoo.feikongbao.provisioning.common.dto.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description ：TODO
@@ -12,38 +13,46 @@ public class Neo4jInstanceDto extends BaseDto {
     /**
      * IP
      **/
+    @ApiModelProperty(value = "IP", required = true, example = "127.0.0.1", position = 1)
     private String url;
 
     /**
      * 初始用户名
      */
+    @ApiModelProperty(value = "初始用户名", required = true, example = "oldtest", position = 2)
     private String initialUsername;
 
     /**
      * 初始密码
      */
+    @ApiModelProperty(value = "初始密码", required = true, example = "oldtest", position = 3)
     private String initialPassword;
 
     /**
      * 用户名
      */
+    @ApiModelProperty(value = "用户名", required = false, example = "test", position = 4)
     private String username;
 
     /**
      * 密码
      */
+    @ApiModelProperty(value = "密码", required = false, example = "test", position = 5)
     private String password;
 
     /**
      * neo4j名称
      **/
+    @ApiModelProperty(value = "neo4j名称", required = false, example = "test", position = 6)
     private String neo4jName;
 
     /**
      * 状态：0 未被使用，1 已被使用
      */
+    @ApiModelProperty(value = "状态：0 未被使用，1 已被使用", required = false, example = "0", position = 7)
     private Integer status;
 
+    @ApiModelProperty(value = "公司id", required = false, example = "0", position = 8)
     private Integer companyId;
 
     public String getUrl() {
