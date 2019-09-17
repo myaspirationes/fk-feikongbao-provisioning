@@ -1217,7 +1217,4 @@ public class UserGroup {
         }
     }
 
-
-
-
 }
