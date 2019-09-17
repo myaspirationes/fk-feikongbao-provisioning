@@ -1213,7 +1213,7 @@ public class UserGroup {
             String message = response.getString("message");
             Assert.assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            Assert.assertTrue("Error!" + e, 1 == 5);
         }
     }
 
