@@ -1197,7 +1197,7 @@ public class UserGroup {
 
 
     /**
-     *用户组批处理 1： Id is null
+     *用户组批处理 1： Id is not exist
      *
      */
     @Test
@@ -1205,7 +1205,7 @@ public class UserGroup {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         headers.put("Authorization", "Basic bGlsZWk6eW9kb28xMjM=");
-        String id= "-13";
+        String id= "93";
         try {
             ResponseEntity<String> exchange = restTemplateUtils.exchange(url+"/userGroupBatchProcessing?userGroupId="+id, HttpMethod.POST, headers, String.class);
             String body = exchange.getBody();
