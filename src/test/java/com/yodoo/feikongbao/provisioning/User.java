@@ -1,16 +1,9 @@
 package com.yodoo.feikongbao.provisioning;
 
 import com.feikongbao.storageclient.util.RestTemplateUtils;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningConfig;
 import com.yodoo.feikongbao.provisioning.config.ProvisioningSecurityConf;
-
-import com.yodoo.megalodon.permission.dto.UserDto;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +11,26 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestClientException;
-import tk.mybatis.mapper.genid.GenId;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
+
+//import org.Testng.annotations.Test;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ProvisioningConfig.class, ProvisioningSecurityConf.class})
+@WebAppConfiguration
+
 public class User {
 
     @Autowired
@@ -76,14 +76,14 @@ public class User {
         headers.put("Authorization", "Basic bGlsZWk6eW9kb28xMjM=");
 
         JSONObject requestJson = new JSONObject();
-        requestJson.put("parentId", "2");
+        requestJson.put("parentId", "0");
         requestJson.put("account", "YODOO_TEST_1");
         requestJson.put("name", "张三");
         requestJson.put("password", "2");
         requestJson.put("email", "222@146.com");
         requestJson.put("region", "SH");
         requestJson.put("post", "2");
-        requestJson.put("sex", "1");
+        requestJson.put("sex", "0");
         requestJson.put("birthday", "1972-09-09");
         requestJson.put("phone", "13838384388");
         requestJson.put("status", "1");
@@ -95,9 +95,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("用户已存在", message);
+            assertEquals("用户已存在", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
 
@@ -132,9 +132,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
 
 
@@ -168,9 +168,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -202,9 +202,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
 
 
@@ -238,9 +238,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
 
 
@@ -275,9 +275,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -311,9 +311,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -347,9 +347,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -383,9 +383,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -419,9 +419,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -455,9 +455,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -491,9 +491,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -529,9 +529,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -566,9 +566,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -603,9 +603,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -639,9 +639,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -676,9 +676,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -712,9 +712,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -749,9 +749,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -786,9 +786,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -822,9 +822,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -858,9 +858,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -896,9 +896,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -933,9 +933,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -970,9 +970,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1008,9 +1008,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1044,9 +1044,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1080,9 +1080,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1118,9 +1118,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1155,9 +1155,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1192,9 +1192,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String status = response.getString("status");
 
-            Assert.assertEquals("400", status);
+            assertEquals("400", status);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1232,9 +1232,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1272,9 +1272,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("用户不存在", message);
+            assertEquals("用户不存在", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1311,9 +1311,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1350,9 +1350,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1389,9 +1389,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1429,9 +1429,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1469,9 +1469,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1509,9 +1509,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1548,9 +1548,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1588,9 +1588,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1628,9 +1628,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1668,9 +1668,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1707,9 +1707,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1744,9 +1744,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1784,9 +1784,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1824,9 +1824,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1864,9 +1864,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1903,9 +1903,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("服务异常,请联系管理员", message);
+            assertEquals("服务异常,请联系管理员", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1944,9 +1944,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -1984,9 +1984,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2024,9 +2024,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2063,9 +2063,9 @@ public class User {
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
 
-            Assert.assertEquals("电话格式错误", message);
+            assertEquals("电话格式错误", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2088,9 +2088,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2113,9 +2113,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("用户不存在", message);
+            assertEquals("用户不存在", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2137,9 +2137,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2161,9 +2161,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2185,9 +2185,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2209,9 +2209,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2234,9 +2234,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2258,9 +2258,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2282,9 +2282,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
         }
     }
 
@@ -2306,9 +2306,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2331,9 +2331,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2355,9 +2355,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("用户不存在", message);
+            assertEquals("用户不存在", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2380,9 +2380,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("用户不存在", message);
+            assertEquals("用户不存在", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2406,9 +2406,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2432,9 +2432,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2458,9 +2458,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("参数异常", message);
+            assertEquals("参数异常", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2484,9 +2484,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2510,9 +2510,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }
@@ -2535,9 +2535,9 @@ public class User {
             String body = exchange.getBody();
             JSONObject response = JSONObject.fromObject(body);
             String message = response.getString("message");
-            Assert.assertEquals("请求成功", message);
+            assertEquals("请求成功", message);
         } catch (RestClientException e) {
-            Assert.assertTrue("Error!" + e, 1 == 2);
+            assertTrue("Error!" + e, 1 == 2);
 
         }
     }

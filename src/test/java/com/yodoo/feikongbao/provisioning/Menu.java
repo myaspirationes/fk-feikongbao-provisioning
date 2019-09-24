@@ -17,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestClientException;
 
 import java.io.BufferedReader;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ProvisioningConfig.class, ProvisioningSecurityConf.class})
+@WebAppConfiguration
 public class Menu {
 
     @Autowired
