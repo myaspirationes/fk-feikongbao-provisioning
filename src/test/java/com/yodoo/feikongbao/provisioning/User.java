@@ -2513,7 +2513,6 @@ public class User {
             assertEquals("请求成功", message);
         } catch (RestClientException e) {
             assertTrue("Error!" + e, 1 == 2);
-
         }
     }
 
@@ -2538,7 +2537,6 @@ public class User {
             assertEquals("请求成功", message);
         } catch (RestClientException e) {
             assertTrue("Error!" + e, 1 == 2);
-
         }
     }
 
